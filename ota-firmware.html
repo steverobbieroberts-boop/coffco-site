@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>CoffCo — Scheduled OTA Firmware Update</title>
+<link rel="stylesheet" href="assets/coffco.css">
+<style>
+:root{--navy:#1C2B4A;--teal:#0F6E56;--teal-light:#E1F5EE;--teal-border:#5DCAA5;--teal-mid:#1D9E75;--amber:#854F0B;--amber-light:#FAEEDA;--amber-border:#EF9F27;--red:#A32D2D;--red-light:#FCEBEB;--red-border:#F09595;--blue:#185FA5;--blue-light:#E6F1FB;--purple:#534AB7;--purple-light:#EEEDFE;--radius:8px;--radius-lg:12px;--mono:ui-monospace,'SF Mono',monospace;}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#f8f7f4;color:#1a1a18;font-size:13px}
+.page-body{max-width:1060px;margin:0 auto;padding:36px 40px 80px}
+.kpi-row{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:10px;margin-bottom:28px}
+.kpi{background:#fff;border:.5px solid rgba(0,0,0,.1);border-radius:var(--radius);padding:12px 14px}
+.kpi-label{font-size:10px;color:#9b9a96;text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px}
+.kpi-val{font-size:20px;font-weight:600;color:#1a1a18;line-height:1}
+.kpi-val.good{color:var(--teal)}.kpi-val.warn{color:var(--amber)}
+.sec-banner{display:flex;align-items:center;gap:12px;margin:36px 0 14px;padding-bottom:10px;border-bottom:.5px solid rgba(0,0,0,.15)}
+.sec-icon{width:32px;height:32px;border-radius:var(--radius);display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0}
+.sec-title{font-size:15px;font-weight:600;color:#1a1a18}
+.sec-sub{font-size:11px;color:#9b9a96;margin-top:2px}
+.panel{background:#fff;border:.5px solid rgba(0,0,0,.1);border-radius:var(--radius-lg);padding:18px 20px;margin-bottom:12px}
+table.ops{width:100%;border-collapse:collapse;font-size:12px}
+table.ops th{text-align:left;font-weight:500;color:#9b9a96;padding:0 10px 8px 0;border-bottom:.5px solid rgba(0,0,0,.15);font-size:10px;text-transform:uppercase;letter-spacing:.04em}
+table.ops th:first-child{padding-left:0}
+table.ops td{padding:9px 10px 9px 0;border-bottom:.5px solid rgba(0,0,0,.07);vertical-align:top;line-height:1.55;color:#6b6a66}
+table.ops td:first-child{padding-left:0;color:#1a1a18}
+table.ops tr:last-child td{border-bottom:none}
+table.ops tr:hover td{background:#f8f7f4}
+table.ops td strong,table.ops b{color:#1a1a18}
+.pill{display:inline-flex;font-size:10px;padding:2px 8px;border-radius:20px;font-weight:500;white-space:nowrap}
+.pill-teal{background:var(--teal-light);color:var(--teal);border:.5px solid var(--teal-border)}
+.pill-amber{background:var(--amber-light);color:var(--amber);border:.5px solid var(--amber-border)}
+.pill-red{background:var(--red-light);color:var(--red);border:.5px solid var(--red-border)}
+.pill-blue{background:var(--blue-light);color:var(--blue);border:.5px solid #85B7EB}
+.pill-grey{background:#f1f0ed;color:#6b6a66;border:.5px solid rgba(0,0,0,.15)}
+.callout{border-left:3px solid var(--teal);background:var(--teal-light);padding:12px 16px;border-radius:0 var(--radius) var(--radius) 0;margin:12px 0;font-size:13px;line-height:1.7;color:#1a3a3a}
+.callout strong{color:var(--teal)}
+.callout.warn{border-color:var(--amber);background:var(--amber-light);color:#3a2000}
+.callout.warn strong{color:var(--amber)}
+/* Flow diagram */
+.flow{display:grid;grid-template-columns:repeat(4,1fr);gap:0;margin:16px 0 20px}
+.flow-step{background:#fff;border:.5px solid rgba(0,0,0,.12);padding:14px 16px;position:relative}
+.flow-step:not(:last-child)::after{content:"▶";position:absolute;right:-12px;top:50%;transform:translateY(-50%);color:var(--teal);font-size:14px;z-index:1;background:#f8f7f4;padding:0 2px}
+.flow-step:first-child{border-radius:var(--radius) 0 0 var(--radius)}
+.flow-step:last-child{border-radius:0 var(--radius) var(--radius) 0}
+.flow-num{font-size:10px;font-weight:600;color:var(--teal);text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px}
+.flow-title{font-size:13px;font-weight:600;color:#1a1a18;margin-bottom:6px}
+.flow-desc{font-size:11px;color:#6b6a66;line-height:1.5}
+/* State cards */
+.state-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:8px;margin:14px 0}
+.state-card{background:#fff;border:.5px solid rgba(0,0,0,.1);border-radius:var(--radius);padding:12px 14px;border-left:3px solid transparent}
+.state-card.proceed{border-left-color:var(--teal)}
+.state-card.defer{border-left-color:var(--amber)}
+.state-card.block{border-left-color:var(--red)}
+.state-name{font-size:12px;font-weight:600;color:#1a1a18;margin-bottom:4px}
+.state-action{font-size:11px;font-weight:500;margin-bottom:4px}
+.state-card.proceed .state-action{color:var(--teal)}
+.state-card.defer .state-action{color:var(--amber)}
+.state-card.block .state-action{color:var(--red)}
+.state-rationale{font-size:11px;color:#6b6a66;line-height:1.5}
+</style>
+</head>
+<body>
+<nav class="sidebar"></nav>
+<main class="main">
+<div class="page-cover">
+  <div class="cover-eyebrow">Supporting Document &middot; COFFCO-OTA-001 V1.0 &middot; Engineering Design Specification</div>
+  <h1 class="cover-title">Scheduled OTA Firmware Update</h1>
+  <p class="cover-sub">Night-window deployment strategy &middot; A/B partition management &middot; State machine gating &middot; Time zone scheduling &middot; Canary deployment &middot; SRS 1.11</p>
+  <div class="cover-meta">
+    <span><strong>Issue:</strong> V1.0</span>
+    <span><strong>Trigger:</strong> SRS 1.11 derivation</span>
+    <span><strong>Night window:</strong> 03:00–06:00 local</span>
+    <span><strong>Safety function:</strong> FW-SF-09</span>
+    <span><strong>Test case:</strong> TC-OTA-01</span>
+  </div>
+  <div class="cover-download">
+    <a href="downloads/ota-firmware.docx" class="btn-download">&#11015; Download V1.0 (.docx)</a>
+  </div>
+</div>
+<div class="page-body">
+
+<div class="kpi-row">
+  <div class="kpi"><div class="kpi-label">Design objectives</div><div class="kpi-val">6</div></div>
+  <div class="kpi"><div class="kpi-label">Night window</div><div class="kpi-val good">03–06</div><div style="font-size:10px;color:#9b9a96;margin-top:4px">local time</div></div>
+  <div class="kpi"><div class="kpi-label">Activity-free gate</div><div class="kpi-val">30 min</div></div>
+  <div class="kpi"><div class="kpi-label">Rollback window</div><div class="kpi-val">120 s</div></div>
+  <div class="kpi"><div class="kpi-label">Markets</div><div class="kpi-val">3</div><div style="font-size:10px;color:#9b9a96;margin-top:4px">UK · EU · US</div></div>
+  <div class="kpi"><div class="kpi-label">SRS requirement</div><div class="kpi-val good" style="font-size:14px">SRS 1.11</div></div>
+</div>
+
+<div class="callout"><strong>Design intent.</strong> The 30–60 second machine reboot during a firmware update must never coincide with an active or imminent guest brew. Night-window scheduling eliminates this risk by restricting updates to the lowest-usage window (03:00–06:00 local) across all Vacation Stables properties. The state machine is the gating mechanism — update can only proceed from STANDBY.</div>
+
+<!-- Design Objectives -->
+<div class="sec-banner">
+  <div class="sec-icon" style="background:var(--blue-light);color:var(--blue)">🎯</div>
+  <div><div class="sec-title">1. Design Objectives</div>
+  <div class="sec-sub">Six objectives derived from the SDA question: can firmware updates be scheduled during night hours to minimise guest impact?</div></div>
+</div>
+<div class="panel" style="padding:0;overflow:hidden">
+<table class="ops">
+<thead><tr>
+  <th style="padding-left:18px;width:60px">Ref</th>
+  <th style="width:180px">Objective</th>
+  <th>Engineering requirement</th>
+</tr></thead>
+<tbody>
+  <tr><td style="padding-left:18px"><strong>OBJ-1</strong></td><td><strong>Zero guest impact</strong></td><td>No firmware update shall interrupt or prevent a guest brew cycle in progress or imminent.</td></tr>
+  <tr><td style="padding-left:18px"><strong>OBJ-2</strong></td><td><strong>Night-window deployment</strong></td><td>All firmware updates shall be scheduled for deployment in the 03:00–06:00 local time window of the property where each machine is installed.</td></tr>
+  <tr><td style="padding-left:18px"><strong>OBJ-3</strong></td><td><strong>Safe failure</strong></td><td>If a firmware update fails for any reason, the machine shall revert to the previous firmware version and return to STANDBY state. Under no circumstances shall a failed update leave the machine in an unsafe state.</td></tr>
+  <tr><td style="padding-left:18px"><strong>OBJ-4</strong></td><td><strong>No user action required</strong></td><td>The update process shall be entirely transparent to the hotel guest. No guest action, acknowledgement, or awareness is required.</td></tr>
+  <tr><td style="padding-left:18px"><strong>OBJ-5</strong></td><td><strong>Canary deployment</strong></td><td>Updates shall be deployed to a small canary group first, validated, then rolled out progressively across the fleet to limit exposure to any defect in the new firmware.</td></tr>
+  <tr><td style="padding-left:18px"><strong>OBJ-6</strong></td><td><strong>Traceability</strong></td><td>Every machine's firmware version shall be recorded in the cloud platform asset register before and after update. Failed updates shall be logged with failure reason.</td></tr>
+</tbody>
+</table>
+</div>
+
+<!-- Update flow -->
+<div class="sec-banner">
+  <div class="sec-icon" style="background:var(--teal-light);color:var(--teal)">⚙️</div>
+  <div><div class="sec-title">2. Update Process — Four-Step Architecture</div>
+  <div class="sec-sub">Cloud scheduler → machine check → download and verify → install and reboot</div></div>
+</div>
+<div class="flow">
+  <div class="flow-step">
+    <div class="flow-num">Step 1</div>
+    <div class="flow-title">Cloud Scheduler</div>
+    <div class="flow-desc">Cloud ops schedules update release. Assigns firmware version, target device group, night window (local time per property time zone). Staggered canary release plan defined.</div>
+  </div>
+  <div class="flow-step">
+    <div class="flow-num">Step 2</div>
+    <div class="flow-title">Machine Firmware Check</div>
+    <div class="flow-desc">Machine polls cloud at scheduled time. Checks: (a) state = STANDBY, (b) no recent brew activity (30-min activity-free check), (c) Wi-Fi signal adequate. All must pass.</div>
+  </div>
+  <div class="flow-step">
+    <div class="flow-num">Step 3</div>
+    <div class="flow-title">Download and Verify</div>
+    <div class="flow-desc">Machine downloads firmware package. Verifies digital signature against CoffCo public key. Verifies checksum. If either fails: abort and log. Do NOT install.</div>
+  </div>
+  <div class="flow-step">
+    <div class="flow-num">Step 4</div>
+    <div class="flow-title">Install and Reboot</div>
+    <div class="flow-desc">Verified firmware installed to inactive A/B partition. Machine reboots. Post-boot self-test. If STANDBY reached within 120s: confirm update. If not: automatic rollback to previous partition.</div>
+  </div>
+</div>
+
+<!-- State machine gating -->
+<div class="sec-banner">
+  <div class="sec-icon" style="background:var(--purple-light);color:var(--purple)">🔒</div>
+  <div><div class="sec-title">3. State Machine Gating</div>
+  <div class="sec-sub">Update proceeds only from STANDBY — the FSM is the primary protection mechanism</div></div>
+</div>
+<div class="state-grid">
+  <div class="state-card proceed">
+    <div class="state-name">STANDBY</div>
+    <div class="state-action">✓ Proceed (all checks pass)</div>
+    <div class="state-rationale">Machine is idle. No guest activity. Safe to update.</div>
+  </div>
+  <div class="state-card proceed">
+    <div class="state-name">LOW CONSUMABLE</div>
+    <div class="state-action">✓ Proceed (STANDBY-equivalent)</div>
+    <div class="state-rationale">Low consumable is a status indicator only — machine is otherwise operational and idle.</div>
+  </div>
+  <div class="state-card defer">
+    <div class="state-name">BREWING</div>
+    <div class="state-action">⏸ Defer — re-check every 5 min</div>
+    <div class="state-rationale">Update must never interrupt an active brew cycle. Heating element may be energised.</div>
+  </div>
+  <div class="state-card defer">
+    <div class="state-name">DISPENSING</div>
+    <div class="state-action">⏸ Defer — re-check every 5 min</div>
+    <div class="state-rationale">Beverage is being delivered to guest. Do not interrupt.</div>
+  </div>
+  <div class="state-card defer">
+    <div class="state-name">MAINTENANCE</div>
+    <div class="state-action">⏸ Defer until STANDBY</div>
+    <div class="state-rationale">Housekeeping is servicing the machine. Do not interrupt.</div>
+  </div>
+  <div class="state-card defer">
+    <div class="state-name">FLUID-EMPTY</div>
+    <div class="state-action">⏸ Defer until STANDBY</div>
+    <div class="state-rationale">Machine is in a degraded state. Update when restored to normal operation.</div>
+  </div>
+  <div class="state-card block">
+    <div class="state-name">SAFE-SHUTDOWN</div>
+    <div class="state-action">✗ Block — alert cloud ops</div>
+    <div class="state-rationale">Safety state. Machine may have a hardware or firmware fault. Update only after Tier 2 engineer has cleared the fault.</div>
+  </div>
+  <div class="state-card block">
+    <div class="state-name">FAULT</div>
+    <div class="state-action">✗ Block — alert cloud ops</div>
+    <div class="state-rationale">Fault state. Root cause unknown. Update would mask or complicate diagnosis.</div>
+  </div>
+</div>
+
+<!-- Activity-free check -->
+<div class="sec-banner">
+  <div class="sec-icon" style="background:var(--amber-light);color:var(--amber)">⏱️</div>
+  <div><div class="sec-title">4. Activity-Free Check</div>
+  <div class="sec-sub">State check alone is insufficient — a guest may be about to start a brew</div></div>
+</div>
+<div class="panel">
+  <p style="font-size:13px;color:#3A3F47;line-height:1.75;margin-bottom:14px">Even in STANDBY state, a guest may have selected a drink type but not yet pressed CONFIRM BREW. A 30-minute activity buffer provides a conservative gate against this scenario.</p>
+  <table class="ops">
+  <thead><tr><th>Condition</th><th>Action</th></tr></thead>
+  <tbody>
+    <tr><td><strong>Last UI activity &gt;30 min ago</strong></td><td>Activity-free check passes — proceed with update.</td></tr>
+    <tr><td><strong>Last UI activity within 30 min of 03:00</strong></td><td>Update deferred by 30 minutes and re-checked. Maximum deferral: until 05:30 local time (leaving 30 minutes of update window).</td></tr>
+    <tr><td><strong>Continuously in STANDBY since 22:00 local</strong></td><td>Activity-free check waived — machine is clearly unoccupied. Proceed immediately.</td></tr>
+  </tbody>
+  </table>
+</div>
+
+<!-- Time zone table -->
+<div class="sec-banner">
+  <div class="sec-icon" style="background:var(--blue-light);color:var(--blue)">🌍</div>
+  <div><div class="sec-title">5. Night-Window Time Zone Management</div>
+  <div class="sec-sub">Vacation Stables spans UK, EU, and US markets — a single UTC window would update some machines during peak usage</div></div>
+</div>
+<div class="panel" style="padding:0;overflow:hidden">
+<table class="ops">
+<thead><tr>
+  <th style="padding-left:18px;width:100px">Market</th>
+  <th style="width:160px">Time zones</th>
+  <th style="width:160px">Night window (local)</th>
+  <th>UTC window</th>
+</tr></thead>
+<tbody>
+  <tr><td style="padding-left:18px"><span class="pill pill-blue">UK</span></td><td>GMT / BST (UTC+1)</td><td><strong>03:00–06:00 local</strong></td><td>03:00–06:00 UTC (winter) / 02:00–05:00 UTC (summer)</td></tr>
+  <tr><td style="padding-left:18px"><span class="pill pill-teal">EU (West)</span></td><td>CET (UTC+1) / CEST (UTC+2)</td><td><strong>03:00–06:00 local</strong></td><td>02:00–05:00 UTC (winter) / 01:00–04:00 UTC (summer)</td></tr>
+  <tr><td style="padding-left:18px"><span class="pill pill-amber">US East</span></td><td>EST (UTC-5) / EDT (UTC-4)</td><td><strong>03:00–06:00 local</strong></td><td>08:00–11:00 UTC (winter) / 07:00–10:00 UTC (summer)</td></tr>
+  <tr><td style="padding-left:18px"><span class="pill pill-amber">US Central</span></td><td>CST (UTC-6) / CDT (UTC-5)</td><td><strong>03:00–06:00 local</strong></td><td>09:00–12:00 UTC (winter) / 08:00–11:00 UTC (summer)</td></tr>
+  <tr><td style="padding-left:18px"><span class="pill pill-amber">US Pacific</span></td><td>PST (UTC-8) / PDT (UTC-7)</td><td><strong>03:00–06:00 local</strong></td><td>11:00–14:00 UTC (winter) / 10:00–13:00 UTC (summer)</td></tr>
+</tbody>
+</table>
+</div>
+
+<!-- TC-OTA-01 -->
+<div class="sec-banner">
+  <div class="sec-icon" style="background:var(--teal-light);color:var(--teal)">✅</div>
+  <div><div class="sec-title">6. Acceptance Criteria — TC-OTA-01</div>
+  <div class="sec-sub">All five conditions must pass for SRS 1.11 to be verified</div></div>
+</div>
+<div class="panel" style="padding:0;overflow:hidden">
+<table class="ops">
+<thead><tr>
+  <th style="padding-left:18px;width:60px">Cond.</th>
+  <th>Pass criterion</th>
+  <th style="width:120px">Verification</th>
+</tr></thead>
+<tbody>
+  <tr><td style="padding-left:18px"><span class="pill pill-teal">1</span></td><td>Update blocked outside 03:00–06:00 local time window</td><td>Test</td></tr>
+  <tr><td style="padding-left:18px"><span class="pill pill-teal">2</span></td><td>STANDBY state-gate enforced — update blocked in any other FSM state</td><td>Test</td></tr>
+  <tr><td style="padding-left:18px"><span class="pill pill-teal">3</span></td><td>Update blocked if brew activity within preceding 30 minutes</td><td>Test</td></tr>
+  <tr><td style="padding-left:18px"><span class="pill pill-teal">4</span></td><td>Automatic A/B partition rollback if STANDBY not achieved within 120 s post-reboot</td><td>Test</td></tr>
+  <tr><td style="padding-left:18px"><span class="pill pill-teal">5</span></td><td>UPDATE-COMPLETE or UPDATE-FAILED telemetry event received at cloud ops dashboard</td><td>Test (end-to-end)</td></tr>
+</tbody>
+</table>
+</div>
+
+<!-- Documents updated -->
+<div class="sec-banner">
+  <div class="sec-icon" style="background:var(--amber-light);color:var(--amber)">📄</div>
+  <div><div class="sec-title">7. Documents Updated by this Specification</div></div>
+</div>
+<div class="panel" style="padding:0;overflow:hidden">
+<table class="ops">
+<thead><tr><th style="padding-left:18px">Document</th><th>Change</th></tr></thead>
+<tbody>
+  <tr><td style="padding-left:18px"><strong>SRS V3.0</strong></td><td>SRS 1.11 (Scheduled OTA Firmware Update) added as a new functional requirement</td></tr>
+  <tr><td style="padding-left:18px"><strong>Architecture V2.2</strong></td><td>FW-SF-09 (OTA A/B partition rollback) added as a firmware safety function; OTA-UPDATE state added to FSM</td></tr>
+  <tr><td style="padding-left:18px"><strong>IPS Plan V3.0</strong></td><td>§2.4 — firmware management expanded; OTA update process and rollback procedure documented</td></tr>
+  <tr><td style="padding-left:18px"><strong>VVP V2.0</strong></td><td>TC-OTA-01 added to test case register with 5 acceptance conditions</td></tr>
+</tbody>
+</table>
+</div>
+
+</div>
+</main>
+<script src="assets/nav.js"></script>
+</body>
+</html>

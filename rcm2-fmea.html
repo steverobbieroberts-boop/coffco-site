@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>CoffCo — RCM2 FMEA</title>
+<link rel="stylesheet" href="assets/coffco.css">
+<style>
+:root{--navy:#1C2B4A;--teal:#0F6E56;--teal-light:#E1F5EE;--teal-border:#5DCAA5;--teal-mid:#1D9E75;--amber:#854F0B;--amber-light:#FAEEDA;--amber-border:#EF9F27;--red:#A32D2D;--red-light:#FCEBEB;--red-border:#F09595;--blue:#185FA5;--blue-light:#E6F1FB;--purple:#534AB7;--purple-light:#EEEDFE;--radius:8px;--radius-lg:12px;--mono:ui-monospace,'SF Mono',monospace;}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#f8f7f4;color:#1a1a18;font-size:13px}
+.page-body{max-width:1100px;margin:0 auto;padding:36px 40px 80px}
+.kpi-row{display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:10px;margin-bottom:24px}
+.kpi{background:#fff;border:.5px solid rgba(0,0,0,.1);border-radius:var(--radius);padding:12px 14px}
+.kpi-label{font-size:10px;color:#9b9a96;text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px}
+.kpi-val{font-size:20px;font-weight:600;color:#1a1a18;line-height:1}
+.kpi-val.good{color:var(--teal)}.kpi-val.warn{color:var(--amber)}.kpi-val.bad{color:var(--red)}
+.sec-banner{display:flex;align-items:center;gap:12px;margin:32px 0 14px;padding-bottom:10px;border-bottom:.5px solid rgba(0,0,0,.15)}
+.sec-icon{width:32px;height:32px;border-radius:var(--radius);display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0}
+.sec-title{font-size:15px;font-weight:600;color:#1a1a18}
+.sec-sub{font-size:11px;color:#9b9a96;margin-top:2px}
+.panel{background:#fff;border:.5px solid rgba(0,0,0,.1);border-radius:var(--radius-lg);padding:18px 20px;margin-bottom:12px}
+table.ops{width:100%;border-collapse:collapse;font-size:12px}
+table.ops th{text-align:left;font-weight:500;color:#9b9a96;padding:0 8px 8px 0;border-bottom:.5px solid rgba(0,0,0,.15);font-size:10px;text-transform:uppercase;letter-spacing:.04em}
+table.ops th:first-child{padding-left:0}
+table.ops td{padding:8px 8px 8px 0;border-bottom:.5px solid rgba(0,0,0,.07);vertical-align:top;line-height:1.5;color:#6b6a66}
+table.ops td:first-child{padding-left:0}
+table.ops tr:last-child td{border-bottom:none}
+table.ops tr:hover td{background:#f8f7f4}
+table.ops td strong,table.ops b{color:#1a1a18}
+.pill{display:inline-flex;font-size:10px;padding:2px 8px;border-radius:20px;font-weight:500;white-space:nowrap}
+.pill-teal{background:var(--teal-light);color:var(--teal);border:.5px solid var(--teal-border)}
+.pill-amber{background:var(--amber-light);color:var(--amber);border:.5px solid var(--amber-border)}
+.pill-red{background:var(--red-light);color:var(--red);border:.5px solid var(--red-border)}
+.pill-blue{background:var(--blue-light);color:var(--blue);border:.5px solid #85B7EB}
+.pill-grey{background:#f1f0ed;color:#6b6a66;border:.5px solid rgba(0,0,0,.12)}
+.pill-purple{background:#EEEDFE;color:#534AB7;border:.5px solid #AFA9EC}
+.callout{border-left:3px solid var(--teal);background:var(--teal-light);padding:12px 16px;border-radius:0 var(--radius) var(--radius) 0;margin:12px 0 20px;font-size:13px;line-height:1.7;color:#1a3a3a}
+.callout strong{color:var(--teal)}
+.callout.red{border-color:var(--red);background:var(--red-light);color:#3a0000}
+.callout.red strong{color:var(--red)}
+.filter-row{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:12px}
+.filter-row input{flex:1;min-width:180px;padding:7px 11px;border:.5px solid rgba(0,0,0,.2);border-radius:var(--radius);font-size:12px;background:#fff;color:#1a1a18;font-family:inherit;outline:none}
+.filter-row input:focus{border-color:var(--teal-mid)}
+.ftab{padding:5px 13px;border:.5px solid rgba(0,0,0,.2);border-radius:20px;background:transparent;font-size:11px;color:#6b6a66;cursor:pointer;font-family:inherit;transition:all .12s}
+.ftab:hover{background:#f1f0ed}.ftab.on{background:#1a1a18;color:#fff;border-color:#1a1a18}
+.reset-btn{padding:5px 13px;border:.5px solid var(--teal-border);border-radius:20px;background:transparent;font-size:11px;color:var(--teal);cursor:pointer;font-family:inherit}
+.reset-btn:hover{background:var(--teal-light)}
+.count-line{font-size:11px;color:#9b9a96;margin-bottom:10px}
+.count-line b{color:#6b6a66}
+/* RPN bar */
+.rpn-bar{display:inline-block;height:8px;border-radius:4px;vertical-align:middle;margin-right:4px}
+/* Accordion */
+.fm-row{cursor:pointer}
+.fm-row:hover td{background:#f0f4fa !important}
+.fm-detail{display:none;background:#f8f7f4}
+.fm-detail.open{display:table-row}
+.fm-detail td{padding:12px 18px;border-bottom:.5px solid rgba(0,0,0,.07)}
+</style>
+</head>
+<body>
+<nav class="sidebar"></nav>
+<main class="main">
+<div class="page-cover">
+  <div class="cover-eyebrow">Supporting Document &middot; COFFCO-RCM-001 V1.0 &middot; RCM2 Methodology (Moubray 1997) &middot; SAE JA1011/JA1012</div>
+  <h1 class="cover-title">RCM2 Failure Modes and Effects Analysis</h1>
+  <p class="cover-sub">22 failure modes &middot; 6 subsystems &middot; 6 Category A hidden safety failures &middot; Consequence classification &middot; Maintenance task selection &middot; Recommended programme</p>
+  <div class="cover-meta">
+    <span><strong>Issue:</strong> V1.0</span>
+    <span><strong>Methodology:</strong> RCM2 (Moubray 1997)</span>
+    <span><strong>Compliance:</strong> SAE JA1011 / JA1012</span>
+    <span><strong>Approved by:</strong> Steve — SDA</span>
+  </div>
+  <div class="cover-download">
+    <a href="downloads/rcm2-fmeca.docx" class="btn-download">&#11015; Download V1.0 (.docx)</a>
+  </div>
+</div>
+<div class="page-body">
+
+<div class="kpi-row">
+  <div class="kpi"><div class="kpi-label">Failure modes</div><div class="kpi-val">22</div></div>
+  <div class="kpi"><div class="kpi-label">Cat A — Hidden safety</div><div class="kpi-val bad">6</div><div style="font-size:10px;color:#9b9a96;margin-top:4px">mandatory FF tasks</div></div>
+  <div class="kpi"><div class="kpi-label">Cat B — Safety evident</div><div class="kpi-val warn">4</div></div>
+  <div class="kpi"><div class="kpi-label">Cat C — Operational</div><div class="kpi-val">9</div></div>
+  <div class="kpi"><div class="kpi-label">Cat D — Non-operational</div><div class="kpi-val">3</div></div>
+  <div class="kpi"><div class="kpi-label">On-Condition tasks</div><div class="kpi-val good">12</div></div>
+  <div class="kpi"><div class="kpi-label">Failure-Finding</div><div class="kpi-val">7</div></div>
+  <div class="kpi"><div class="kpi-label">Run to Failure</div><div class="kpi-val">1</div><div style="font-size:10px;color:#9b9a96;margin-top:4px">FM-08 PSU</div></div>
+</div>
+
+<div class="callout red"><strong>Safety-critical failure modes — Category A (Hidden).</strong> FM-07 (dry-fire interlock), FM-09 (PSU insulation), FM-13 (sensor monitoring), FM-14 (telemetry), FM-15 (interlock logic), FM-17 (status display): all require mandatory annual failure-finding tasks. These tasks cannot be deferred or omitted without formal SDA waiver and documented risk acceptance.</div>
+
+<!-- Consequence categories -->
+<div class="sec-banner">
+  <div class="sec-icon" style="background:var(--blue-light);color:var(--blue)">📊</div>
+  <div><div class="sec-title">RCM2 Consequence Categories</div>
+  <div class="sec-sub">The category determines the logical order of task selection — safety before operational before economic</div></div>
+</div>
+<div class="panel" style="padding:0;overflow:hidden">
+<table class="ops">
+<thead><tr>
+  <th style="padding-left:18px;width:50px">Cat</th>
+  <th style="width:200px">Category</th>
+  <th>Definition</th>
+</tr></thead>
+<tbody>
+  <tr><td style="padding-left:18px"><span class="pill pill-red">A</span></td><td><strong>Safety/Environmental — Hidden</strong></td><td>Failure mode is hidden from operating crew AND could cause injury, death, or environmental harm. Mandatory failure-finding task required. Cannot be deferred.</td></tr>
+  <tr><td style="padding-left:18px"><span class="pill pill-amber">B</span></td><td><strong>Safety/Environmental — Evident</strong></td><td>Failure mode is evident to operating crew AND could cause injury, death, or environmental harm. On-condition or scheduled task required.</td></tr>
+  <tr><td style="padding-left:18px"><span class="pill pill-blue">C</span></td><td><strong>Operational — Evident</strong></td><td>Failure has direct adverse effect on operational capability (availability, output, guest service). Economic justification for preventive task.</td></tr>
+  <tr><td style="padding-left:18px"><span class="pill pill-purple">D</span></td><td><strong>Non-Operational — Evident</strong></td><td>Failure has no direct effect on safety or operations. Preventive task justified only if cheaper than reactive repair.</td></tr>
+</tbody>
+</table>
+</div>
+
+<!-- FMEA table -->
+<div class="sec-banner">
+  <div class="sec-icon" style="background:var(--teal-light);color:var(--teal)">🔍</div>
+  <div><div class="sec-title">FMEA Worksheet — All 22 Failure Modes</div>
+  <div class="sec-sub">Filter by category, task type, or subsystem · click any row to expand recommended task and maintenance interval</div></div>
+</div>
+<div class="filter-row">
+  <input type="text" id="rcmSrch" placeholder="Search failure modes, subsystems, tasks&hellip;" oninput="rcmFilter()">
+  <button class="ftab on" data-rc="ALL" onclick="rcmSet(this)">All (22)</button>
+  <button class="ftab" data-rc="A" onclick="rcmSet(this)">Cat A</button>
+  <button class="ftab" data-rc="B" onclick="rcmSet(this)">Cat B</button>
+  <button class="ftab" data-rc="C" onclick="rcmSet(this)">Cat C</button>
+  <button class="ftab" data-rc="D" onclick="rcmSet(this)">Cat D</button>
+  <button class="ftab" data-rc="FF" onclick="rcmSet(this)">Failure-Finding</button>
+  <button class="ftab" data-rc="OC" onclick="rcmSet(this)">On-Condition</button>
+  <button class="ftab" data-rc="SR" onclick="rcmSet(this)">Sched. Restoration</button>
+  <button class="reset-btn" onclick="rcmReset()">&#8635; Reset</button>
+</div>
+<div class="count-line" id="rcmCount">Showing <b>22</b> of 22 failure modes</div>
+<div class="panel" style="padding:0;overflow:hidden">
+<table class="ops" id="rcmTable">
+<thead><tr>
+  <th style="padding-left:18px;width:55px">FM</th>
+  <th style="width:80px">SS</th>
+  <th style="width:200px">Failure mode</th>
+  <th style="width:60px">Sev</th>
+  <th style="width:60px">Occ</th>
+  <th style="width:60px">Cat</th>
+  <th style="width:120px">Task type</th>
+</tr></thead>
+<tbody id="rcmBody"></tbody>
+</table>
+</div>
+
+<!-- Maintenance programme -->
+<div class="sec-banner" style="margin-top:36px">
+  <div class="sec-icon" style="background:var(--amber-light);color:var(--amber)">🗓️</div>
+  <div><div class="sec-title">Recommended Maintenance Programme</div>
+  <div class="sec-sub">Derived directly from RCM2 task selection above</div></div>
+</div>
+
+<div class="panel">
+  <div style="font-size:13px;font-weight:600;color:var(--navy);margin-bottom:10px;padding-bottom:8px;border-bottom:.5px solid rgba(0,0,0,.1)">Daily — Housekeeping (Non-Technical)</div>
+  <table class="ops">
+  <thead><tr><th style="width:55px">FM</th><th style="width:60px">SS</th><th>Task</th><th style="width:80px">Type</th></tr></thead>
+  <tbody>
+    <tr><td>FM-09</td><td>SS-4</td><td>Visual inspection of casing for physical damage, liquid ingress, or exposed components. Report any damage immediately; machine taken out of service.</td><td><span class="pill pill-teal">OC/FF</span></td></tr>
+    <tr><td>FM-20</td><td>SS-3</td><td>Empty drip tray if 80% full indicator active. Visual check for overflow.</td><td><span class="pill pill-teal">OC</span></td></tr>
+    <tr><td>FM-06</td><td>SS-2/3</td><td>Confirm milk store temperature indicator shows normal (≤4°C). Report if fault indicated.</td><td><span class="pill pill-teal">OC</span></td></tr>
+    <tr><td>FM-22</td><td>SS-6</td><td>Visual inspection of casing panels for impact damage. Report any crack or deformation.</td><td><span class="pill pill-teal">OC</span></td></tr>
+  </tbody>
+  </table>
+</div>
+
+<div class="panel">
+  <div style="font-size:13px;font-weight:600;color:var(--navy);margin-bottom:10px;padding-bottom:8px;border-bottom:.5px solid rgba(0,0,0,.1)">90-Day — Field Engineer (Scheduled Restoration)</div>
+  <table class="ops">
+  <thead><tr><th style="width:55px">FM</th><th style="width:60px">SS</th><th>Task</th><th style="width:100px">Type</th></tr></thead>
+  <tbody>
+    <tr><td>FM-03</td><td>SS-2/3</td><td>Descale programme: run full descale cycle per approved procedure. Record pre/post pressure measurements.</td><td><span class="pill pill-blue">SR</span></td></tr>
+    <tr><td>FM-19</td><td>SS-3</td><td>Replace water filter cartridge. Record lot number and replacement date.</td><td><span class="pill pill-blue">SR</span></td></tr>
+  </tbody>
+  </table>
+</div>
+
+<div class="panel">
+  <div style="font-size:13px;font-weight:600;color:var(--navy);margin-bottom:4px;padding-bottom:8px;border-bottom:.5px solid rgba(0,0,0,.1)">Annual — Field Engineer (Full Maintenance Visit)</div>
+  <div style="font-size:11px;color:var(--red);margin-bottom:10px">All Category A failure-finding tasks are mandatory and cannot be deferred.</div>
+  <table class="ops">
+  <thead><tr><th style="width:55px">FM</th><th style="width:60px">SS</th><th>Task</th><th style="width:55px">Cat</th><th style="width:80px">Type</th></tr></thead>
+  <tbody>
+    <tr style="background:#fff9f9"><td><strong>FM-07</strong></td><td>SS-2/3</td><td><strong>Dry-fire interlock test (TC-008): drain fluid store, command brew, confirm no heating element activation, fault state within 5s. MANDATORY SAFETY TASK.</strong></td><td><span class="pill pill-red">A</span></td><td><span class="pill pill-red">FF</span></td></tr>
+    <tr style="background:#fff9f9"><td><strong>FM-09</strong></td><td>SS-4</td><td><strong>Hipot insulation resistance test per IEC 60335. Record result. Machine out of service if fail.</strong></td><td><span class="pill pill-red">A</span></td><td><span class="pill pill-red">FF</span></td></tr>
+    <tr style="background:#fff9f9"><td><strong>FM-13</strong></td><td>SS-2/5</td><td><strong>Test all sensor channels — inject out-of-range values; confirm correct fault state entry for each. Record results for all channels. HIGHEST PRIORITY TASK.</strong></td><td><span class="pill pill-red">A</span></td><td><span class="pill pill-red">FF</span></td></tr>
+    <tr style="background:#fff9f9"><td><strong>FM-14</strong></td><td>SS-2/5</td><td><strong>Verify telemetry connectivity end-to-end: trigger test alert; confirm receipt at cloud ops dashboard within 60s.</strong></td><td><span class="pill pill-red">A</span></td><td><span class="pill pill-red">FF</span></td></tr>
+    <tr style="background:#fff9f9"><td><strong>FM-15</strong></td><td>SS-2/5</td><td><strong>Test all interlock functions: thermal, pressure, dry-fire, and empty-store interlocks. Firmware checksum verification.</strong></td><td><span class="pill pill-red">A</span></td><td><span class="pill pill-red">FF</span></td></tr>
+    <tr style="background:#fff9f9"><td><strong>FM-17</strong></td><td>SS-1</td><td><strong>Test all UI status displays: trigger each machine state and confirm correct display. Replace UI panel if any state display fails.</strong></td><td><span class="pill pill-red">A</span></td><td><span class="pill pill-red">FF</span></td></tr>
+    <tr><td>FM-02</td><td>SS-2/3</td><td>Test secondary thermal cutoff: confirm it activates independently of primary control if temperature >95°C.</td><td><span class="pill pill-amber">B</span></td><td><span class="pill pill-red">FF</span></td></tr>
+    <tr><td>FM-01</td><td>SS-2/3</td><td>Inspect heating element; clean scale if not addressed by 90-day descale. Record outlet temperature measurement.</td><td><span class="pill pill-blue">C</span></td><td><span class="pill pill-teal">OC</span></td></tr>
+    <tr><td>FM-04</td><td>SS-2/3</td><td>Inspect and test pressure relief valve function. Replace if any restriction or sluggish operation detected.</td><td><span class="pill pill-amber">B</span></td><td><span class="pill pill-teal">OC</span></td></tr>
+    <tr><td>FM-05</td><td>SS-2/3</td><td>Inspect frother nozzle; clean if not done at 30-cycle interval. Calibrate milk temperature sensor.</td><td><span class="pill pill-blue">C</span></td><td><span class="pill pill-teal">OC</span></td></tr>
+    <tr><td>FM-10</td><td>SS-4</td><td>Inspect plug module clip mechanism; replace if wear or play detected.</td><td><span class="pill pill-blue">C</span></td><td><span class="pill pill-teal">OC</span></td></tr>
+    <tr><td>FM-11</td><td>SS-4</td><td>Measure standby power with calibrated power meter. Confirm ≤0.5W.</td><td><span class="pill pill-purple">D</span></td><td><span class="pill pill-teal">OC</span></td></tr>
+    <tr><td>FM-12</td><td>SS-2/5</td><td>Check firmware version; update to current approved build. Review watchdog reset log since last visit.</td><td><span class="pill pill-blue">C</span></td><td><span class="pill pill-teal">OC</span></td></tr>
+    <tr><td>FM-16</td><td>SS-1</td><td>Test all UI input controls for correct registration. Inspect for physical damage and liquid ingress.</td><td><span class="pill pill-blue">C</span></td><td><span class="pill pill-teal">OC</span></td></tr>
+    <tr><td>FM-18</td><td>SS-3</td><td>Calibrate water level sensor against known fill volume.</td><td><span class="pill pill-blue">C</span></td><td><span class="pill pill-teal">OC</span></td></tr>
+    <tr><td>FM-20</td><td>SS-3</td><td>Test drip tray level sensor: fill to 80%, confirm alert generated.</td><td><span class="pill pill-blue">C</span></td><td><span class="pill pill-red">FF</span></td></tr>
+    <tr><td>FM-21</td><td>SS-6</td><td>Anti-theft anchor pull test (>50N). Inspect clip and anchor point. Replace if >2mm play.</td><td><span class="pill pill-purple">D</span></td><td><span class="pill pill-teal">OC</span></td></tr>
+    <tr><td>FM-22</td><td>SS-6</td><td>Full casing inspection: all panels, edges, ventilation openings. Replace any damaged panels.</td><td><span class="pill pill-amber">B</span></td><td><span class="pill pill-teal">OC</span></td></tr>
+  </tbody>
+  </table>
+</div>
+
+<div class="panel">
+  <div style="font-size:13px;font-weight:600;color:var(--navy);margin-bottom:10px;padding-bottom:8px;border-bottom:.5px solid rgba(0,0,0,.1)">Scheduled Discard Items</div>
+  <table class="ops">
+  <thead><tr><th style="width:55px">FM</th><th style="width:60px">SS</th><th>Item</th><th style="width:100px">Interval</th><th>Basis</th></tr></thead>
+  <tbody>
+    <tr><td>FM-02</td><td>SS-2/3</td><td>Secondary thermal cutoff</td><td><strong>3 years</strong></td><td>Safe life; hidden failure risk</td></tr>
+    <tr><td>FM-04</td><td>SS-2/3</td><td>Pressure relief valve</td><td><strong>3 years</strong></td><td>Safe life; safety consequence</td></tr>
+    <tr><td>FM-10</td><td>SS-4</td><td>Regional plug module</td><td><strong>5 years</strong></td><td>Wear mechanism; arcing risk on partial contact</td></tr>
+  </tbody>
+  </table>
+</div>
+
+</div>
+</main>
+<script src="assets/nav.js"></script>
+<script>
+const FM = [{"id": "FM-01", "ss": "SS-2/3", "name": "Heating element failure", "sev": 7, "occ": 3, "cat": "C", "task": "OC", "fn": "Heat water to 60–95°C", "consequence": "Cat C — Operational — Evident", "recommended": "Temperature sensor monitoring via cloud telemetry; alert if outlet temperature <58°C over 3 consecutive brews. Inspect heating element and thermostat annually.", "interval": "Continuous telemetry + annual inspection"}, {"id": "FM-02", "ss": "SS-2/3", "name": "Thermal cutoff failure", "sev": 9, "occ": 2, "cat": "B", "task": "FF", "fn": "Heat water to 60–95°C", "consequence": "Cat B — Safety / Environmental — Evident", "recommended": "Failure-finding: test secondary thermal cutoff at every scheduled maintenance visit. On-condition: telemetry monitors outlet temperature; alert if >92°C. Scheduled discard: replace thermal cutoff at 3-year interval.", "interval": "FF: annual · OC: continuous · SD: 3 years"}, {"id": "FM-03", "ss": "SS-2/3", "name": "Pump wear / scale accumulation", "sev": 5, "occ": 5, "cat": "D", "task": "SR", "fn": "Maintain 0.9–1.3 bar extraction pressure", "consequence": "Cat D — Non-Operational — Evident", "recommended": "Scheduled restoration: descale programme every 90 days. On-condition: pump current monitoring — rising current indicates scale. Replace pump at 2-year interval or at first confirmed pressure fault.", "interval": "SR: 90-day descale · OC: continuous · replace: 2 years"}, {"id": "FM-04", "ss": "SS-2/3", "name": "Pressure relief valve failure", "sev": 8, "occ": 2, "cat": "B", "task": "OC", "fn": "Maintain 0.9–1.3 bar extraction pressure", "consequence": "Cat B — Safety / Environmental — Evident", "recommended": "On-condition: pressure sensor monitoring at outlet; alert if >1.25 bar. Inspect pressure relief valve annually. Replace relief valve at 3-year interval (scheduled discard).", "interval": "OC: continuous · annual inspection · SD: 3 years"}, {"id": "FM-05", "ss": "SS-2/3", "name": "Frother heater degradation", "sev": 7, "occ": 3, "cat": "C", "task": "OC", "fn": "Heat milk to 60–90°C and froth", "consequence": "Cat C — Operational — Evident", "recommended": "On-condition: milk outlet temperature sensor monitored via telemetry. Alert if <58°C or >88°C. Inspect and calibrate milk temperature sensor annually. Clean frother nozzle after every 30 brew cycles.", "interval": "OC: continuous · frother clean: 30 cycles · annual calibration"}, {"id": "FM-06", "ss": "SS-2/3", "name": "Refrigeration unit failure", "sev": 9, "occ": 2, "cat": "B", "task": "FF", "fn": "Refrigerate milk to ≤4°C", "consequence": "Cat B — Safety / Environmental — Evident", "recommended": "On-condition: milk store temperature monitored continuously; alert if >4°C for >15 minutes. Failure-finding: test milk temperature sensor independently at each maintenance visit. Inspect door seals annually.", "interval": "OC: continuous · FF: annual · seal inspection: annual"}, {"id": "FM-07", "ss": "SS-2/3", "name": "Fluid level sensor failure (dry-fire interlock)", "sev": 10, "occ": 1, "cat": "A", "task": "FF", "fn": "Dry-fire prevention interlock", "consequence": "Cat A — Safety / Environmental — HIDDEN (CRITICAL)", "recommended": "MANDATORY: test dry-fire interlock at every maintenance visit — drain fluid store, command brew, confirm heating element does not activate and fault state entered within 5 s. This is TC-008.", "interval": "FF: annual (MANDATORY safety-critical) · OC: continuous"}, {"id": "FM-08", "ss": "SS-4", "name": "PSU component failure", "sev": 6, "occ": 2, "cat": "C", "task": "RTF", "fn": "Supply regulated DC power", "consequence": "Cat C — Operational — Evident", "recommended": "Run-to-failure: PSU is a COTS module; failure rate low and failure is immediately evident. Replace PSU module on failure. Cloud ops telemetry loss alert enables rapid dispatch.", "interval": "RTF — replace on failure"}, {"id": "FM-09", "ss": "SS-4", "name": "PSU insulation breakdown", "sev": 10, "occ": 1, "cat": "A", "task": "FF", "fn": "Electrical isolation (Class II)", "consequence": "Cat A — Safety / Environmental — HIDDEN (CRITICAL)", "recommended": "Failure-finding: insulation resistance test (hipot) at every maintenance visit. Inspect casing for mechanical damage and ingress at every housekeeping visit. Replace machine immediately on any detected insulation fault.", "interval": "FF: annual hipot · visual inspection: daily (housekeeping)"}, {"id": "FM-10", "ss": "SS-4", "name": "Plug module clip mechanism wear", "sev": 6, "occ": 3, "cat": "C", "task": "OC", "fn": "Accept field-interchangeable regional plug module", "consequence": "Cat C — Operational — Evident", "recommended": "On-condition: inspect plug module engagement and clip condition at each maintenance visit. Replace plug module if clip shows wear or play is felt. Scheduled discard at 5-year interval.", "interval": "OC: annual inspection · SD: 5 years"}, {"id": "FM-11", "ss": "SS-4", "name": "Firmware error — excess standby power", "sev": 5, "occ": 2, "cat": "D", "task": "OC", "fn": "Limit standby power ≤0.5W", "consequence": "Cat D — Non-Operational — Evident", "recommended": "On-condition: standby power monitored via cloud telemetry (current sensing). Alert if measured standby power >0.4W. Verify at annual maintenance visit using calibrated power meter.", "interval": "OC: continuous telemetry · annual verification"}, {"id": "FM-12", "ss": "SS-2/5", "name": "Firmware corruption / FSM error", "sev": 6, "occ": 2, "cat": "C", "task": "OC", "fn": "Execute brew finite state machine", "consequence": "Cat C — Operational — Evident", "recommended": "On-condition: watchdog timer monitoring via telemetry — alert on unexpected reset or state timeout. Firmware version checked at each maintenance visit; update to current approved build.", "interval": "OC: continuous · firmware check: annual"}, {"id": "FM-13", "ss": "SS-2/5", "name": "Sensor monitoring silent failure", "sev": 9, "occ": 2, "cat": "A", "task": "FF", "fn": "Monitor sensors and generate fault states", "consequence": "Cat A — Safety / Environmental — HIDDEN (CRITICAL) — HIGHEST PRIORITY", "recommended": "MANDATORY: test all sensor channels at every maintenance visit — inject known out-of-range values and confirm correct fault state entry. Inspect all sensor wiring and connectors.", "interval": "FF: annual (MANDATORY safety-critical — highest priority task)"}, {"id": "FM-14", "ss": "SS-2/5", "name": "Wireless module failure (telemetry lost)", "sev": 7, "occ": 3, "cat": "A", "task": "FF", "fn": "Transmit maintenance status via wireless telemetry", "consequence": "Cat A — Safety / Environmental — Hidden", "recommended": "Failure-finding: cloud ops dashboard includes heartbeat monitoring — alert if no telemetry received from a machine for >2 hours. Field engineer checks telemetry connectivity at each maintenance visit.", "interval": "FF: continuous heartbeat monitoring (automated) · check: annual"}, {"id": "FM-15", "ss": "SS-2/5", "name": "Interlock logic firmware error", "sev": 10, "occ": 1, "cat": "A", "task": "FF", "fn": "Prevent unsafe state transitions", "consequence": "Cat A — Safety / Environmental — HIDDEN (CRITICAL)", "recommended": "MANDATORY: test all interlock functions at every maintenance visit — thermal, pressure, dry-fire, and empty-store interlocks. Firmware integrity check (checksum verification) at each visit.", "interval": "FF: annual (MANDATORY safety-critical)"}, {"id": "FM-16", "ss": "SS-1", "name": "Button / touchpad failure", "sev": 5, "occ": 3, "cat": "C", "task": "OC", "fn": "Accept guest selection without instruction", "consequence": "Cat C — Operational — Evident", "recommended": "On-condition: UI input events logged via telemetry — alert if no input registered across >3 consecutive guest room occupancies. Inspect UI panel for physical damage, liquid ingress, and button response.", "interval": "OC: telemetry monitoring · annual inspection"}, {"id": "FM-17", "ss": "SS-1", "name": "LED / display failure (status hidden)", "sev": 6, "occ": 2, "cat": "A", "task": "FF", "fn": "Display machine status unambiguously", "consequence": "Cat A — Safety / Environmental — Hidden", "recommended": "Failure-finding: test all UI status states at each maintenance visit — trigger each machine state and confirm correct display. Replace UI panel assembly if any state display fails.", "interval": "FF: annual"}, {"id": "FM-18", "ss": "SS-3", "name": "Water reservoir depletion before 10 brews", "sev": 4, "occ": 4, "cat": "C", "task": "OC", "fn": "Store and supply ≥2.5L water for ≥10 brews", "consequence": "Cat C — Operational — Evident", "recommended": "On-condition: water level sensor monitored continuously. Low-level alert to cloud ops when reservoir at 20% capacity. Calibrate level sensor annually.", "interval": "OC: continuous · calibration: annual"}, {"id": "FM-19", "ss": "SS-3", "name": "Filter media saturation", "sev": 6, "occ": 6, "cat": "D", "task": "SR", "fn": "Filter water / tolerate water hardness 0–400 mg/L", "consequence": "Cat D — Non-Operational — Evident", "recommended": "Scheduled restoration: replace filter cartridge every 90 days. On-condition: water hardness sensor alert when input hardness >300 mg/L CaCO₃.", "interval": "SR: 90 days · OC: hardness sensor alert"}, {"id": "FM-20", "ss": "SS-3", "name": "Drip tray overflow", "sev": 5, "occ": 4, "cat": "C", "task": "FF", "fn": "Contain and collect drip waste without floor spillage", "consequence": "Cat C — Operational — Evident", "recommended": "On-condition: drip tray level sensor monitored; alert to cloud ops and UI at 80% capacity. Housekeeping empties tray at each daily restocking visit. Failure-finding: test tray sensor at each maintenance visit.", "interval": "OC: continuous · FF: annual · housekeeping: daily"}, {"id": "FM-21", "ss": "SS-6", "name": "Anti-theft anchor fatigue", "sev": 4, "occ": 3, "cat": "D", "task": "OC", "fn": "Prevent removal without tools in <60 seconds", "consequence": "Cat D — Non-Operational — Evident", "recommended": "On-condition: inspect anti-theft anchor and clip mechanism at each maintenance visit — apply firm pull test (>50N) and confirm <2mm play. Replace anchor assembly if any play detected.", "interval": "OC: annual inspection with pull test"}, {"id": "FM-22", "ss": "SS-6", "name": "Physical impact damage to casing", "sev": 9, "occ": 2, "cat": "B", "task": "OC", "fn": "Safe enclosure — no accessible live parts or burn surfaces", "consequence": "Cat B — Safety / Environmental — Evident", "recommended": "On-condition: housekeeping instructed to report any visible casing damage at each daily check. Machine taken out of service immediately on any casing damage report. Formal casing inspection at each maintenance visit.", "interval": "OC: daily visual (housekeeping) · formal: annual"}];
+
+const CAT_PILL = {
+  'A': '<span class="pill pill-red">A</span>',
+  'B': '<span class="pill pill-amber">B</span>',
+  'C': '<span class="pill pill-blue">C</span>',
+  'D': '<span class="pill pill-purple">D</span>',
+};
+const TASK_PILL = {
+  'FF':  '<span class="pill pill-red">FF</span>',
+  'OC':  '<span class="pill pill-teal">OC</span>',
+  'SR':  '<span class="pill pill-blue">SR</span>',
+  'SD':  '<span class="pill pill-purple">SD</span>',
+  'RTF': '<span class="pill pill-grey">RTF</span>',
+};
+
+function sev_bar(s) {
+  const pct = s * 10;
+  const col = s >= 9 ? 'var(--red)' : s >= 7 ? 'var(--amber)' : 'var(--teal)';
+  return `<div class="rpn-bar" style="width:${pct}px;background:${col}"></div><span style="font-size:11px;color:#6b6a66">${s}/10</span>`;
+}
+
+let rcmFilt = 'ALL', openFM = null;
+
+function renderRCM(list) {
+  const tb = document.getElementById('rcmBody');
+  tb.innerHTML = '';
+  list.forEach(fm => {
+    const isOpen = fm.id === openFM;
+    const tr = document.createElement('tr');
+    tr.className = 'fm-row';
+    tr.innerHTML = `
+      <td style="padding-left:18px"><strong>${fm.id}</strong></td>
+      <td style="font-family:var(--mono);font-size:10px">${fm.ss}</td>
+      <td><strong>${fm.name}</strong></td>
+      <td>${sev_bar(fm.sev)}</td>
+      <td>${sev_bar(fm.occ)}</td>
+      <td>${CAT_PILL[fm.cat]}</td>
+      <td>${TASK_PILL[fm.task]}</td>`;
+    tr.addEventListener('click', function() {
+      openFM = (openFM === fm.id) ? null : fm.id;
+      rcmFilter();
+    });
+    tb.appendChild(tr);
+    
+    if (isOpen) {
+      const det = document.createElement('tr');
+      det.className = 'fm-detail open';
+      det.innerHTML = `<td colspan="7" style="padding-left:18px">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;padding:4px 0">
+          <div>
+            <div style="font-size:10px;color:#9b9a96;text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px">Consequence / function</div>
+            <div style="font-size:12px;color:#1a1a18;line-height:1.6">${fm.consequence}</div>
+          </div>
+          <div>
+            <div style="font-size:10px;color:#9b9a96;text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px">Recommended task</div>
+            <div style="font-size:12px;color:#3A3F47;line-height:1.6">${fm.recommended}</div>
+            <div style="margin-top:8px;font-size:11px;color:var(--teal);font-weight:500">Interval: ${fm.interval}</div>
+          </div>
+        </div>
+      </td>`;
+      tb.appendChild(det);
+    }
+  });
+  document.getElementById('rcmCount').innerHTML = `Showing <b>${list.length}</b> of ${FM.length} failure modes`;
+}
+
+function rcmSet(btn) {
+  document.querySelectorAll('.ftab').forEach(b => b.classList.remove('on'));
+  btn.classList.add('on');
+  rcmFilt = btn.dataset.rc;
+  rcmFilter();
+}
+
+function rcmReset() {
+  document.getElementById('rcmSrch').value = '';
+  rcmFilt = 'ALL';
+  document.querySelectorAll('.ftab').forEach(b => b.classList.remove('on'));
+  document.querySelector('[data-rc="ALL"]').classList.add('on');
+  rcmFilter();
+}
+
+function rcmFilter() {
+  const q = document.getElementById('rcmSrch').value.toLowerCase();
+  renderRCM(FM.filter(fm => {
+    if (rcmFilt === 'FF' && fm.task !== 'FF') return false;
+    if (rcmFilt === 'OC' && fm.task !== 'OC') return false;
+    if (rcmFilt === 'SR' && fm.task !== 'SR') return false;
+    if (['A','B','C','D'].includes(rcmFilt) && fm.cat !== rcmFilt) return false;
+    if (q && !(fm.id+' '+fm.ss+' '+fm.name+' '+fm.consequence+' '+fm.recommended).toLowerCase().includes(q)) return false;
+    return true;
+  }));
+}
+
+rcmFilter();
+</script>
+</body>
+</html>

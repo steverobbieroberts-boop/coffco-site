@@ -22,6 +22,8 @@ const NAV_ITEMS = [
   { label: 'divider' },
   { label: 'Reference', type: 'heading' },
   { label: 'Supporting Documents', href: 'supporting-docs.html', num: '' },
+  { label: 'OTA Firmware Spec', href: 'ota-firmware.html', num: '' },
+  { label: 'RCM2 FMEA', href: 'rcm2-fmea.html', num: '' },
   { label: 'Definitions & Acronyms', href: 'definitions.html', num: '' },
   { label: 'Assumptions & Deps', href: 'assumptions.html', num: '' },
   { label: 'Operating Environment', href: 'operating-environment.html', num: '' },

@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>CoffCo — Implementation Plan</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.19.0/dist/tabler-icons.min.css">
+<link rel="stylesheet" href="assets/coffco.css">
+<style>
+:root{--bg:#f8f7f4;--surface:#fff;--surface2:#f1f0ed;--border:rgba(0,0,0,.10);--border2:rgba(0,0,0,.20);--text:#1a1a18;--text2:#6b6a66;--text3:#9b9a96;--teal:#0F6E56;--teal-light:#E1F5EE;--teal-border:#5DCAA5;--teal-mid:#1D9E75;--amber:#854F0B;--amber-light:#FAEEDA;--amber-border:#EF9F27;--red:#A32D2D;--red-light:#FCEBEB;--red-border:#F09595;--blue:#185FA5;--blue-light:#E6F1FB;--purple:#534AB7;--purple-light:#EEEDFE;--purple-border:#AFA9EC;--radius:8px;--radius-lg:12px;--mono:ui-monospace,'SF Mono','Fira Code',monospace;}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,sans-serif;background:var(--bg);color:var(--text);font-size:13px}
+.page-body{max-width:1100px;margin:0 auto;padding:28px 32px 80px}
+.kpi-row{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:10px;margin-bottom:24px}
+.kpi{background:var(--surface2);border-radius:var(--radius);padding:12px 14px}
+.kpi-label{font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px}
+.kpi-val{font-size:22px;font-weight:500;line-height:1;color:var(--text)}
+.kpi-val.good{color:var(--teal)}.kpi-val.warn{color:var(--amber)}.kpi-sub{font-size:10px;color:var(--text3);margin-top:4px}
+.panel{background:var(--surface);border:.5px solid var(--border);border-radius:var(--radius-lg);padding:18px 20px;margin-bottom:14px}
+.section-banner{display:flex;align-items:center;gap:12px;margin:32px 0 14px;padding-bottom:10px;border-bottom:.5px solid var(--border2)}
+.section-icon{width:32px;height:32px;border-radius:var(--radius);display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0}
+.section-title{font-size:15px;font-weight:600;color:var(--text)}
+.section-sub{font-size:11px;color:var(--text3);margin-top:2px}
+table.ops{width:100%;border-collapse:collapse;font-size:12px}
+table.ops th{text-align:left;font-weight:500;color:var(--text3);padding:0 10px 8px 0;border-bottom:.5px solid var(--border2);font-size:10px;text-transform:uppercase;letter-spacing:.04em}
+table.ops th:first-child{padding-left:0}
+table.ops td{padding:8px 10px 8px 0;border-bottom:.5px solid var(--border);vertical-align:top;line-height:1.5;color:var(--text2)}
+table.ops td:first-child{padding-left:0}
+table.ops tr:last-child td{border-bottom:none}
+table.ops tr:hover td{background:var(--surface2)}
+table.ops td strong,table.ops td b{color:var(--text)}
+.pill{display:inline-flex;align-items:center;gap:3px;font-size:10px;padding:2px 8px;border-radius:20px;font-weight:500;white-space:nowrap}
+.pill-teal{background:var(--teal-light);color:var(--teal);border:.5px solid var(--teal-border)}
+.pill-amber{background:var(--amber-light);color:var(--amber);border:.5px solid var(--amber-border)}
+.pill-grey{background:var(--surface2);color:var(--text3);border:.5px solid var(--border2)}
+.pill-blue{background:var(--blue-light);color:var(--blue);border:.5px solid #85B7EB}
+.filter-row{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:12px}
+.filter-row input{flex:1;min-width:180px;padding:7px 11px;border:.5px solid var(--border2);border-radius:var(--radius);font-size:12px;background:var(--surface);color:var(--text);font-family:inherit;outline:none}
+.filter-row input:focus{border-color:var(--teal-mid)}
+.ftab{padding:5px 13px;border:.5px solid var(--border2);border-radius:20px;background:transparent;font-size:11px;color:var(--text2);cursor:pointer;font-family:inherit;transition:all .12s}
+.ftab:hover{background:var(--surface2)}.ftab.on{background:var(--text);color:#fff;border-color:var(--text)}
+.reset-btn{padding:5px 13px;border:.5px solid var(--teal-border);border-radius:20px;background:transparent;font-size:11px;color:var(--teal);cursor:pointer;font-family:inherit;transition:all .12s}
+.reset-btn:hover{background:var(--teal-light)}
+.count-line{font-size:11px;color:var(--text3);margin-bottom:10px}.count-line b{color:var(--text2)}
+
+/* Phase timeline */
+.phase-track{display:flex;flex-direction:column;gap:0;margin-bottom:24px}
+.phase-item{display:grid;grid-template-columns:80px 1fr;gap:0;cursor:pointer}
+.phase-stem{display:flex;flex-direction:column;align-items:center}
+.phase-dot{width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:600;flex-shrink:0;border:.5px solid var(--border2);background:var(--surface2);color:var(--text3);transition:all .15s;z-index:1}
+.phase-item.active .phase-dot{background:var(--teal);color:#fff;border-color:var(--teal-mid)}
+.phase-item.done .phase-dot{background:var(--teal-light);color:var(--teal);border-color:var(--teal-border)}
+.phase-line{width:2px;flex:1;background:var(--border2);min-height:12px}
+.phase-item:last-child .phase-line{display:none}
+.phase-content{padding:6px 0 20px 16px}
+.phase-label{font-size:11px;font-weight:500;color:var(--text3);margin-bottom:3px;text-transform:uppercase;letter-spacing:.06em}
+.phase-name{font-size:14px;font-weight:600;color:var(--text);margin-bottom:4px}
+.phase-desc{font-size:12px;color:var(--text2);line-height:1.6}
+.phase-output{display:inline-block;margin-top:6px;font-size:10px;padding:2px 8px;border-radius:3px;background:var(--surface2);color:var(--text3);border:.5px solid var(--border2)}
+.phase-item.active .phase-name{color:var(--teal)}
+.phase-item.active .phase-content{border-left:2px solid var(--teal);padding-left:14px}
+</style>
+</head>
+<body>
+<nav class="sidebar"></nav>
+<main class="main">
+<div class="page-cover">
+  <div class="cover-eyebrow">DoD Deliverable 6 &middot; CoffCo Coffee Machine V1.0</div>
+  <h1 class="cover-title">Implementation Plan</h1>
+  <p class="cover-sub">6-phase build strategy P0–P5 &middot; 11 make/buy decisions &middot; resources and facilities &middot; Through Life Support throughout</p>
+  <div class="cover-meta">
+    <span><strong>Issue:</strong> V1.0</span>
+    <span><strong>Build phases:</strong> P0–P5</span>
+    <span><strong>Make/Buy decisions:</strong> 11</span>
+    <span><strong>Current phase:</strong> P0 — Design Freeze</span>
+  </div>
+  <div class="cover-download">
+    <a href="downloads/6-implementation.docx" class="btn-download">&#11015; Download V1.0 (.docx)</a>
+    <a href="schedule.html" class="btn-download">&#9654; BIV Schedule</a>
+  </div>
+</div>
+<div class="page-body">
+
+<div class="kpi-row">
+  <div class="kpi"><div class="kpi-label">Build phases</div><div class="kpi-val">6</div><div class="kpi-sub">P0 to P5</div></div>
+  <div class="kpi"><div class="kpi-label">Buy (COTS)</div><div class="kpi-val good">7</div></div>
+  <div class="kpi"><div class="kpi-label">Make (bespoke)</div><div class="kpi-val warn">4</div></div>
+  <div class="kpi"><div class="kpi-label">External facilities</div><div class="kpi-val">3</div><div class="kpi-sub">EMC, IEC, hotel sim</div></div>
+  <div class="kpi"><div class="kpi-label">Current phase</div><div class="kpi-val" style="font-size:16px;color:var(--teal)">P0</div><div class="kpi-sub">Design Freeze</div></div>
+</div>
+
+<!-- Phase timeline -->
+<div class="section-banner">
+  <div class="section-icon" style="background:var(--blue-light);color:var(--blue)"><i class="ti ti-timeline" aria-hidden="true"></i></div>
+  <div><div class="section-title">Build Strategy — Prototype to Production</div>
+  <div class="section-sub">Click any phase to highlight it &middot; gate-controlled sequence &middot; P4 is the investor/customer demonstration</div></div>
+</div>
+
+<div id="phaseTrack" class="phase-track"></div>
+
+<!-- Make / Buy -->
+<div class="section-banner">
+  <div class="section-icon" style="background:var(--amber-light);color:var(--amber)"><i class="ti ti-scale" aria-hidden="true"></i></div>
+  <div><div class="section-title">Make / Buy Decisions</div>
+  <div class="section-sub">All 11 assembly and element decisions — filter by buy/make or search by supplier</div></div>
+</div>
+<div class="filter-row">
+  <input type="text" id="mbSrch" placeholder="Search assembly, supplier, rationale&hellip;" oninput="filterMB()">
+  <button class="ftab on" data-d="ALL" onclick="setMBFilter(this)">All (11)</button>
+  <button class="ftab" data-d="Buy" onclick="setMBFilter(this)">Buy / COTS (7)</button>
+  <button class="ftab" data-d="Make" onclick="setMBFilter(this)">Make / Bespoke (4)</button>
+  <button class="reset-btn" onclick="resetMB()">&#8635; Reset</button>
+</div>
+<div class="count-line" id="mbCount">Showing <b>11</b> of 11 decisions</div>
+<div class="panel" style="padding:0;overflow:hidden">
+<table class="ops" id="mbTable">
+  <thead><tr>
+    <th style="padding-left:20px;width:180px">Assembly / element</th>
+    <th style="width:90px">Decision</th>
+    <th style="width:180px">Key supplier / source</th>
+    <th>Rationale</th>
+  </tr></thead>
+  <tbody id="mbBody"></tbody>
+</table>
+</div>
+
+<!-- Resources -->
+<div class="section-banner">
+  <div class="section-icon" style="background:var(--purple-light);color:var(--purple)"><i class="ti ti-tools" aria-hidden="true"></i></div>
+  <div><div class="section-title">Resources and Facilities</div>
+  <div class="section-sub">All resources required from prototype through certification — click to expand each item</div></div>
+</div>
+<div id="resourceList"></div>
+
+</div>
+</main>
+<script src="assets/nav.js"></script>
+<script>
+const PHASES = [
+  {id:'P0', name:'Design Freeze', active:true, done:false,
+   desc:'Complete systems engineering baseline. SRS Issue 3.0, ARCH V2.2, SDD V1.0, IPS V3.0. All COTS components selected. Make/buy decisions finalised (except TD-06 wireless). Design reviewed at PDR.',
+   output:'SE document baseline signed off · PDR pass achieved'},
+  {id:'P1', name:'Component Selection', active:false, done:false,
+   desc:'Source and verify all COTS components. PSU supplier selected and sample tested. TCO, PRV, WDT IC, pump, and Peltier cooler sourced. Supplier reliability data obtained for MTBF analysis.',
+   output:'Approved vendor list · Component incoming inspection records'},
+  {id:'P2', name:'Prototype Build', active:false, done:false,
+   desc:'Single functional prototype. 3D printed chassis (acceptable for MVP). Production-equivalent PCBAs from contract manufacturer. All subsystems built and bench-verified individually before integration begins.',
+   output:'One functional CoffCo prototype unit'},
+  {id:'P3', name:'Integration and V&V', active:false, done:false,
+   desc:'Integrate all subsystems following 7-gate sequence per Integration Plan. Execute V&V test programme per COFFCO-VVP-001. All 42 SRS requirements verified to acceptance criteria. Safety-critical TCs (TC-FW-01, TC-HE-01, TC-PRV-01) under QA witness sign-off.',
+   output:'COFFCO-VVP-001 test report · signed QA records'},
+  {id:'P4', name:'Investor / Customer Demonstration', active:false, done:false,
+   desc:'Demonstrate to Vacation Stables CEO and investors in hotel room simulation environment. VE-B1 naive user trial (≥4/5 succeed unaided). VE-D1 customer acceptance review. Signed customer acceptance record.',
+   output:'Customer acceptance sign-off · investor demonstration complete'},
+  {id:'P5', name:'Certification', active:false, done:false,
+   desc:'IEC 60335-1 type-test at accredited third-party facility. EN 55014 EMC test. CE/UKCA Declaration of Conformity. UL or ETL listing for US market. HACCP plan approved by Vacation Stables food safety officer.',
+   output:'CE/UKCA/UL Declaration of Conformity · IEC 60335 type-test certificate'},
+];
+
+const MB = [
+  {asm:'Control Assembly (PCBA)', dec:'Buy', supplier:'Contract PCB assembly house (TBD) to CoffCo Gerbers', rat:'PCBA manufacture requires SMT pick-and-place — not cost-effective in-house at MVP volumes. CoffCo retains firmware and schematic IP. COTS-dominant architecture.'},
+  {asm:'Wireless module', dec:'Buy', supplier:'TBD — pending TD-06 resolution (Wi-Fi / BLE / Zigbee)', rat:'Pre-certified module eliminates independent EMC certification. Technology selection requires hotel IT infrastructure confirmation from Vacation Stables.'},
+  {asm:'Thermal Assembly', dec:'Make', supplier:'CoffCo-designed; heating element and pump COTS', rat:'No suitable off-the-shelf unified thermal path available at required performance and footprint. Fluid pathway and switching mechanism are CoffCo mechanical IP.'},
+  {asm:'Power Supply Unit', dec:'Buy', supplier:'Universal switch-mode PSU module (e.g. Mean Well, XP Power)', rat:'Certified COTS PSU transfers IEC 60335 and EMC certification to an established supplier. No business case for bespoke PSU development at MVP scale.'},
+  {asm:'Interchangeable plug module', dec:'Make', supplier:'CoffCo-designed; injection moulded externally', rat:'Bespoke design required to achieve interchangeable connector strategy (TD-03). No COTS solution matches required geometry and retention force.'},
+  {asm:'Structural chassis and casing', dec:'Buy', supplier:'Injection moulding partner to CoffCo tooling', rat:'CoffCo designs the tooling; external partner moulds. Long-lead item — tooling ordered at P0. 3D printed chassis acceptable for P2 prototype only.'},
+  {asm:'Thermal Cutoff (TCO)', dec:'Buy', supplier:'Cantherm or Emerson bi-metallic TCO (100°C trip)', rat:'Safety-critical COTS device with established reliability data. Hardware independence from firmware is essential — cannot be bespoke.'},
+  {asm:'Hardware Watchdog IC', dec:'Buy', supplier:'Maxim DS1232 or equivalent', rat:'High-volume, multi-sourced, vetted for industrial applications. Hardware independence from MCU firmware is the design intent (SRS 3.12).'},
+  {asm:'Pressure Relief Valve', dec:'Buy', supplier:'Parker or Watts food-grade PRV (2.5 bar, food-contact rated)', rat:'Safety-critical COTS device. Food-grade rated. PRV must be field-replaceable at PM-05 annual service — standard COTS enables this.'},
+  {asm:'Mains fuse', dec:'Buy', supplier:'Littelfuse or Schurter 5×20mm T-type IEC 60127', rat:'Commodity component, multi-sourced. T-type specification chosen to handle inrush without nuisance tripping.'},
+  {asm:'Coffee consumables', dec:'Buy', supplier:'CoffCo supply partner (TBD) — commercial arrangement', rat:'Out of system design scope. Highest-leverage design decision for the commercial model — proprietary format to be confirmed separately.'},
+];
+
+const RESOURCES = [
+  {name:'Electronics assembly bench', purpose:'PCBA build and rework; component fitting', notes:'Surface-mount soldering station, hot-air rework, oscilloscope, bench PSU, multimeter. CoffCo facilities.'},
+  {name:'Thermal cycling rig', purpose:'Brew temperature testing; thermal assembly verification', notes:'Calibrated thermocouple. Measures outlet temperature for TC-001, TC-002, TC-ST-01. CoffCo facilities.'},
+  {name:'Pressure test bench', purpose:'PRV verification (TC-PRV-01); extraction pressure verification', notes:'Calibrated pressure gauge 0–5 bar. Controlled pressure source. CoffCo facilities.'},
+  {name:'EMC test chamber (external)', purpose:'EN 55014 Class B radiated emission testing', notes:'Accredited third-party EMC test facility. External engagement required — 4–6 week lead time typical.'},
+  {name:'IEC 60335 test laboratory (external)', purpose:'Type-test for CE/UKCA/UL certification', notes:'Accredited third-party safety test laboratory. External engagement required — 8–12 week lead time typical.'},
+  {name:'Hotel room simulation environment', purpose:'VE-D1 and VE-B1 validation events', notes:'Mock hotel room or equivalent with hotel desk, standard mug set, Wi-Fi network. Required at P4.'},
+  {name:'Water hardness test kit', purpose:'SRS 1.6 hardness tolerance verification', notes:'0–500 mg/L CaCO₃ range. Required to cover full Vacation Stables estate hardness range.'},
+  {name:'Vacation Stables water quality data', purpose:'SRS 1.6 hardness range threshold confirmation', notes:'Data required from VS facilities management before hardness test band can be confirmed. Action on Vacation Stables.'},
+  {name:'CoffCo cloud platform', purpose:'Telemetry verification; OTA firmware testing', notes:'Development environment for MQTT-over-TLS telemetry test and TC-OTA-01. Required at P3.'},
+  {name:'Debug interface (JTAG/SWD)', purpose:'Firmware watchdog test (TC-FW-01); in-circuit test', notes:'Required to deliberately halt firmware heartbeat for WDT IC verification. CoffCo tools.'},
+];
+
+// Build phase track
+function buildPhases() {
+  const el = document.getElementById('phaseTrack');
+  PHASES.forEach((p, i) => {
+    const div = document.createElement('div');
+    div.className = 'phase-item' + (p.active ? ' active' : '') + (p.done ? ' done' : '');
+    div.onclick = function() {
+      document.querySelectorAll('.phase-item').forEach(x => x.classList.remove('active'));
+      this.classList.add('active');
+    };
+    div.innerHTML = `<div class="phase-stem">
+        <div class="phase-dot">${p.id}</div>
+        <div class="phase-line"></div>
+      </div>
+      <div class="phase-content">
+        <div class="phase-label">Phase ${i}</div>
+        <div class="phase-name">${p.name}</div>
+        <div class="phase-desc">${p.desc}</div>
+        <div class="phase-output">${p.output}</div>
+      </div>`;
+    el.appendChild(div);
+  });
+}
+
+// Build make/buy table
+let mbFilt = 'ALL';
+function renderMB(list) {
+  const tb = document.getElementById('mbBody');
+  tb.innerHTML = '';
+  list.forEach(r => {
+    const isBuy = r.dec === 'Buy';
+    const tr = document.createElement('tr');
+    tr.innerHTML = `<td style="padding-left:20px"><strong>${r.asm}</strong></td>
+      <td><span class="pill ${isBuy ? 'pill-teal' : 'pill-amber'}">${isBuy ? '&#10003; Buy / COTS' : '&#9670; Make / Bespoke'}</span></td>
+      <td style="font-size:11px">${r.supplier}</td>
+      <td style="font-size:11px">${r.rat}</td>`;
+    tb.appendChild(tr);
+  });
+  document.getElementById('mbCount').innerHTML = `Showing <b>${list.length}</b> of ${MB.length} decisions`;
+}
+function setMBFilter(btn) {
+  document.querySelectorAll('[data-d]').forEach(b => b.classList.remove('on'));
+  btn.classList.add('on'); mbFilt = btn.dataset.d; filterMB();
+}
+function resetMB() {
+  document.getElementById('mbSrch').value = ''; mbFilt = 'ALL';
+  document.querySelectorAll('[data-d]').forEach(b => b.classList.remove('on'));
+  document.querySelector('[data-d="ALL"]').classList.add('on');
+  filterMB();
+}
+function filterMB() {
+  const q = document.getElementById('mbSrch').value.toLowerCase();
+  renderMB(MB.filter(r => {
+    if (mbFilt !== 'ALL' && !r.dec.startsWith(mbFilt)) return false;
+    if (q && !(r.asm+' '+r.supplier+' '+r.rat).toLowerCase().includes(q)) return false;
+    return true;
+  }));
+}
+
+// Build resource accordions
+function buildResources() {
+  const el = document.getElementById('resourceList');
+  RESOURCES.forEach(r => {
+    const div = document.createElement('div');
+    div.className = 'acc-item';
+    div.innerHTML = `<div class="acc-head" onclick="this.parentElement.classList.toggle('open')">
+        <i class="ti ti-tool" style="font-size:14px;color:var(--text3)" aria-hidden="true"></i>
+        <span style="font-size:13px;font-weight:500;color:var(--text)">${r.name}</span>
+        <span style="font-size:11px;color:var(--text3);margin-left:8px">${r.purpose}</span>
+        <i class="ti ti-chevron-down acc-chevron" aria-hidden="true"></i>
+      </div>
+      <div class="acc-body">
+        <p style="font-size:12px;color:var(--text2);line-height:1.6;padding-top:10px">${r.notes}</p>
+      </div>`;
+    el.appendChild(div);
+  });
+}
+
+buildPhases(); renderMB(MB); buildResources();
+</script>
+</body>
+</html>

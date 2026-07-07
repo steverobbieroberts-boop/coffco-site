@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>CoffCo — Operating Environment</title>
+<link rel="stylesheet" href="assets/coffco.css">
+<style>
+.prose-body{max-width:900px;margin:0 auto;padding:40px 44px 80px}
+.prose-body>p{font-size:14px;line-height:1.8;color:#3A3F47;margin:0 0 16px}
+.sec-head{display:flex;align-items:center;gap:14px;margin:48px 0 18px;padding-bottom:10px;border-bottom:2px solid #D8DDE6}
+.sec-head:first-of-type{margin-top:0}
+.sec-num{width:36px;height:36px;background:var(--navy);color:#fff;font-size:15px;font-weight:700;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.sec-title{font-size:20px;font-weight:700;color:var(--navy);line-height:1.2}
+.sec-sub{font-size:12px;color:#7A7A7A;margin-top:2px}
+.callout{border-left:4px solid #0D5C5C;background:#E6F4F4;padding:14px 18px;border-radius:0 8px 8px 0;margin:16px 0;font-size:13px;line-height:1.7;color:#1A3A3A}
+.callout strong{color:#0D5C5C}
+table.def{width:100%;border-collapse:collapse;font-size:13px;margin:16px 0 24px}
+table.def thead th{background:var(--navy);color:#fff;text-align:left;padding:10px 14px;font-size:11px;font-weight:600;letter-spacing:.05em;text-transform:uppercase}
+table.def tbody td{padding:9px 14px;border-bottom:1px solid #E2E6ED;vertical-align:top;line-height:1.6;color:#3A3F47}
+table.def tbody tr:nth-child(even) td{background:#F7F8FA}
+table.def tbody tr:last-child td{border-bottom:none}
+table.def tbody tr:hover td{background:#F0F4FA}
+table.def td:first-child{font-weight:600;color:var(--navy);white-space:nowrap;width:180px}
+.pill{display:inline-flex;font-size:10px;padding:2px 8px;border-radius:20px;font-weight:500;white-space:nowrap}
+.pill-a{background:#E1F5EE;color:#0F6E56;border:.5px solid #5DCAA5}
+.pill-d{background:#E6F1FB;color:#185FA5;border:.5px solid #85B7EB}
+.env-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:10px;margin:16px 0 24px}
+.env-card{background:#fff;border:1px solid #E2E6ED;border-radius:8px;overflow:hidden}
+.env-cat{background:#F7F8FA;border-bottom:1px solid #E2E6ED;padding:8px 12px;font-size:10px;font-weight:600;color:#7A7A7A;text-transform:uppercase;letter-spacing:.06em}
+.env-rows{display:flex;flex-direction:column}
+.env-row{padding:9px 12px;border-bottom:1px solid #F0F0F0;font-size:12px;line-height:1.5}
+.env-row:last-child{border:none}
+.env-factor{font-weight:600;color:var(--navy);margin-bottom:3px}
+.env-desc{color:#3A3F47}
+</style>
+</head>
+<body>
+<nav class="sidebar"></nav>
+<main class="main">
+<div class="page-cover">
+  <div class="cover-eyebrow">Reference &middot; COFFCO-SRS-001 Operating Environment Sheet</div>
+  <h1 class="cover-title">Operating Environment</h1>
+  <p class="cover-sub">Physical · Usage · Regulatory · Commercial constraints on the CoffCo system</p>
+  <div class="cover-meta">
+    <span><strong>Source:</strong> SRS V3.0 Operating Environment sheet</span>
+    <span><strong>Categories:</strong> Physical, Usage, Regulatory, Commercial</span>
+    <span><strong>Factors:</strong> 22</span>
+  </div>
+</div>
+<div class="prose-body">
+<div class="callout"><strong>The operating environment is not a requirement.</strong> It is the context that requirements must respond to. Every SRS requirement can be traced back to one or more of the environmental factors listed here — this is what makes the requirements necessary rather than arbitrary.</div>
+<div class="env-grid">
+<div class="env-card">
+  <div class="env-cat" style="background:#E6F1FB;color:#1A4B8C">Physical</div>
+  <div class="env-rows"><div class="env-row"><div class="env-factor">Deployment location</div><div class="env-desc">In-room hotel guest room — desk or bedside surface. Standard hotel furniture with no modifications permitted.</div></div><div class="env-row"><div class="env-factor">Footprint constraint</div><div class="env-desc">Maximum 300mm (W) × 300mm (D) × 300mm (H). Must fit existing desk space without displacing other room items.</div></div><div class="env-row"><div class="env-factor">Power supply (EU)</div><div class="env-desc">230V / 50Hz mains supply. CEE 7/4 or equivalent socket standard. System must operate natively without adapters.</div></div><div class="env-row"><div class="env-factor">Power supply (US)</div><div class="env-desc">110V / 60Hz mains supply. Must operate natively on US supply without modification or adapters.</div></div><div class="env-row"><div class="env-factor">Water hardness</div><div class="env-desc">Variable — soft to very hard — across the Vacation Stables UK, EU, and US estate. Machine must accommodate the full range without performance degradation.</div></div><div class="env-row"><div class="env-factor">Thermal</div><div class="env-desc">Ambient room temperature 18–26°C. System processes water at up to 90°C internally. All external surfaces ≤48°C under normal operation.</div></div></div>
+</div>
+<div class="env-card">
+  <div class="env-cat" style="background:#E1F5EE;color:#0F6E56">Usage</div>
+  <div class="env-rows"><div class="env-row"><div class="env-factor">Primary use case</div><div class="env-desc">Business executive — morning coffee upon waking. User is time-pressured, may be fatigued, has zero prior training with this machine.</div></div><div class="env-row"><div class="env-factor">Secondary use case</div><div class="env-desc">Afternoon coffee — lower urgency, same user profile.</div></div><div class="env-row"><div class="env-factor">Operator</div><div class="env-desc">Housekeeping staff — consumable restocking and cleaning. No technical training. Interaction must require no more than 5 minutes and no tools.</div></div><div class="env-row"><div class="env-factor">Usage frequency</div><div class="env-desc">Daily use during occupied stays. Machine may be idle for extended periods between stays — design must accommodate dormancy without performance loss.</div></div><div class="env-row"><div class="env-factor">User familiarity</div><div class="env-desc">Zero — no instruction material, no prior training. Machine must be fully self-explanatory from first contact.</div></div></div>
+</div>
+<div class="env-card">
+  <div class="env-cat" style="background:#FCEBEB;color:#A32D2D">Regulatory</div>
+  <div class="env-rows"><div class="env-row"><div class="env-factor">Electrical safety</div><div class="env-desc">IEC 60335 — household and similar electrical appliances. CE marking (EU); UL/ETL listing (US); UKCA (UK). Type-test certificate required before deployment.</div></div><div class="env-row"><div class="env-factor">Food safety</div><div class="env-desc">HACCP principles apply to all water and beverage contact surfaces. All food-contact materials must be food-grade certified.</div></div><div class="env-row"><div class="env-factor">Energy efficiency</div><div class="env-desc">EU energy efficiency rating A required. Ecodesign and Energy Labelling Regulations apply.</div></div><div class="env-row"><div class="env-factor">EMC</div><div class="env-desc">Must not cause harmful interference to in-room devices (Wi-Fi, TV, telephone, laptop). EN 55014 / CISPR 14 compliance required.</div></div><div class="env-row"><div class="env-factor">Data protection</div><div class="env-desc">GDPR applies if guest usage data is processed. Minimum data principle applies — collect only what is operationally necessary.</div></div><div class="env-row"><div class="env-factor">WEEE / RoHS</div><div class="env-desc">All materials must be WEEE-compliant and RoHS-compliant. End-of-life recycling routes confirmed before deployment.</div></div></div>
+</div>
+<div class="env-card">
+  <div class="env-cat" style="background:#FAEEDA;color:#854F0B">Commercial</div>
+  <div class="env-rows"><div class="env-row"><div class="env-factor">Interior design</div><div class="env-desc">Vacation Stables standard — predominantly black or transparent. Minimum 80% of visible surface area must be black or transparent (SRS 3.6).</div></div><div class="env-row"><div class="env-factor">Mug compatibility</div><div class="env-desc">Existing Vacation Stables mug: 100mm height × 100mm diameter. Machine dispensing outlet must accommodate this mug with ≥105mm clearance.</div></div><div class="env-row"><div class="env-factor">Sustainability — materials</div><div class="env-desc">Minimum 50% of machine materials to be recycled content. Vacation Stables 2030 sustainability target.</div></div><div class="env-row"><div class="env-factor">Sustainability — waste</div><div class="env-desc">All waste products generated during operation must have a feasible recycling or reuse route. Zero landfill target (SRS 3.7).</div></div><div class="env-row"><div class="env-factor">Maintenance-free period</div><div class="env-desc">365 days minimum before any scheduled maintenance is required. Hotel environment means any maintenance call has brand and cost implications.</div></div><div class="env-row"><div class="env-factor">Anti-theft</div><div class="env-desc">Machine is a capital asset in an unsecured room. Opportunistic theft to be deterred by mechanical means — no permanent room modification.</div></div></div>
+</div>
+</div>
+</div>
+</main>
+<script src="assets/nav.js"></script>
+</body>
+</html>

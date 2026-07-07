@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>CoffCo — Assumptions and Dependencies</title>
+<link rel="stylesheet" href="assets/coffco.css">
+<style>
+.prose-body{max-width:900px;margin:0 auto;padding:40px 44px 80px}
+.prose-body>p{font-size:14px;line-height:1.8;color:#3A3F47;margin:0 0 16px}
+.sec-head{display:flex;align-items:center;gap:14px;margin:48px 0 18px;padding-bottom:10px;border-bottom:2px solid #D8DDE6}
+.sec-head:first-of-type{margin-top:0}
+.sec-num{width:36px;height:36px;background:var(--navy);color:#fff;font-size:15px;font-weight:700;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.sec-title{font-size:20px;font-weight:700;color:var(--navy);line-height:1.2}
+.sec-sub{font-size:12px;color:#7A7A7A;margin-top:2px}
+.callout{border-left:4px solid #0D5C5C;background:#E6F4F4;padding:14px 18px;border-radius:0 8px 8px 0;margin:16px 0;font-size:13px;line-height:1.7;color:#1A3A3A}
+.callout strong{color:#0D5C5C}
+table.def{width:100%;border-collapse:collapse;font-size:13px;margin:16px 0 24px}
+table.def thead th{background:var(--navy);color:#fff;text-align:left;padding:10px 14px;font-size:11px;font-weight:600;letter-spacing:.05em;text-transform:uppercase}
+table.def tbody td{padding:9px 14px;border-bottom:1px solid #E2E6ED;vertical-align:top;line-height:1.6;color:#3A3F47}
+table.def tbody tr:nth-child(even) td{background:#F7F8FA}
+table.def tbody tr:last-child td{border-bottom:none}
+table.def tbody tr:hover td{background:#F0F4FA}
+table.def td:first-child{font-weight:600;color:var(--navy);white-space:nowrap;width:180px}
+.pill{display:inline-flex;font-size:10px;padding:2px 8px;border-radius:20px;font-weight:500;white-space:nowrap}
+.pill-a{background:#E1F5EE;color:#0F6E56;border:.5px solid #5DCAA5}
+.pill-d{background:#E6F1FB;color:#185FA5;border:.5px solid #85B7EB}
+.env-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:10px;margin:16px 0 24px}
+.env-card{background:#fff;border:1px solid #E2E6ED;border-radius:8px;overflow:hidden}
+.env-cat{background:#F7F8FA;border-bottom:1px solid #E2E6ED;padding:8px 12px;font-size:10px;font-weight:600;color:#7A7A7A;text-transform:uppercase;letter-spacing:.06em}
+.env-rows{display:flex;flex-direction:column}
+.env-row{padding:9px 12px;border-bottom:1px solid #F0F0F0;font-size:12px;line-height:1.5}
+.env-row:last-child{border:none}
+.env-factor{font-weight:600;color:var(--navy);margin-bottom:3px}
+.env-desc{color:#3A3F47}
+</style>
+</head>
+<body>
+<nav class="sidebar"></nav>
+<main class="main">
+<div class="page-cover">
+  <div class="cover-eyebrow">Reference &middot; COFFCO-SRS-001 Assumptions &amp; Dependencies Sheet</div>
+  <h1 class="cover-title">Assumptions and Dependencies</h1>
+  <p class="cover-sub">9 assumptions &middot; 5 dependencies &middot; conditions required for the system to operate as intended</p>
+  <div class="cover-meta">
+    <span><strong>Source:</strong> SRS V3.0 Assumptions &amp; Dependencies sheet</span>
+    <span><strong>Assumptions:</strong> 9</span>
+    <span><strong>Dependencies:</strong> 5</span>
+  </div>
+</div>
+<div class="prose-body">
+<div class="callout"><strong>Assumptions</strong> are conditions taken to be true for the purposes of this programme, which have not been formally verified. <strong>Dependencies</strong> are external items or decisions that must be in place for the system to achieve its requirements. Both should be reviewed at each design gate.</div>
+<table class="def">
+<thead><tr><th style="width:60px">ID</th><th style="width:160px">Category</th><th style="width:100px">Type</th><th>Description</th></tr></thead>
+<tbody>
+<tr><td><span class="pill pill-a">A-01</span></td><td>Power supply</td><td>Assumption</td><td>Vacation Stables hotel rooms have standard UK/EU 230V/50Hz or US 110V/60Hz mains power sockets available at or near the room desk.</td></tr>
+<tr><td><span class="pill pill-a">A-02</span></td><td>Network</td><td>Assumption</td><td>Hotel Wi-Fi is available in rooms, required if IoT features are included in MVP scope.</td></tr>
+<tr><td><span class="pill pill-a">A-03</span></td><td>Water supply</td><td>Assumption</td><td>Mains water supply is available in each hotel room for guest use; connection to machine water supply is via a removable user-filled reservoir — not a direct plumbing connection.</td></tr>
+<tr><td><span class="pill pill-a">A-04</span></td><td>Housekeeping</td><td>Assumption</td><td>Vacation Stables housekeeping staff perform daily room servicing and are available to restock consumables and perform basic cleaning of the machine as part of their normal duties.</td></tr>
+<tr><td><span class="pill pill-a">A-05</span></td><td>Mug provision</td><td>Assumption</td><td>Vacation Stables provides guests with their standard mug (100mm H × 100mm D) in the room.</td></tr>
+<tr><td><span class="pill pill-a">A-06</span></td><td>Consumable supply</td><td>Assumption</td><td>CoffCo or its designated supply partner provides an uninterrupted supply of compatible coffee consumables to all Vacation Stables properties.</td></tr>
+<tr><td><span class="pill pill-a">A-07</span></td><td>Room footprint</td><td>Assumption</td><td>Sufficient desk or surface space of at least 300mm × 300mm is available in each room for machine placement.</td></tr>
+<tr><td><span class="pill pill-a">A-08</span></td><td>Regulatory compliance</td><td>Assumption</td><td>CoffCo's engineering team will obtain all necessary product certifications (CE marking EU, UKCA UK, UL/ETL US) before commercial deployment.</td></tr>
+<tr><td><span class="pill pill-a">A-09</span></td><td>Milk refrigeration</td><td>Assumption</td><td>The machine incorporates an integrated milk refrigeration store maintaining milk at ≤4°C — required for frothed milk production without guest-supplied fresh milk.</td></tr>
+<tr><td><span class="pill pill-d">D-01</span></td><td>User requirements</td><td>Dependency</td><td>The Vacation Stables User Requirements Document (CONOPS & URD v1.0) remains the authoritative statement of customer need throughout the programme.</td></tr>
+<tr><td><span class="pill pill-d">D-02</span></td><td>Vacation Stables PMS</td><td>Dependency</td><td>If guest loyalty profile features are included in a future increment, this system depends on API access to the Vacation Stables Property Management System.</td></tr>
+<tr><td><span class="pill pill-d">D-03</span></td><td>Consumable compatibility</td><td>Dependency</td><td>System performance requirements assume use of CoffCo-specified coffee consumables. Third-party consumables may not meet extraction pressure or volume requirements.</td></tr>
+<tr><td><span class="pill pill-d">D-04</span></td><td>Infrastructure</td><td>Dependency</td><td>The 365-day maintenance-free target is dependent on Vacation Stables providing water hardness data per property. Where water hardness exceeds threshold, descale interval will be shorter.</td></tr>
+<tr><td><span class="pill pill-d">D-05</span></td><td>Sustainability targets</td><td>Dependency</td><td>The recycled material and recyclable waste requirements depend on CoffCo's supply chain partners confirming material composition and end-of-life routes before deployment.</td></tr>
+</tbody>
+</table>
+</div>
+</main>
+<script src="assets/nav.js"></script>
+</body>
+</html>

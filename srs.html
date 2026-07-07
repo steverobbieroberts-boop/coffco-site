@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>CoffCo - SRS Explorer</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.19.0/dist/tabler-icons.min.css">
+<link rel="stylesheet" href="assets/coffco.css">
+<style>
+:root{--bg:#f8f7f4;--surface:#fff;--surface2:#f1f0ed;--border:rgba(0,0,0,.10);--border2:rgba(0,0,0,.20);--text:#1a1a18;--text2:#6b6a66;--text3:#9b9a96;--teal:#0F6E56;--teal-light:#E1F5EE;--teal-border:#5DCAA5;--teal-mid:#1D9E75;--amber:#854F0B;--amber-light:#FAEEDA;--amber-mid:#EF9F27;--amber-border:#EF9F27;--red:#A32D2D;--red-light:#FCEBEB;--red-border:#F09595;--red-mid:#E24B4A;--blue:#185FA5;--blue-light:#E6F1FB;--purple:#534AB7;--purple-light:#EEEDFE;--purple-border:#AFA9EC;--radius:8px;--radius-lg:12px;--mono:ui-monospace,'SF Mono','Fira Code',monospace;}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,sans-serif;background:var(--bg);color:var(--text);font-size:13px}
+.page-body{max-width:1100px;margin:0 auto;padding:28px 32px 80px}
+.kpi-row{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:10px;margin-bottom:24px}
+.kpi{background:var(--surface2);border-radius:var(--radius);padding:12px 14px}
+.kpi-label{font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px}
+.kpi-val{font-size:22px;font-weight:500;line-height:1;color:var(--text)}
+.kpi-val.warn{color:var(--amber)}.kpi-sub{font-size:10px;color:var(--text3);margin-top:4px}
+.filter-row{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:12px}
+.filter-row input{flex:1;min-width:180px;padding:7px 11px;border:.5px solid var(--border2);border-radius:var(--radius);font-size:12px;background:var(--surface);color:var(--text);font-family:inherit;outline:none}
+.filter-row input:focus{border-color:var(--teal-mid)}
+.ftab{padding:5px 13px;border:.5px solid var(--border2);border-radius:20px;background:transparent;font-size:11px;color:var(--text2);cursor:pointer;font-family:inherit;transition:all .12s}
+.ftab:hover{background:var(--surface2)}.ftab.on{background:var(--text);color:#fff;border-color:var(--text)}
+.count-line{font-size:11px;color:var(--text3);margin-bottom:10px}.count-line b{color:var(--text2)}
+.kpi-btn{cursor:pointer;border:.5px solid transparent;transition:all .15s}
+.kpi-btn:hover{border-color:var(--teal-border);background:var(--teal-light)}
+.kpi-btn.on{border-color:var(--teal-border);background:var(--teal-light);box-shadow:0 0 0 2px var(--teal-border)}
+.kpi-btn.on .kpi-label{color:var(--teal)}
+.kpi-btn.on .kpi-val{color:var(--teal)}
+.pill{display:inline-flex;align-items:center;gap:3px;font-size:10px;padding:2px 8px;border-radius:20px;font-weight:500;white-space:nowrap}
+.pill-teal{background:var(--teal-light);color:var(--teal);border:.5px solid var(--teal-border)}
+.pill-amber{background:var(--amber-light);color:var(--amber);border:.5px solid var(--amber-border)}
+.pill-red{background:var(--red-light);color:var(--red);border:.5px solid var(--red-border)}
+.pill-blue{background:var(--blue-light);color:var(--blue);border:.5px solid #85B7EB}
+.pill-purple{background:var(--purple-light);color:var(--purple);border:.5px solid var(--purple-border)}
+.pill-grey{background:var(--surface2);color:var(--text3);border:.5px solid var(--border2)}
+.sb-c{background:var(--red-light);color:var(--red);border:.5px solid var(--red-border)}
+.sb-i{background:var(--amber-light);color:var(--amber);border:.5px solid var(--amber-border)}
+.req-card{background:var(--surface);border:.5px solid var(--border);border-radius:var(--radius);margin-bottom:4px;overflow:hidden}
+.req-card:hover{border-color:var(--border2)}
+.req-card.sc{border-left:3px solid var(--red-mid)}
+.req-card.si{border-left:3px solid var(--amber-mid)}
+.req-head{display:flex;align-items:center;gap:10px;padding:9px 14px;cursor:pointer;user-select:none}
+.req-head:hover{background:var(--surface2)}
+.req-id{font-family:var(--mono);font-size:11px;color:var(--text3);min-width:36px}
+.req-name{flex:1;font-size:13px;font-weight:500;color:var(--text)}
+.chevron{font-size:13px;color:var(--text3);transition:transform .15s;flex-shrink:0}
+.req-card.open .chevron{transform:rotate(180deg)}
+.req-body{display:none;padding:0 14px 14px;border-top:.5px solid var(--border)}
+.req-card.open .req-body{display:block}
+.req-shall{font-size:13px;color:var(--text2);line-height:1.65;margin:10px 0 12px;padding:8px 12px;border-left:2px solid var(--teal-border);background:var(--teal-light);border-radius:0 6px 6px 0}
+.req-shall em{color:var(--teal);font-style:normal;font-weight:500}
+.d-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.d-block{background:var(--surface2);border-radius:var(--radius);padding:10px 12px}
+.d-lbl{font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:4px}
+.d-val{font-size:12px;color:var(--text2);line-height:1.5}
+@media(max-width:600px){.d-grid{grid-template-columns:1fr}}
+.reset-btn{padding:5px 13px;border:.5px solid var(--teal-border);border-radius:20px;background:transparent;font-size:11px;color:var(--teal);cursor:pointer;font-family:inherit;transition:all .12s}.reset-btn:hover{background:var(--teal-light)}
+</style>
+</head>
+<body>
+<nav class="sidebar"></nav>
+<main class="main">
+<div class="page-cover">
+  <div class="cover-eyebrow">DoD Deliverable 2 &middot; COFFCO-SRS-001 Issue 3.0</div>
+  <h1 class="cover-title">System Requirements Specification</h1>
+  <p class="cover-sub">41 requirements &middot; 4 categories &middot; EARS notation &middot; implementation-neutral &middot; sourced direct from xlsx baseline</p>
+  <div class="cover-meta">
+    <span><strong>Issue:</strong> 3.0</span>
+    <span><strong>Notation:</strong> EARS</span>
+    <span><strong>Safety-critical:</strong> SRS 1.10, 3.10, 3.11, 3.12, 3.13</span>
+  </div>
+  <div class="cover-download">
+    <a href="downloads/2-srs.xlsx" class="btn-download">&#11015; Download SRS V3.0 (.xlsx)</a>
+  </div>
+</div>
+<div class="page-body">
+<div class="kpi-row">
+  <div class="kpi kpi-btn on" data-c="ALL" onclick="setKpi(this)"><div class="kpi-label">All Requirements</div><div class="kpi-val">42</div></div>
+  <div class="kpi kpi-btn" data-c="F"   onclick="setKpi(this)"><div class="kpi-label">Functional</div><div class="kpi-val">12</div></div>
+  <div class="kpi kpi-btn" data-c="I"   onclick="setKpi(this)"><div class="kpi-label">Interface</div><div class="kpi-val">7</div></div>
+  <div class="kpi kpi-btn" data-c="N"   onclick="setKpi(this)"><div class="kpi-label">Non-Functional</div><div class="kpi-val">13</div></div>
+  <div class="kpi kpi-btn" data-c="P"   onclick="setKpi(this)"><div class="kpi-label">Performance</div><div class="kpi-val">11</div></div>
+  <div class="kpi kpi-btn" data-c="S"   onclick="setKpi(this)"><div class="kpi-label">Safety-Critical</div><div class="kpi-val warn">5</div></div>
+</div>
+<div class="filter-row">
+  <input type="text" id="srch" placeholder="Search requirements&hellip;" oninput="go()">
+  <button class="ftab on" data-c="ALL" onclick="setCat(this)">All</button>
+  <button class="ftab" data-c="F" onclick="setCat(this)">Functional</button>
+  <button class="ftab" data-c="I" onclick="setCat(this)">Interface</button>
+  <button class="ftab" data-c="N" onclick="setCat(this)">Non-functional</button>
+  <button class="ftab" data-c="P" onclick="setCat(this)">Performance</button>
+  <button class="ftab" data-c="S" onclick="setCat(this)">Safety</button>
+<button class="reset-btn" onclick="resetSRS()">&#8635; Reset</button>
+</div>
+<div class="count-line" id="cl">Showing <b>42</b> of 42 &mdash; click any row to expand</div>
+<div id="rl"></div>
+</div>
+</main>
+<script src="assets/nav.js"></script>
+<script>
+var D = [{"id": "1.1", "name": "Americano brewing", "shall": "enable a user to produce an americano coffee.", "priority": "Mandatory", "method": "Test", "measure": "Americano produced. Minimum liquid temperature at dispensation: 60°C.", "justification": "URD 1.1. Core product function. 60°C minimum safe serving temperature per food safety guidance.", "cat": "F", "safety": ""}, {"id": "1.2", "name": "Hot frothed milk production", "shall": "enable a user to produce hot frothed milk.", "priority": "Mandatory", "method": "Test", "measure": "Frothed milk produced. Minimum: 60°C. Maximum: 90°C.", "justification": "URD 1.2. Temperature band prevents scalding (max 90°C) and ensures palatability (min 60°C).", "cat": "F", "safety": ""}, {"id": "1.3", "name": "Beverage volume selection", "shall": "enable a user to select the dispensed americano volume.", "priority": "Mandatory", "method": "Demonstration", "measure": "Minimum selectable: 200 ml. Maximum selectable: 400 ml.", "justification": "URD 1.3. Personalisation. 200–400 ml covers standard drink sizes.", "cat": "F", "safety": ""}, {"id": "1.4", "name": "Consumable capacity and loading integrity", "shall": "hold sufficient consumables to dispense a minimum of 10 consecutive americano beverages without replenishment, and shall incorporate a keyed mechanical geometry in the extraction chamber that accepts only the correct consumable format, with a mechanical interlock that prevents the chamber from sealing when the consumable is not correctly seated.", "priority": "Mandatory", "method": "Test + Inspection", "measure": "Minimum 10 americano dispensations from a single loaded state. Incorrect consumable formats cannot close the chamber. Brew cycle cannot be initiated with chamber unseated. Verified by misuse trial with 5 incorrect items. [Consolidates SAF-17 / H-18]", "justification": "URD 1.4. Capacity: minimum brews per stay. Interlock: foreseeable misuse per IEC 60335-1 Cl.21 — prevents seal bypass and pressurised hot water escape at extraction chamber breach (HAZID H-18).", "cat": "F", "safety": "safety-impacted"}, {"id": "1.5", "name": "Coffee extraction pressure", "shall": "apply a minimum coffee extraction pressure of 0.9 bar and a maximum of 1.3 bar during the brewing cycle.", "priority": "High", "method": "Test", "measure": "Extraction pressure: minimum 0.9 bar, target 1.1 bar, maximum 1.3 bar.", "justification": "URD 1.5. Barista-standard extraction. Range allows engineering tolerance while maintaining brew quality.", "cat": "F", "safety": ""}, {"id": "1.6", "name": "Water hardness tolerance and descale management", "shall": "operate correctly across the full range of soft to hard water supply conditions without requiring user adjustment, and shall calculate a descale interval from the accumulated brew count and water hardness setting, execute an automated descale cycle at or before that interval, and transmit a DESCALE-REQUIRED telemetry alert at least 10 brew cycles before the interval is reached.", "priority": "Low / Mandatory", "method": "Test + Demonstration", "measure": "System operates without degradation across full hardness range. DESCALE-REQUIRED alert received ≥10 brews before calculated interval. Descale cycle executes at interval. Post-descale pressure: 0.9–1.3 bar. [Consolidates SAF-16 / H-17]", "justification": "URD 1.6. Hardness varies across estate. Scale is the primary long-term cause of pressure faults and element damage in hot-water systems — proactive descale management prevents PRV activation and supports SRS 3.3 (365-day maintenance-free interval). (HAZID H-17).", "cat": "F", "safety": "safety-impacted"}, {"id": "1.7", "name": "Status indication", "shall": "clearly indicate to the user and housekeeping staff when consumables are low, when a fault condition exists, when the drip tray approaches full capacity, and when maintenance is required.", "priority": "High", "method": "Demonstration", "measure": "Status communicated without ambiguity for: Ready / Brewing / Low Consumable / Empty / Fault / Drip-Tray-Full / Maintenance Required. Guest and housekeeping identify each state without documentation. [Consolidates SAF-15 / H-16 UI element]", "justification": "Derived from OPSCON. Ensures housekeeping can act proactively. Drip-tray-full status added (HAZID H-16) — overflow creates commercial liability and electrical hazard.", "cat": "F", "safety": "safety-impacted"}, {"id": "1.8", "name": "Theft deterrence", "shall": "incorporate a mechanism that prevents opportunistic grab-and-go removal from the hotel room.", "priority": "Medium", "method": "Demonstration", "measure": "Machine cannot be removed in under 60 seconds without tools or specialist knowledge.", "justification": "URD 2.11. Capital asset protection.", "cat": "F", "safety": ""}, {"id": "1.9", "name": "Maintenance status communication", "shall": "communicate its maintenance requirements to an external party via a wireless interface, including transmission of MILK-SPOILAGE-RISK alerts when the milk store exceeds 4°C for more than 30 consecutive minutes, DRIP-TRAY-FULL alerts when the tray approaches overflow capacity, and DESCALE-REQUIRED alerts at least 10 brew cycles before the scheduled descale interval; and shall log a COMMS-FAULT event to non-volatile local storage and display a MAINTENANCE REQUIRED indication if the wireless link is unavailable for more than 60 consecutive minutes.", "priority": "Mandatory", "method": "Demonstration + Test", "measure": "All four telemetry event types confirmed at cloud ops dashboard. MILK-SPOILAGE-RISK within 5 min of 30-min threshold. DRIP-TRAY-FULL before overflow. DESCALE-REQUIRED ≥10 brews prior. COMMS-FAULT in local log and UI after 60-min simulated outage. [Consolidates SAF-08/H-08, SAF-09/H-10, SAF-15/H-16 telemetry element]", "justification": "COFFCO-OC-001 (wireless maintenance comms). Specific telemetry events derived from HAZID H-08 (milk spoilage), H-10 (telemetry failure), H-16 (drip tray). Comms watchdog ensures loss of link does not leave machine in degraded unmonitored state.", "cat": "F", "safety": "safety-impacted"}, {"id": "1.10", "name": "Dry-fire prevention", "shall": "prevent activation of the heating element when the fluid level sensor indicates a quantity below the minimum required to complete a single brew cycle, entering FAULT/EMPTY state within 5 seconds of any brew command issued with insufficient fluid, and releasing the interlock automatically when the fluid level is restored above the minimum threshold.", "priority": "Mandatory", "method": "Test (TC-008)", "measure": "Heating element relay: 0.0 A on empty-store brew command. FAULT/EMPTY state within 5 s. Interlock releases on refill. [Original SRS 1.10 + SAF-02/H-02 timing detail merged]", "justification": "Safety-derived. HAZID H-02 (dry-fire/empty-store initiation). Prevents heating element burnout and fire risk. SAF-02 timing detail merged here — the 5-second response and auto-recovery are part of the functional requirement, not separate. (FMECA FM-05).", "cat": "F", "safety": "safety-critical"}, {"id": "1.11", "cat": "F", "name": "Scheduled OTA firmware update", "pri": "M", "method": "Test (TC-OTA-01)", "safety": "safety-impacted", "shall": "accept, authenticate, and install firmware updates from the CoffCo cloud platform; schedule installation exclusively within 03:00–06:00 local hotel time; install only from STANDBY with no brew activity for more than 30 consecutive minutes; revert to previous firmware partition automatically if STANDBY not achieved within 120 s post-reboot; transmit UPDATE-COMPLETE or UPDATE-FAILED telemetry on completion", "measure": "All 5 conditions verified by TC-OTA-01: (1) update blocked outside 03:00–06:00 window; (2) STANDBY state-gate enforced; (3) blocked if brew activity within preceding 30 min; (4) automatic A/B partition rollback on failed reboot; (5) UPDATE-COMPLETE or UPDATE-FAILED telemetry received at cloud ops dashboard", "justification": "Derived from COFFCO-OC-001. OTA enables remote software improvement without field engineer visit. Night-window eliminates guest impact from ~60-second reboot. State-gate prevents update interrupting a live brew with heating element energised. A/B partition rollback (FW-SF-09) ensures failed update cannot leave machine unbootable. Safety-impacted: must not update while any safety-critical actuator is energised.", "priority": "Mandatory"}, {"id": "2.1", "name": "User interface — unaided operation", "shall": "be operable by a first-time user without the need to consult any instruction manual or documentation.", "priority": "Mandatory", "method": "Demonstration", "measure": "Test subject with no prior knowledge successfully produces americano without reference to documentation.", "justification": "URD 2.9. Hotel room amenity context: guests will not read manuals.", "cat": "I", "safety": ""}, {"id": "2.2", "name": "Mug compatibility", "shall": "be compatible with the Vacation Stables standard coffee mug.", "priority": "High", "method": "Test", "measure": "System dispenses correctly into a vessel of 100 mm height × 100 mm diameter without spillage.", "justification": "URD 2.10.", "cat": "I", "safety": ""}, {"id": "2.3", "name": "UK and EU power supply interface", "shall": "operate on a standard UK and EU mains power supply of 230 V / 50 Hz, and the power supply unit shall withstand a 2 kV input surge test in accordance with IEC 61000-4-5 Level 2 without damage to downstream components.", "priority": "Mandatory", "method": "Test + PSU cert.", "measure": "All functions operate at 230 V / 50 Hz. PSU supplier provides IEC 61000-4-5 Level 2 surge certificate. No downstream damage after 2 kV surge. [Consolidates SAF-05/H-05 into PSU acceptance criteria]", "justification": "URD 2.2 + COFFCO-OC-001. Hotel mains subject to switching transients — surge protection mandatory for installed appliance. (HAZID H-05).", "cat": "I", "safety": "safety-impacted"}, {"id": "2.4", "name": "US power supply interface", "shall": "operate on a standard US mains power supply of 110 V / 60 Hz without adaptation or in-service modification.", "priority": "Mandatory", "method": "Test", "measure": "All functions operate correctly and safely at 110 V / 60 Hz.", "justification": "URD 2.2. Single product variant across UK, EU, and US.", "cat": "I", "safety": ""}, {"id": "2.5", "name": "Housekeeping interface — consumable replenishment", "shall": "allow consumable replenishment and routine cleaning to be performed by housekeeping staff without tools and without technical training.", "priority": "High", "method": "Demonstration", "measure": "Test operator with no prior knowledge restocks and cleans machine without tools within 5 minutes.", "justification": "Derived from OPSCON.", "cat": "I", "safety": ""}, {"id": "2.6", "name": "Regional electrical connector interface", "shall": "be capable of configuration with regional electrical connectors for UK, EU, and US markets without modification to the power supply unit.", "priority": "Mandatory", "method": "Test", "measure": "Operates with BS 1363 (UK), NEMA 5-15 (US), CEE 7/16 (EU) without PSU modification.", "justification": "URD 2.2. Configurable connector minimises supply chain complexity.", "cat": "I", "safety": ""}, {"id": "2.7", "name": "Dispensing clearance height", "shall": "provide sufficient clearance between the dispensing outlet and the drip tray surface to accommodate the Vacation Stables standard mug.", "priority": "High", "method": "Test", "measure": "Minimum clearance: 105 mm (100 mm mug + 5 mm tolerance). Mug insertable and removable without tilting.", "justification": "Derived from URD 2.10.", "cat": "I", "safety": ""}, {"id": "3.1", "name": "Dispensation time", "shall": "complete a full dispensation cycle from user-initiated start to coffee ready within 3 minutes.", "priority": "High", "method": "Test", "measure": "Maximum elapsed time from user initiation to beverage ready: 180 seconds.", "justification": "URD 2.1.", "cat": "N", "safety": ""}, {"id": "3.2", "name": "Physical footprint", "shall": "fit within a maximum envelope of 300 mm width × 300 mm depth × 300 mm height.", "priority": "High", "method": "Inspection", "measure": "System dimensions do not exceed 300 × 300 × 300 mm in any configuration.", "justification": "URD 2.3.", "cat": "N", "safety": ""}, {"id": "3.3", "name": "Maintenance-free interval", "shall": "not require scheduled maintenance intervention for a minimum of 365 days under normal operating conditions.", "priority": "Medium", "method": "Analysis / Test", "measure": "Operates without mandatory maintenance for ≥365 days at 2 americanos per day.", "justification": "URD 2.4.", "cat": "N", "safety": ""}, {"id": "3.4", "name": "Recycled material content", "shall": "incorporate a minimum of 50% recycled material content by mass.", "priority": "Medium", "method": "Analysis", "measure": "≥50% of total system mass comprises certified recycled-content materials.", "justification": "URD 2.5.", "cat": "N", "safety": ""}, {"id": "3.5", "name": "Energy efficiency rating", "shall": "achieve a minimum EU energy efficiency rating of A.", "priority": "Medium", "method": "Analysis / Test", "measure": "System rated A under applicable EU energy efficiency legislation.", "justification": "URD 2.6.", "cat": "N", "safety": ""}, {"id": "3.6", "name": "Colour scheme", "shall": "have external surfaces that are a minimum of 80% black or transparent by visible surface area.", "priority": "Low", "method": "Inspection", "measure": "≥80% of visible external surface area is black or transparent.", "justification": "URD 2.7.", "cat": "N", "safety": ""}, {"id": "3.7", "name": "Waste recyclability", "shall": "generate only waste products that have a feasible recycling or reuse route.", "priority": "Medium", "method": "Analysis", "measure": "All waste confirmed recyclable or reusable. No waste to landfill by design.", "justification": "URD 2.8.", "cat": "N", "safety": ""}, {"id": "3.8", "name": "Electromagnetic compatibility", "shall": "not cause interference to other electronic devices within the operating room environment.", "priority": "Medium", "method": "Test", "measure": "EMC emissions comply with EN 55014 / CISPR 14 Class B limits.", "justification": "URD 2.12.", "cat": "N", "safety": ""}, {"id": "3.9", "name": "Mean Time Between Failures (MTBF)", "shall": "achieve a minimum MTBF of 26,280 hours under normal operating conditions.", "priority": "High", "method": "Analysis", "measure": "Minimum MTBF: 26,280 hours. Minimum 2,190 brew cycles between failures.", "justification": "Derived. 3× engineering margin over annual powered hours. Underpins SRS 3.3.", "cat": "N", "safety": ""}, {"id": "3.10", "name": "Burn prevention", "shall": "have no exposed heating elements or surfaces where user contact burns may occur during normal operation or foreseeable misuse; shall provide a recessed or shrouded dispensing outlet such that direct hand contact with the active beverage stream at the point of exit is not possible; and shall maintain the temperature of all user-accessible external surfaces at or below 48°C during normal operation and within 30 minutes after power-off in a 25°C ambient environment; and shall incorporate an independent non-software thermal cutoff device that permanently disconnects the heating element if the fluid temperature exceeds 100°C, regardless of firmware state.", "priority": "Mandatory", "method": "Analysis + Test + Inspection", "measure": "No exposed heating elements or burn surfaces in assembled configuration. Dispensing outlet shroud confirmed by hand-geometry inspection (SAF-06). All accessible surfaces ≤48°C at steady state and 30 min post power-off in 25°C ambient, verified by calibrated surface thermometer ±0.5°C (SAF-11). Bi-metallic TCO opens at ≥100°C; heating element current = 0.0 A after trip; non-resettable (SAF-01). [Consolidates SAF-01/H-01, SAF-06/H-06, SAF-11/H-12]", "justification": "COFFCO-OC-001 (shall pose no burn threats to users and maintainers). IEC 60335-1 safe-touch limit 48°C (H-12). Shrouded outlet prevents scalding from beverage stream (H-06). Hardware TCO provides firmware-independent thermal runaway protection (H-01). Three burn-prevention provisions consolidated into single strengthened requirement.", "cat": "N", "safety": "safety-critical"}, {"id": "3.11", "name": "Electrical shock prevention and enclosure protection", "shall": "have no exposed electrical components which may cause electrical shock to the user or maintainer during normal operation or foreseeable misuse; shall comply with IEC 60335-1 Class II double insulation requirements such that no user-accessible surface presents a live electrical voltage under any single fault condition; shall incorporate a mains input fuse rated to the minimum protective value consistent with peak load demand, positioned at or immediately after the mains inlet connector and accessible to field engineers only; shall achieve a minimum enclosure ingress protection rating of IPX2 in accordance with IEC 60529; and shall route all fluid-carrying components in a thermoplastic channel physically isolated from all electrical conductors by a minimum of 6 mm.", "priority": "Mandatory", "method": "Analysis + Test + Inspection", "measure": "No exposed electrical components capable of shock in assembled and maintenance configurations. IEC 60335-1 Class II type-test certificate confirms no single fault makes surface live (SAF-04). T-type mains fuse present at inlet, confirmed by build inspection (SAF-13). IEC 60529 IPX2 drip test passed — no ingress to electrical compartment (SAF-14). ≥6 mm separation between any fluid path and any electrical conductor, confirmed on mechanical drawings (SAF-03). [Consolidates SAF-03/H-03, SAF-04/H-04, SAF-13/H-14, SAF-14/H-15]", "justification": "COFFCO-OC-001 (shall pose no electrical shock threats to users and maintainers). IEC 60335-1 Class II: fundamental requirement for mains appliance in public accommodation (H-04). Mains fuse: IEC 60335-1 Cl.25 mandatory for abnormal operation protection (H-14). IPX2: foreseeable cleaning exposure per IEC 60335-1 Annex A (H-15). Fluid isolation: prevents fluid leak causing electrical fault (H-03). Four shock/ingress provisions consolidated into single strengthened requirement.", "cat": "N", "safety": "safety-critical"}, {"id": "3.12", "name": "Firmware safety — hardware watchdog", "shall": "incorporate a hardware watchdog timer, independent of the application processor, that restores the system to a fully de-energised safe state if the main firmware control loop does not assert the watchdog signal within 500 ms.", "priority": "Mandatory", "method": "Test (TC-FW-01)", "measure": "External watchdog IC asserts hardware RESET if WDT-GPIO not toggled within 500 ms. All actuators confirmed de-energised post-RESET. Verified by simulating firmware hang via debug interface.", "justification": "NEW requirement. HAZID H-07 (firmware runaway). No existing SRS requirement mandates a hardware-level firmware failsafe. Closest are SRS 3.8 (EMC robustness) and SRS 3.9 (MTBF) but neither mandates a WDT device. Hardware watchdog is the only mechanism that protects against the case where firmware itself fails in a way that sustains actuator energisation.", "cat": "N", "safety": "safety-critical"}, {"id": "3.13", "name": "Fluid system overpressure protection", "shall": "incorporate a mechanical pressure relief valve in the fluid circuit, independent of firmware and pump control, rated to open at a pressure not exceeding 2.5 bar, directing relieved fluid safely into the drip tray and away from all user-accessible areas.", "priority": "Mandatory", "method": "Inspection + Test (TC-PRV-01)", "measure": "PRV opens at ≤2.5 bar; relieved fluid enters drip tray only; no venting at ≤1.3 bar normal operating pressure. PRV re-seats on pressure reduction. Food-grade wetted parts confirmed. Firmware pressure guard set at 1.5 bar (FW-SF-08) as software-layer backstop below PRV hardware limit.", "justification": "NEW requirement. HAZID H-13 (fluid system overpressure). No existing SRS requirement addresses over-pressure protection — SRS 1.5/4.4/4.5 specify the normal 0.9–1.3 bar operating band but not what limits pressure if the pump or control fails. PRV is a hardware-only protection device independent of firmware, consistent with SP-09 (fail-safe default) and SP-10 (defence in depth).", "cat": "N", "safety": "safety-critical"}, {"id": "4.1", "name": "Brew temperature — americano", "shall": "deliver americano coffee at a minimum temperature of 60°C at the point of dispensation.", "priority": "Mandatory", "method": "Test", "measure": "Liquid temperature at dispensation: minimum 60°C.", "justification": "URD 1.1. Food safety minimum.", "cat": "P", "safety": ""}, {"id": "4.2", "name": "Milk temperature — maximum", "shall": "not exceed a milk output temperature of 90°C at the point of dispensation.", "priority": "Mandatory", "method": "Test", "measure": "Milk temperature at dispensation: maximum 90°C.", "justification": "URD 1.2. Scalding risk above 90°C.", "cat": "P", "safety": ""}, {"id": "4.3", "name": "Milk temperature — minimum", "shall": "deliver hot frothed milk at a minimum temperature of 60°C at the point of dispensation.", "priority": "Mandatory", "method": "Test", "measure": "Milk temperature at dispensation: minimum 60°C.", "justification": "URD 1.2. Palatability and food safety minimum.", "cat": "P", "safety": ""}, {"id": "4.4", "name": "Extraction pressure — minimum", "shall": "achieve a minimum coffee extraction pressure of 0.9 bar.", "priority": "High", "method": "Test", "measure": "Extraction pressure: ≥0.9 bar at coffee outlet during extraction phase.", "justification": "URD 1.5.", "cat": "P", "safety": ""}, {"id": "4.5", "name": "Extraction pressure — maximum", "shall": "not exceed a maximum coffee extraction pressure of 1.3 bar.", "priority": "High", "method": "Test", "measure": "Extraction pressure: ≤1.3 bar at coffee outlet during extraction phase.", "justification": "URD 1.5.", "cat": "P", "safety": ""}, {"id": "4.6", "name": "Dispensation volume — minimum", "shall": "be capable of dispensing a minimum americano volume of 200 ml.", "priority": "Mandatory", "method": "Test", "measure": "Minimum dispense volume: 200 ml ±5 ml.", "justification": "URD 1.3.", "cat": "P", "safety": ""}, {"id": "4.7", "name": "Dispensation volume — maximum", "shall": "be capable of dispensing a maximum americano volume of 400 ml.", "priority": "Mandatory", "method": "Test", "measure": "Maximum dispense volume: 400 ml ±10 ml.", "justification": "URD 1.3.", "cat": "P", "safety": ""}, {"id": "4.8", "name": "Electrical safety compliance", "shall": "comply with IEC 60335 safety requirements for household and similar electrical appliances, including Class II double insulation (IEC 60335-1), and the power supply unit shall comply with IEC 61000-4-5 Level 2 surge immunity.", "priority": "Mandatory", "method": "Analysis (type test + PSU cert.)", "measure": "IEC 60335-1 Class II type-test certificate. CE marking (EU), UKCA (UK), UL/ETL (US). IEC 61000-4-5 Level 2 surge certificate from PSU supplier. [Consolidates SAF-04/H-04, SAF-05/H-05 certification requirements — specific acceptance criteria restated in 3.11 and 2.3]", "justification": "Derived from OPSCON regulatory environment. 4.8 is the certification umbrella; specific Class II and surge requirements are given measurable acceptance criteria in SRS 3.11 and SRS 2.3 respectively.", "cat": "P", "safety": "safety-impacted"}, {"id": "4.9", "name": "Food safety compliance", "shall": "ensure all surfaces in contact with water, coffee, or milk comply with applicable food contact safety standards.", "priority": "Mandatory", "method": "Inspection / Analysis", "measure": "All wetted surfaces food-grade material. HACCP analysis documented for brew path.", "justification": "Derived from OPSCON regulatory environment.", "cat": "P", "safety": ""}, {"id": "4.10", "name": "System mass and mechanical stability", "shall": "not exceed a maximum mass of 10 kg in its fully loaded operational configuration, and shall remain mechanically stable under a 50 N lateral force applied at the top surface, and shall be supplied with an anti-tip bracket compatible with standard hotel furniture fixing (M6).", "priority": "High", "method": "Inspection + Test", "measure": "Maximum mass: 10 kg with full water and consumable load. Machine does not tip under 50 N lateral force on flat surface. Anti-tip bracket supplied and M6-compatible. [Consolidates SAF-10/H-11 into the existing mass/stability requirement]", "justification": "Derived. Mass underpins desk load limits and theft deterrence (SRS 1.8). Stability and anti-tip bracket added from HAZID H-11 (tip-over hazard) — lateral force from child or adult contact with machine is foreseeable.", "cat": "P", "safety": "safety-impacted"}, {"id": "4.11", "name": "Dispense cycle time", "shall": "complete a full dispense cycle from user-initiated start to beverage ready in a maximum of 3 minutes.", "priority": "High", "method": "Test", "measure": "Maximum elapsed time from user initiation to beverage ready: 180 seconds.", "justification": "Derived. Also captured in SRS 3.1. Stated here as measurable performance threshold.", "cat": "P", "safety": ""}];
+
+var cat = 'ALL';
+var openId = null;
+var CP = {
+  F: '<span class="pill pill-blue">Functional</span>',
+  I: '<span class="pill pill-purple">Interface</span>',
+  N: '<span class="pill pill-teal">Non-functional</span>',
+  P: '<span class="pill pill-amber">Performance</span>'
+};
+
+function sb(s) {
+  if (s === 'safety-critical') return '<span class="pill sb-c" style="font-size:9px;padding:1px 6px;margin-left:4px"><i class="ti ti-shield-bolt"></i> safety-critical</span>';
+  if (s === 'safety-impacted') return '<span class="pill sb-i" style="font-size:9px;padding:1px 6px;margin-left:4px"><i class="ti ti-shield"></i> safety-impacted</span>';
+  return '';
+}
+function mp(m) {
+  return m.split('+').map(function(p){ return '<span class="pill pill-grey" style="margin:1px">' + p.trim() + '</span>'; }).join('');
+}
+function xe(s) {
+  return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+function pp(p) {
+  if (!p) return '';
+  var l = p.toLowerCase();
+  if (l.indexOf('mandatory') >= 0) return '<span class="pill pill-red">Mandatory</span>';
+  if (l.indexOf('high') >= 0)      return '<span class="pill pill-amber">High</span>';
+  return '<span class="pill pill-grey">' + xe(p) + '</span>';
+}
+
+function render(list) {
+  var el = document.getElementById('rl');
+  el.innerHTML = '';
+  list.forEach(function(r) {
+    var card = document.createElement('div');
+    card.className = 'req-card' + (r.safety === 'safety-critical' ? ' sc' : r.safety === 'safety-impacted' ? ' si' : '') + (r.id === openId ? ' open' : '');
+    card.dataset.id = r.id;
+
+    var head = document.createElement('div');
+    head.className = 'req-head';
+    head.innerHTML =
+      '<span class="req-id">' + xe(r.id) + '</span>' +
+      (CP[r.cat] || '') +
+      '<span class="req-name">' + xe(r.name) + sb(r.safety) + '</span>' +
+      '<span>' + pp(r.priority) + '</span>' +
+      '<span style="min-width:60px">' + mp(r.method) + '</span>' +
+      '<i class="ti ti-chevron-down chevron"></i>';
+    head.addEventListener('click', function() {
+      openId = (openId === r.id) ? null : r.id;
+      go();
+    });
+
+    var body = document.createElement('div');
+    body.className = 'req-body';
+    body.innerHTML =
+      '<p class="req-shall">The system shall <em>' + xe(r.shall) + '</em></p>' +
+      '<div class="d-grid">' +
+        '<div class="d-block"><div class="d-lbl">Acceptance criterion</div><div class="d-val">' + xe(r.measure) + '</div></div>' +
+        '<div class="d-block"><div class="d-lbl">Justification &amp; traceability</div><div class="d-val">' + xe(r.justification) + '</div></div>' +
+      '</div>';
+
+    card.appendChild(head);
+    card.appendChild(body);
+    el.appendChild(card);
+  });
+  document.getElementById('cl').innerHTML = 'Showing <b>' + list.length + '</b> of ' + D.length + ' &mdash; click any row to expand';
+}
+
+function setCat(btn) {
+  document.querySelectorAll('.ftab').forEach(function(b){ b.classList.remove('on'); });
+  btn.classList.add('on');
+  cat = btn.dataset.c;
+  syncKpi();
+  go();
+}
+
+function setKpi(card) {
+  cat = card.dataset.c;
+  syncKpi();
+  // Also sync the filter tab buttons
+  document.querySelectorAll('.ftab').forEach(function(b){
+    b.classList.toggle('on', b.dataset.c === cat);
+  });
+  go();
+}
+
+function syncKpi() {
+  document.querySelectorAll('.kpi-btn').forEach(function(k){
+    k.classList.toggle('on', k.dataset.c === cat);
+  });
+}
+
+function go() {
+  var q = document.getElementById('srch').value.toLowerCase();
+  render(D.filter(function(r) {
+    if (cat === 'S' && !r.safety) return false;
+    if (cat !== 'ALL' && cat !== 'S' && r.cat !== cat) return false;
+    if (q && (r.id + ' ' + r.name + ' ' + r.shall + ' ' + r.justification).toLowerCase().indexOf(q) < 0) return false;
+    return true;
+  }));
+}
+
+go();
+</script>
+</body>
+</html>

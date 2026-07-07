@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>CoffCo — Definitions and Acronyms</title>
+<link rel="stylesheet" href="assets/coffco.css">
+<style>
+.prose-body{max-width:900px;margin:0 auto;padding:40px 44px 80px}
+.prose-body>p{font-size:14px;line-height:1.8;color:#3A3F47;margin:0 0 16px}
+.sec-head{display:flex;align-items:center;gap:14px;margin:48px 0 18px;padding-bottom:10px;border-bottom:2px solid #D8DDE6}
+.sec-head:first-of-type{margin-top:0}
+.sec-num{width:36px;height:36px;background:var(--navy);color:#fff;font-size:15px;font-weight:700;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.sec-title{font-size:20px;font-weight:700;color:var(--navy);line-height:1.2}
+.sec-sub{font-size:12px;color:#7A7A7A;margin-top:2px}
+.callout{border-left:4px solid #0D5C5C;background:#E6F4F4;padding:14px 18px;border-radius:0 8px 8px 0;margin:16px 0;font-size:13px;line-height:1.7;color:#1A3A3A}
+.callout strong{color:#0D5C5C}
+table.def{width:100%;border-collapse:collapse;font-size:13px;margin:16px 0 24px}
+table.def thead th{background:var(--navy);color:#fff;text-align:left;padding:10px 14px;font-size:11px;font-weight:600;letter-spacing:.05em;text-transform:uppercase}
+table.def tbody td{padding:9px 14px;border-bottom:1px solid #E2E6ED;vertical-align:top;line-height:1.6;color:#3A3F47}
+table.def tbody tr:nth-child(even) td{background:#F7F8FA}
+table.def tbody tr:last-child td{border-bottom:none}
+table.def tbody tr:hover td{background:#F0F4FA}
+table.def td:first-child{font-weight:600;color:var(--navy);white-space:nowrap;width:180px}
+.pill{display:inline-flex;font-size:10px;padding:2px 8px;border-radius:20px;font-weight:500;white-space:nowrap}
+.pill-a{background:#E1F5EE;color:#0F6E56;border:.5px solid #5DCAA5}
+.pill-d{background:#E6F1FB;color:#185FA5;border:.5px solid #85B7EB}
+.env-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:10px;margin:16px 0 24px}
+.env-card{background:#fff;border:1px solid #E2E6ED;border-radius:8px;overflow:hidden}
+.env-cat{background:#F7F8FA;border-bottom:1px solid #E2E6ED;padding:8px 12px;font-size:10px;font-weight:600;color:#7A7A7A;text-transform:uppercase;letter-spacing:.06em}
+.env-rows{display:flex;flex-direction:column}
+.env-row{padding:9px 12px;border-bottom:1px solid #F0F0F0;font-size:12px;line-height:1.5}
+.env-row:last-child{border:none}
+.env-factor{font-weight:600;color:var(--navy);margin-bottom:3px}
+.env-desc{color:#3A3F47}
+</style>
+</head>
+<body>
+<nav class="sidebar"></nav>
+<main class="main">
+<div class="page-cover">
+  <div class="cover-eyebrow">Reference &middot; COFFCO-SRS-001 Introduction Sheet</div>
+  <h1 class="cover-title">Definitions and Acronyms</h1>
+  <p class="cover-sub">38 terms and acronyms used throughout the CoffCo Systems Engineering portfolio</p>
+  <div class="cover-meta">
+    <span><strong>Source:</strong> SRS V3.0 Introduction sheet</span>
+    <span><strong>Terms:</strong> 38</span>
+    <span><strong>Scope:</strong> All portfolio documents</span>
+  </div>
+</div>
+<div class="prose-body">
+<div class="callout"><strong>Scope.</strong> These definitions apply across all CoffCo Systems Engineering documents. Where a term has a specific technical meaning in this programme that differs from common usage, that meaning is stated here and takes precedence.</div>
+<table class="def">
+<thead><tr><th style="width:220px">Term / Acronym</th><th>Definition</th></tr></thead>
+<tbody>
+<tr><td>CONOPS</td><td>Concept of Operations — Vacation Stables document defining the operational context and user needs</td></tr>
+<tr><td>OPSCON</td><td>Operational Concept — CoffCo document defining the system's intended operational behaviour (COFFCO-OC-001)</td></tr>
+<tr><td>SRS</td><td>System Requirements Specification — the requirements baseline document (COFFCO-SRS-001)</td></tr>
+<tr><td>MVP</td><td>Minimum Viable Product — the initial system to be demonstrated to investors</td></tr>
+<tr><td>User</td><td>A hotel guest occupying a Vacation Stables room — the primary operator of the machine</td></tr>
+<tr><td>Operator</td><td>Vacation Stables housekeeping staff responsible for restocking and basic cleaning</td></tr>
+<tr><td>Americano</td><td>A concentrated coffee-based drink produced by diluting extracted coffee with hot water</td></tr>
+<tr><td>Bar</td><td>Unit of pressure; 1 bar ≈ 100 kPa. Standard barista-quality coffee extraction pressure is approximately 1.1 bar</td></tr>
+<tr><td>EU Energy Rating A</td><td>Highest efficiency band under EU Ecodesign and Energy Labelling Regulations</td></tr>
+<tr><td>EMC</td><td>Electromagnetic Compatibility — the ability of the machine to operate without causing interference to other devices</td></tr>
+<tr><td>IEC 60335</td><td>International standard for safety of household and similar electrical appliances</td></tr>
+<tr><td>HACCP</td><td>Hazard Analysis and Critical Control Points — food safety management standard</td></tr>
+<tr><td>GDPR</td><td>General Data Protection Regulation — EU data protection legislation</td></tr>
+<tr><td>MTBF</td><td>Mean Time Between Failures — a measure of system reliability</td></tr>
+<tr><td>MTTR</td><td>Mean Time To Repair — a measure of maintainability</td></tr>
+<tr><td>ALARP</td><td>As Low As Reasonably Practicable — safety risk reduction principle</td></tr>
+<tr><td>BER</td><td>Beyond Economical Repair — threshold at which assembly replacement is preferred over repair</td></tr>
+<tr><td>COTS</td><td>Commercial Off-The-Shelf — standard commercially available component</td></tr>
+<tr><td>EARS</td><td>Easy Approach to Requirements Syntax — structured requirements notation</td></tr>
+<tr><td>FMECA</td><td>Failure Modes, Effects, and Criticality Analysis</td></tr>
+<tr><td>FSM</td><td>Finite State Machine — a model of system behaviour through discrete states</td></tr>
+<tr><td>ILS</td><td>Integrated Logistics Support — structured approach to through-life product support</td></tr>
+<tr><td>IPS</td><td>Integrated Product Support — the complete support plan for the system lifecycle</td></tr>
+<tr><td>LRU</td><td>Line Replaceable Unit — an assembly designed for rapid field replacement</td></tr>
+<tr><td>MCU</td><td>Microcontroller Unit — the main processor on the Control Assembly PCBA</td></tr>
+<tr><td>OTA</td><td>Over-the-Air — wireless firmware or software update mechanism</td></tr>
+<tr><td>PCBA</td><td>Printed Circuit Board Assembly</td></tr>
+<tr><td>PRV</td><td>Pressure Relief Valve — safety device limiting maximum system pressure</td></tr>
+<tr><td>RCM</td><td>Reliability-Centred Maintenance — methodology for optimising maintenance strategy</td></tr>
+<tr><td>RPN</td><td>Risk Priority Number — FMECA severity × occurrence × detectability score</td></tr>
+<tr><td>SDA</td><td>Systems Design Authority — the technical authority for the CoffCo programme</td></tr>
+<tr><td>SOSE</td><td>School of Systems Engineering — academic programme context for this portfolio</td></tr>
+<tr><td>SSM</td><td>Soft Systems Methodology — Checkland (1981) systems thinking framework</td></tr>
+<tr><td>TCO</td><td>Thermal Cutoff — non-resettable hardware overtemperature safety device</td></tr>
+<tr><td>TLS</td><td>Through Life Support — the Design for X theme governing this programme</td></tr>
+<tr><td>VCRM</td><td>Verification and Compliance Requirements Matrix — maps requirements to V&V evidence</td></tr>
+<tr><td>WEEE</td><td>Waste Electrical and Electronic Equipment — EU/UK recycling regulation</td></tr>
+<tr><td>WDT</td><td>Watchdog Timer — hardware circuit that resets the MCU if firmware heartbeat is lost</td></tr>
+<tr><td>Verification — Test</td><td>Physical testing of the system to confirm a requirement is met</td></tr>
+<tr><td>Verification — Demonstration</td><td>Observation of the system performing a function to confirm it is met</td></tr>
+<tr><td>Verification — Analysis</td><td>Review of data, calculations, or models to confirm a requirement is met</td></tr>
+<tr><td>Verification — Inspection</td><td>Visual or physical examination to confirm a requirement is met</td></tr>
+</tbody>
+</table>
+</div>
+</main>
+<script src="assets/nav.js"></script>
+</body>
+</html>

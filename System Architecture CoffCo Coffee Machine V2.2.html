@@ -1,0 +1,1917 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CoffCo — System Architecture</title>
+<style>
+  :root {
+    --navy:     #1C2B4A;
+    --teal:     #0D5C5C;
+    --teal-lt:  #E6F4F4;
+    --teal-md:  #BDE0E0;
+    --blue:     #1A4B8C;
+    --blue-lt:  #E8F0FA;
+    --purple:   #3D2D7A;
+    --purple-lt:#EDE9F7;
+    --amber:    #7A4E0D;
+    --amber-lt: #FDF3E0;
+    --coral:    #7A2A1A;
+    --coral-lt: #FDECEA;
+    --green:    #1A5C2A;
+    --green-lt: #E8F5EC;
+    --mid:      #4A4A4A;
+    --soft:     #7A7A7A;
+    --rule:     #D8DDE6;
+    --bg:       #F7F8FA;
+    --white:    #FFFFFF;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'Calibri', 'Segoe UI', Arial, sans-serif;
+    background: var(--bg);
+    color: var(--mid);
+    font-size: 14px;
+    line-height: 1.6;
+  }
+  .cover {
+    background: var(--navy);
+    color: #fff;
+    padding: 38px 48px 32px;
+    border-bottom: 4px solid var(--teal);
+  }
+  .cover-eyebrow { font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--teal-md); margin-bottom: 8px; }
+  .cover-title   { font-size: 30px; font-weight: 700; line-height: 1.15; margin-bottom: 6px; }
+  .cover-sub     { font-size: 15px; color: #b0bfcf; margin-bottom: 22px; }
+  .cover-meta    { display: flex; gap: 32px; flex-wrap: wrap; }
+  .cover-meta span { font-size: 12px; color: #8aa0b8; }
+  .cover-meta strong { color: #c8d8e8; }
+
+  .body-wrap { max-width: 1100px; margin: 0 auto; padding: 40px 40px 60px; }
+
+  .section-header {
+    display: flex; align-items: center; gap: 14px;
+    margin: 44px 0 20px;
+    padding-bottom: 10px;
+    border-bottom: 2px solid var(--rule);
+  }
+  .section-num {
+    width: 36px; height: 36px; background: var(--navy); color: #fff;
+    font-size: 14px; font-weight: 700; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+  }
+  .section-title { font-size: 18px; font-weight: 700; color: var(--navy); }
+  .section-sub   { font-size: 13px; color: var(--soft); margin-top: 2px; }
+
+  p { margin-bottom: 12px; font-size: 14px; line-height: 1.65; }
+
+  .diagram-wrap {
+    background: var(--white);
+    border: 1px solid var(--rule);
+    border-radius: 10px;
+    padding: 24px;
+    margin: 20px 0;
+    overflow-x: auto;
+  }
+  .diagram-caption {
+    font-size: 12px; color: var(--soft); text-align: center;
+    margin-top: 12px; font-style: italic;
+  }
+
+  /* ASSUMPTION / GAP CARDS */
+  .card-row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin: 16px 0; }
+  .card {
+    border-radius: 8px; padding: 14px 16px;
+    border-left: 4px solid;
+  }
+  .card.assumption { background: var(--amber-lt); border-left-color: var(--amber); }
+  .card.gap        { background: var(--coral-lt); border-left-color: var(--coral); }
+  .card.new-req    { background: var(--green-lt); border-left-color: var(--green); }
+  .card-label {
+    font-size: 10px; font-weight: 700; letter-spacing: 0.12em;
+    text-transform: uppercase; margin-bottom: 5px;
+  }
+  .card.assumption .card-label { color: var(--amber); }
+  .card.gap        .card-label { color: var(--coral); }
+  .card.new-req    .card-label { color: var(--green); }
+  .card-title { font-size: 13px; font-weight: 700; color: var(--navy); margin-bottom: 4px; }
+  .card-desc  { font-size: 12px; color: var(--mid); line-height: 1.5; }
+
+  /* ALLOCATION TABLE */
+  .alloc-table { width: 100%; border-collapse: collapse; font-size: 12px; margin-top: 12px; }
+  .alloc-table th {
+    background: var(--navy); color: #fff; padding: 9px 12px;
+    text-align: left; font-size: 11px; letter-spacing: 0.06em;
+  }
+  .alloc-table td { padding: 8px 12px; border-bottom: 1px solid var(--rule); vertical-align: top; line-height: 1.5; }
+  .alloc-table tr:nth-child(even) td { background: var(--blue-lt); }
+  .alloc-table tr:nth-child(odd)  td { background: var(--white); }
+  .req-tag {
+    display: inline-block; font-size: 10px; font-weight: 700;
+    padding: 1px 6px; border-radius: 8px; margin: 1px 2px;
+    background: var(--navy); color: #fff;
+  }
+
+  .footer {
+    border-top: 1px solid var(--rule); padding: 16px 40px;
+    display: flex; justify-content: space-between;
+    font-size: 11px; color: var(--soft);
+    max-width: 1100px; margin: 0 auto;
+  }
+
+  @media (max-width: 700px) {
+    .card-row { grid-template-columns: 1fr; }
+    .body-wrap { padding: 24px 20px 48px; }
+    .cover { padding: 28px 24px; }
+  }
+
+  /* MBSE additions */
+  .principle-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 12px; margin-top: 8px; }
+  .principle-card {
+    background: var(--white); border-radius: 8px; padding: 14px 16px;
+    border-top: 3px solid var(--teal); border: 1px solid var(--rule);
+    border-top: 3px solid var(--teal);
+  }
+  .principle-num { font-size: 10px; font-weight: 700; color: var(--teal); letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 4px; }
+  .principle-title { font-size: 13px; font-weight: 700; color: var(--navy); margin-bottom: 5px; }
+  .principle-desc { font-size: 12px; color: var(--mid); line-height: 1.5; }
+
+  .trade-table { width: 100%; border-collapse: collapse; font-size: 12px; margin-top: 10px; }
+  .trade-table th { background: var(--navy); color: #fff; padding: 9px 12px; text-align: left; font-size: 11px; letter-spacing: 0.06em; }
+  .trade-table td { padding: 8px 12px; border-bottom: 1px solid var(--rule); vertical-align: top; line-height: 1.5; }
+  .trade-table tr:nth-child(even) td { background: var(--blue-lt); }
+  .trade-table tr:nth-child(odd) td { background: var(--white); }
+  .trade-sel { display: inline-block; font-size: 10px; font-weight: 700; padding: 2px 8px; border-radius: 8px; background: var(--teal); color: #fff; }
+  .trade-rej { display: inline-block; font-size: 10px; font-weight: 700; padding: 2px 8px; border-radius: 8px; background: var(--rule); color: var(--soft); }
+
+  .concern-table { width: 100%; border-collapse: collapse; font-size: 12px; margin-top: 10px; }
+  .concern-table th { background: var(--purple); color: #fff; padding: 9px 12px; text-align: left; font-size: 11px; letter-spacing: 0.06em; }
+  .concern-table td { padding: 8px 12px; border-bottom: 1px solid var(--rule); vertical-align: top; line-height: 1.5; }
+  .concern-table tr:nth-child(even) td { background: var(--purple-lt); }
+  .concern-table tr:nth-child(odd) td { background: var(--white); }
+  .view-tag { display: inline-block; font-size: 10px; font-weight: 700; padding: 1px 7px; border-radius: 8px; margin: 1px; background: var(--navy); color: #fff; }
+
+  @media (max-width: 700px) { .principle-grid { grid-template-columns: 1fr; } }
+
+
+  /* Additional diagram styles */
+  .diagram-wrap {
+    background: #111418;
+    border: 1px solid #333;
+    border-radius: 10px;
+    padding: 28px 24px 20px;
+    margin: 20px 0;
+    overflow-x: auto;
+  }
+  .diagram-wrap svg text { font-family: 'Calibri', 'Segoe UI', Arial, sans-serif; }
+  .diagram-caption-alt {
+    font-size: 12px; color: var(--soft); text-align: center;
+    margin-top: 12px; font-style: italic;
+  }
+  .align-note {
+    background: var(--amber-lt); border-left: 4px solid var(--amber);
+    border-radius: 0 8px 8px 0; padding: 12px 16px; margin: 12px 0;
+    font-size: 13px; color: var(--mid);
+  }
+  .align-note strong { color: var(--amber); }
+
+</style>
+</head>
+<body>
+
+<div class="cover">
+  <div class="cover-eyebrow">CoffCo · Investor MVP Deck · Deliverable 3 of 10 · MBSE Edition</div>
+  <div class="cover-title">System Architecture</div>
+  <div class="cover-sub">Logical and physical architecture — CoffCo in-room hotel coffee machine MVP · Vacation Stables partnership</div>
+  <div class="cover-meta">
+    <span><strong>Prepared by:</strong> School of Systems Engineering (secondment)</span>
+    <span><strong>Reference:</strong> COFFCO-ARCH-001 v2.2</span>
+    <span><strong>Baseline SRS:</strong> COFFCO-SRS-001</span>
+    <span><strong>Classification:</strong> Investor Confidential</span>
+  </div>
+</div>
+
+<div class="body-wrap">
+
+<!-- ══════════════════════════════════════════════════════
+     SECTION 1 — APPROACH
+══════════════════════════════════════════════════════ -->
+<div class="section-header">
+  <div class="section-num">1</div>
+  <div>
+    <div class="section-title">Architectural approach</div>
+    <div class="section-sub">How the architecture has been developed and what it represents</div>
+  </div>
+</div>
+
+<p>This document is version 2.1 of COFFCO-ARCH-001 (updated Issue 2.1 — Safety Engineering review; adds SRS 3.10&#8211;3.13 (safety provisions in SRS) to requirements allocation; updates SS-2, SS-3, SS-4, SS-6 function descriptions; adds SAFE-SHUTDOWN and FLUID-EMPTY states), updated to meet INCOSE Z8 (System Architecture) and Z9 (MBSE) requirements. It provides seven formally connected view types — logical, physical, structuring principles, options/trade, behavioural, operational, and requirements traceability — addressing the concerns of all identified stakeholders per the Z9 MBSE ontology. <p>The architecture is developed in two stages. The <strong>logical architecture</strong> decomposes the system into functional subsystems and defines the flows between them — entirely technology-agnostic. It answers the question: what does the system need to do, and how do those functions relate? The <strong>physical architecture</strong> then allocates those logical functions to physical elements, making explicit design decisions about how the system will be realised — without over-constraining the detail design.</p>
+
+<p>Where the architecture has exposed gaps in the requirement set, new requirements have been identified and flagged. Where design decisions have been made that are not mandated by the SRS, they are recorded as architectural assumptions. Both are tracked below and will be used to mature the SRS.</p>
+
+
+<!-- ══════════════════════════════════════════════════════
+     SECTION 2 — LOGICAL ARCHITECTURE
+══════════════════════════════════════════════════════ -->
+<div class="section-header">
+  <div class="section-num">2</div>
+  <div>
+    <div class="section-title">Logical architecture</div>
+    <div class="section-sub">Functional decomposition — technology-agnostic subsystems and their interfaces</div>
+  </div>
+</div>
+
+<p>The logical architecture decomposes the CoffCo system into six logical subsystems. Each subsystem groups a set of related functions from the SRS. The flows between them represent logical data, material, or energy exchanges — not physical connections.</p>
+
+<div class="diagram-wrap">
+<svg viewBox="0 0 1020 640" width="100%" xmlns="http://www.w3.org/2000/svg" font-family="Calibri, Segoe UI, Arial, sans-serif">
+
+  <!-- BACKGROUND -->
+  <rect width="1020" height="640" fill="#F7F8FA" rx="8"/>
+
+  <!-- TITLE -->
+  <text x="510" y="28" text-anchor="middle" font-size="13" font-weight="700" fill="#1C2B4A">CoffCo logical architecture — functional subsystem decomposition</text>
+
+  <!-- ── EXTERNAL ACTORS (left + right) ── -->
+  <!-- User -->
+  <rect x="20" y="180" width="110" height="56" rx="8" fill="#EDE9F7" stroke="#3D2D7A" stroke-width="1.5"/>
+  <text x="75" y="203" text-anchor="middle" font-size="11" font-weight="700" fill="#3D2D7A">Guest / User</text>
+  <text x="75" y="218" text-anchor="middle" font-size="10" fill="#3D2D7A">Initiates brew</text>
+  <text x="75" y="231" text-anchor="middle" font-size="10" fill="#3D2D7A">Receives beverage</text>
+
+  <!-- Housekeeping -->
+  <rect x="20" y="370" width="110" height="56" rx="8" fill="#EDE9F7" stroke="#3D2D7A" stroke-width="1.5"/>
+  <text x="75" y="393" text-anchor="middle" font-size="11" font-weight="700" fill="#3D2D7A">Housekeeping</text>
+  <text x="75" y="408" text-anchor="middle" font-size="10" fill="#3D2D7A">Restocks</text>
+  <text x="75" y="421" text-anchor="middle" font-size="10" fill="#3D2D7A">consumables</text>
+
+  <!-- External maintenance system -->
+  <rect x="890" y="270" width="110" height="56" rx="8" fill="#EDE9F7" stroke="#3D2D7A" stroke-width="1.5"/>
+  <text x="945" y="293" text-anchor="middle" font-size="11" font-weight="700" fill="#3D2D7A">Maint. System</text>
+  <text x="945" y="308" text-anchor="middle" font-size="10" fill="#3D2D7A">Receives status</text>
+  <text x="945" y="321" text-anchor="middle" font-size="10" fill="#3D2D7A">wirelessly</text>
+
+  <!-- Power supply -->
+  <rect x="20" y="540" width="110" height="44" rx="8" fill="#EDE9F7" stroke="#3D2D7A" stroke-width="1.5"/>
+  <text x="75" y="561" text-anchor="middle" font-size="11" font-weight="700" fill="#3D2D7A">Mains Power</text>
+  <text x="75" y="576" text-anchor="middle" font-size="10" fill="#3D2D7A">UK / EU / US</text>
+
+  <!-- ── SUBSYSTEM 1: USER INTERFACE SUBSYSTEM ── -->
+  <rect x="160" y="140" width="180" height="130" rx="10" fill="#E6F4F4" stroke="#0D5C5C" stroke-width="2"/>
+  <rect x="160" y="140" width="180" height="24" rx="10" fill="#0D5C5C"/>
+  <rect x="160" y="152" width="180" height="12" fill="#0D5C5C"/>
+  <text x="250" y="157" text-anchor="middle" font-size="11" font-weight="700" fill="white">SS-1 · User Interface</text>
+  <text x="170" y="182" font-size="10" fill="#0D5C5C">• Accept user drink selection</text>
+  <text x="170" y="196" font-size="10" fill="#0D5C5C">• Accept volume preference</text>
+  <text x="170" y="210" font-size="10" fill="#0D5C5C">• Display system status</text>
+  <text x="170" y="224" font-size="10" fill="#0D5C5C">• Operable without instruction</text>
+  <text x="170" y="238" font-size="10" fill="#0D5C5C">• Legible in low light</text>
+  <text x="166" y="260" font-size="9" fill="#7A7A7A" font-style="italic">SRS: 1.3, 1.7, 2.1</text>
+
+  <!-- ── SUBSYSTEM 2: BREW CONTROL SUBSYSTEM ── -->
+  <rect x="400" y="80" width="200" height="160" rx="10" fill="#E8F0FA" stroke="#1A4B8C" stroke-width="2"/>
+  <rect x="400" y="80" width="200" height="24" rx="10" fill="#1A4B8C"/>
+  <rect x="400" y="92" width="200" height="12" fill="#1A4B8C"/>
+  <text x="500" y="97" text-anchor="middle" font-size="11" font-weight="700" fill="white">SS-2 · Brew Control</text>
+  <text x="410" y="120" font-size="10" fill="#1A4B8C">• Manage brew cycle sequence</text>
+  <text x="410" y="134" font-size="10" fill="#1A4B8C">• Control extraction pressure</text>
+  <text x="410" y="148" font-size="10" fill="#1A4B8C">• Control brew temperature</text>
+  <text x="410" y="162" font-size="10" fill="#1A4B8C">• Control dispense volume</text>
+  <text x="410" y="176" font-size="10" fill="#1A4B8C">• Manage dispense timing</text>
+  <text x="410" y="190" font-size="10" fill="#1A4B8C">• Compensate water hardness</text>
+  <text x="410" y="204" font-size="10" fill="#C00000">• Fluid level interlock (SAF-02)</text>
+  <text x="410" y="218" font-size="10" fill="#C00000">• Pressure monitoring — PRV backstop</text>
+  <text x="410" y="232" font-size="10" fill="#C00000">• Descale cycle scheduling (SAF-16)</text>
+  <text x="406" y="250" font-size="9" fill="#7A7A7A" font-style="italic">SRS: 1.1,1.2,1.3,1.5,1.6,4.1–4.7,4.11 + SAF-02,SAF-16</text>
+
+  <!-- ── SUBSYSTEM 3: FLUID MANAGEMENT SUBSYSTEM ── -->
+  <rect x="400" y="310" width="200" height="190" rx="10" fill="#FDF3E0" stroke="#7A4E0D" stroke-width="2"/>
+  <rect x="400" y="310" width="200" height="24" rx="10" fill="#7A4E0D"/>
+  <rect x="400" y="322" width="200" height="12" fill="#7A4E0D"/>
+  <text x="500" y="327" text-anchor="middle" font-size="11" font-weight="700" fill="white">SS-3 · Fluid Management</text>
+  <text x="410" y="352" font-size="10" fill="#7A4E0D">• Store and supply water</text>
+  <text x="410" y="366" font-size="10" fill="#7A4E0D">• Store and supply consumable</text>
+  <text x="410" y="380" font-size="10" fill="#7A4E0D">• Contain waste fluid / grounds</text>
+  <text x="410" y="394" font-size="10" fill="#7A4E0D">• Indicate low consumable state</text>
+  <text x="410" y="408" font-size="10" fill="#7A4E0D">• Drip tray / spillage containment</text>
+  <text x="410" y="422" font-size="10" fill="#C00000">• Drip tray full sensor (SAF-15)</text>
+  <text x="410" y="436" font-size="10" fill="#C00000">• Consumable loading interlock (SAF-17)</text>
+  <text x="410" y="450" font-size="10" fill="#C00000">• PRV — pressure relief valve (SAF-12)</text>
+  <text x="406" y="490" font-size="9" fill="#7A7A7A" font-style="italic">SRS: 1.4, 1.7, 2.5, 2.7, 3.7 + SAF-12, SAF-15, SAF-17</text>
+
+  <!-- ── SUBSYSTEM 4: POWER MANAGEMENT SUBSYSTEM ── -->
+  <rect x="160" y="460" width="180" height="130" rx="10" fill="#E8F5EC" stroke="#1A5C2A" stroke-width="2"/>
+  <rect x="160" y="460" width="180" height="24" rx="10" fill="#1A5C2A"/>
+  <rect x="160" y="472" width="180" height="12" fill="#1A5C2A"/>
+  <text x="250" y="477" text-anchor="middle" font-size="11" font-weight="700" fill="white">SS-4 · Power Management</text>
+  <text x="170" y="502" font-size="10" fill="#1A5C2A">• Accept 230V/50Hz (UK/EU)</text>
+  <text x="170" y="516" font-size="10" fill="#1A5C2A">• Accept 110V/60Hz (US)</text>
+  <text x="170" y="530" font-size="10" fill="#1A5C2A">• Configurable connector I/F</text>
+  <text x="170" y="544" font-size="10" fill="#1A5C2A">• Distribute regulated power</text>
+  <text x="170" y="558" font-size="10" fill="#1A5C2A">• Provide electrical isolation</text>
+  <text x="170" y="572" font-size="10" fill="#C00000">• Mains input fuse (SAF-13)</text>
+  <text x="170" y="586" font-size="10" fill="#C00000">• Surge protection MOV/TVS (SAF-05)</text>
+  <text x="166" y="604" font-size="9" fill="#7A7A7A" font-style="italic">SRS: 2.3, 2.4, 2.6, 3.5, 3.11, 4.8 + SAF-05, SAF-13</text>
+
+  <!-- ── SUBSYSTEM 5: MONITORING AND COMMS SUBSYSTEM ── -->
+  <rect x="650" y="200" width="200" height="160" rx="10" fill="#EDE9F7" stroke="#3D2D7A" stroke-width="2"/>
+  <rect x="650" y="200" width="200" height="24" rx="10" fill="#3D2D7A"/>
+  <rect x="650" y="212" width="200" height="12" fill="#3D2D7A"/>
+  <text x="750" y="217" text-anchor="middle" font-size="11" font-weight="700" fill="white">SS-5 · Monitoring &amp; Comms</text>
+  <text x="660" y="242" font-size="10" fill="#3D2D7A">• Monitor system health / faults</text>
+  <text x="660" y="256" font-size="10" fill="#3D2D7A">• Monitor consumable levels</text>
+  <text x="660" y="270" font-size="10" fill="#3D2D7A">• Transmit maintenance status</text>
+  <text x="660" y="284" font-size="10" fill="#3D2D7A">• Log operational data</text>
+  <text x="660" y="298" font-size="10" fill="#3D2D7A">• Support remote diagnostics</text>
+  <text x="656" y="348" font-size="9" fill="#7A7A7A" font-style="italic">SRS: 1.7, 1.9, 3.3, 3.9</text>
+
+  <!-- ── SUBSYSTEM 6: STRUCTURAL / SAFETY SUBSYSTEM ── -->
+  <rect x="650" y="420" width="200" height="150" rx="10" fill="#FDECEA" stroke="#7A2A1A" stroke-width="2"/>
+  <rect x="650" y="420" width="200" height="24" rx="10" fill="#7A2A1A"/>
+  <rect x="650" y="432" width="200" height="12" fill="#7A2A1A"/>
+  <text x="750" y="437" text-anchor="middle" font-size="11" font-weight="700" fill="white">SS-6 · Structure &amp; Safety</text>
+  <text x="660" y="462" font-size="10" fill="#7A2A1A">• Enclose all heated surfaces</text>
+  <text x="660" y="476" font-size="10" fill="#7A2A1A">• Enclose all live electrical parts</text>
+  <text x="660" y="490" font-size="10" fill="#7A2A1A">• Provide anti-theft attachment</text>
+  <text x="660" y="504" font-size="10" fill="#7A2A1A">• Provide recycled-content casing</text>
+  <text x="660" y="518" font-size="10" fill="#7A2A1A">• Conform to colour scheme</text>
+  <text x="660" y="532" font-size="10" fill="#7A2A1A">• Meet mass / footprint limits</text>
+  <text x="660" y="546" font-size="10" fill="#C00000">• IPX2 drip-proof rating (SAF-14)</text>
+  <text x="660" y="560" font-size="10" fill="#C00000">• Anti-tip bracket provision (SAF-10)</text>
+  <text x="660" y="574" font-size="10" fill="#C00000">• Surface temp ≤48°C (SAF-11)</text>
+  <text x="660" y="588" font-size="10" fill="#C00000">• Chassis thermistor for FW-SF-07</text>
+  <text x="656" y="608" font-size="9" fill="#7A7A7A" font-style="italic">SRS: 1.8, 3.2, 3.4, 3.6, 3.10, 3.11, 4.10 + SAF-10, SAF-11, SAF-14</text>
+
+  <!-- ── FLOW ARROWS ── -->
+  <defs>
+    <marker id="ah" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M1 1L9 5L1 9" fill="none" stroke="#1C2B4A" stroke-width="1.5" stroke-linecap="round"/>
+    </marker>
+    <marker id="ah-grn" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M1 1L9 5L1 9" fill="none" stroke="#1A5C2A" stroke-width="1.5" stroke-linecap="round"/>
+    </marker>
+    <marker id="ah-pur" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M1 1L9 5L1 9" fill="none" stroke="#3D2D7A" stroke-width="1.5" stroke-linecap="round"/>
+    </marker>
+  </defs>
+
+  <!-- User → SS-1 (selection) -->
+  <line x1="130" y1="208" x2="158" y2="208" stroke="#1C2B4A" stroke-width="1.5" marker-end="url(#ah)"/>
+  <text x="133" y="202" font-size="9" fill="#1C2B4A">selection</text>
+
+  <!-- SS-1 → User (status display) -->
+  <line x1="158" y1="222" x2="130" y2="222" stroke="#1C2B4A" stroke-width="1.5" marker-end="url(#ah)"/>
+  <text x="133" y="236" font-size="9" fill="#1C2B4A">status</text>
+
+  <!-- SS-1 → SS-2 (brew command) -->
+  <line x1="340" y1="185" x2="398" y2="160" stroke="#1C2B4A" stroke-width="1.5" marker-end="url(#ah)"/>
+  <text x="348" y="178" font-size="9" fill="#1C2B4A">brew cmd</text>
+
+  <!-- SS-2 → SS-3 (water/consumable demand) -->
+  <line x1="500" y1="242" x2="500" y2="308" stroke="#7A4E0D" stroke-width="1.5" marker-end="url(#ah)"/>
+  <text x="505" y="278" font-size="9" fill="#7A4E0D">demand</text>
+
+  <!-- SS-3 → SS-2 (fluid supply) -->
+  <line x1="485" y1="308" x2="485" y2="242" stroke="#7A4E0D" stroke-width="1.5" marker-end="url(#ah)"/>
+  <text x="448" y="278" font-size="9" fill="#7A4E0D">supply</text>
+
+  <!-- SS-2 → dispensing outlet (beverage out) -->
+  <line x1="500" y1="80" x2="500" y2="60" stroke="#0D5C5C" stroke-width="1.5" marker-end="url(#ah)"/>
+  <rect x="420" y="44" width="160" height="18" rx="6" fill="#0D5C5C" opacity="0.15"/>
+  <text x="500" y="56" text-anchor="middle" font-size="10" fill="#0D5C5C" font-weight="700">Beverage output to mug</text>
+
+  <!-- Housekeeping → SS-3 (replenishment) -->
+  <line x1="130" y1="398" x2="398" y2="398" stroke="#7A4E0D" stroke-width="1.5" stroke-dasharray="5 3" marker-end="url(#ah)"/>
+  <text x="200" y="392" font-size="9" fill="#7A4E0D">replenishment</text>
+
+  <!-- SS-3 → SS-5 (level data) -->
+  <line x1="600" y1="385" x2="648" y2="310" stroke="#3D2D7A" stroke-width="1.5" marker-end="url(#ah-pur)"/>
+  <text x="608" y="348" font-size="9" fill="#3D2D7A">level data</text>
+
+  <!-- SS-2 → SS-5 (health/fault data) -->
+  <line x1="600" y1="160" x2="648" y2="240" stroke="#3D2D7A" stroke-width="1.5" marker-end="url(#ah-pur)"/>
+  <text x="605" y="200" font-size="9" fill="#3D2D7A">health data</text>
+
+  <!-- SS-5 → External maint system (wireless) -->
+  <line x1="850" y1="298" x2="888" y2="298" stroke="#3D2D7A" stroke-width="1.5" stroke-dasharray="5 3" marker-end="url(#ah-pur)"/>
+  <text x="852" y="292" font-size="9" fill="#3D2D7A">wireless</text>
+
+  <!-- SS-5 → SS-1 (status to display) -->
+  <line x1="750" y1="200" x2="310" y2="190" stroke="#3D2D7A" stroke-width="1" stroke-dasharray="4 3" marker-end="url(#ah-pur)"/>
+  <text x="520" y="188" font-size="9" fill="#3D2D7A">status signal</text>
+
+  <!-- Mains → SS-4 (power in) -->
+  <line x1="130" y1="562" x2="158" y2="530" stroke="#1A5C2A" stroke-width="1.5" marker-end="url(#ah-grn)"/>
+  <text x="128" y="550" font-size="9" fill="#1A5C2A">AC in</text>
+
+  <!-- SS-4 → SS-2 (regulated power) -->
+  <line x1="290" y1="490" x2="398" y2="210" stroke="#1A5C2A" stroke-width="1" stroke-dasharray="4 3" marker-end="url(#ah-grn)"/>
+  <text x="305" y="380" font-size="9" fill="#1A5C2A">DC power</text>
+
+  <!-- SS-4 → SS-5 (regulated power) -->
+  <line x1="340" y1="510" x2="648" y2="360" stroke="#1A5C2A" stroke-width="1" stroke-dasharray="4 3" marker-end="url(#ah-grn)"/>
+
+  <!-- SS-6 encloses/wraps - shown as annotation -->
+  <rect x="148" y="68" width="714" height="550" rx="12" fill="none" stroke="#7A2A1A" stroke-width="1" stroke-dasharray="8 5" opacity="0.4"/>
+  <text x="156" y="84" font-size="10" fill="#7A2A1A" font-style="italic">SS-6 Structure &amp; Safety — physical envelope governing all subsystems</text>
+
+  <!-- LEGEND -->
+  <rect x="20" y="60" width="130" height="80" rx="6" fill="white" stroke="#D8DDE6" stroke-width="1"/>
+  <text x="28" y="76" font-size="10" font-weight="700" fill="#1C2B4A">Legend</text>
+  <line x1="28" y1="88" x2="58" y2="88" stroke="#1C2B4A" stroke-width="1.5" marker-end="url(#ah)"/>
+  <text x="64" y="92" font-size="9" fill="#1C2B4A">Material / data flow</text>
+  <line x1="28" y1="104" x2="58" y2="104" stroke="#1C2B4A" stroke-width="1.5" stroke-dasharray="5 3" marker-end="url(#ah)"/>
+  <text x="64" y="108" font-size="9" fill="#1C2B4A">Wireless / periodic</text>
+  <rect x="28" y="116" width="16" height="10" rx="3" fill="#E6F4F4" stroke="#0D5C5C" stroke-width="1"/>
+  <text x="50" y="125" font-size="9" fill="#1C2B4A">Logical subsystem</text>
+</svg>
+<div class="diagram-caption">Figure 1 — CoffCo logical architecture. Six logical subsystems derived from COFFCO-SRS-001. Technology-agnostic — flows represent logical exchanges, not physical connections.</div>
+</div>
+
+
+<!-- ══════════════════════════════════════════════════════
+     SECTION 3 — PHYSICAL ARCHITECTURE
+══════════════════════════════════════════════════════ -->
+<div class="section-header">
+  <div class="section-num">3</div>
+  <div>
+    <div class="section-title">Physical architecture</div>
+    <div class="section-sub">Allocation of logical functions to physical elements — with architectural assumptions stated</div>
+  </div>
+</div>
+
+<p>The physical architecture allocates the six logical subsystems to physical elements. Design decisions are made at this level — but only to the extent necessary to define the system's physical decomposition. Detail design (component selection, material grades, circuit topology) remains deferred. Assumptions made here are recorded explicitly.</p>
+
+<div class="diagram-wrap">
+<svg viewBox="0 0 1020 700" width="100%" xmlns="http://www.w3.org/2000/svg" font-family="Calibri, Segoe UI, Arial, sans-serif">
+  <rect width="1020" height="700" fill="#F7F8FA" rx="8"/>
+  <text x="510" y="26" text-anchor="middle" font-size="13" font-weight="700" fill="#1C2B4A">CoffCo physical architecture — element decomposition and interfaces</text>
+
+  <defs>
+    <marker id="ph" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M1 1L9 5L1 9" fill="none" stroke="#4A4A4A" stroke-width="1.5" stroke-linecap="round"/>
+    </marker>
+    <marker id="ph-w" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M1 1L9 5L1 9" fill="none" stroke="#3D2D7A" stroke-width="1.5" stroke-linecap="round"/>
+    </marker>
+    <marker id="ph-p" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M1 1L9 5L1 9" fill="none" stroke="#1A5C2A" stroke-width="1.5" stroke-linecap="round"/>
+    </marker>
+  </defs>
+
+  <!-- OUTER ENCLOSURE -->
+  <rect x="18" y="44" width="984" height="630" rx="14" fill="none" stroke="#7A2A1A" stroke-width="2" stroke-dasharray="10 5"/>
+  <text x="30" y="62" font-size="11" font-weight="700" fill="#7A2A1A">Physical enclosure — recycled-content polymer housing, ≥80% black, ≤300×300×300mm, ≤10kg (SS-6)</text>
+
+  <!-- ── CONTROL ASSEMBLY (centre-top) ── -->
+  <rect x="360" y="78" width="300" height="170" rx="10" fill="#E8F0FA" stroke="#1A4B8C" stroke-width="2"/>
+  <rect x="360" y="78" width="300" height="22" rx="10" fill="#1A4B8C"/>
+  <rect x="360" y="88" width="300" height="12" fill="#1A4B8C"/>
+  <text x="510" y="93" text-anchor="middle" font-size="11" font-weight="700" fill="white">Control Assembly  [SS-2 + SS-5]</text>
+  <text x="370" y="116" font-size="10" fill="#1A4B8C">• Brew sequencer — manages pressure, temp,</text>
+  <text x="370" y="130" font-size="10" fill="#1A4B8C">  volume and timing of brew cycle</text>
+  <text x="370" y="144" font-size="10" fill="#1A4B8C">• Temperature regulation — maintains 60–90°C</text>
+  <text x="370" y="158" font-size="10" fill="#1A4B8C">• Pressure regulation — maintains 0.9–1.3 bar</text>
+  <text x="370" y="172" font-size="10" fill="#1A4B8C">• System health monitor — fault detection</text>
+  <text x="370" y="186" font-size="10" fill="#1A4B8C">• Wireless comms module — maintenance Tx</text>
+  <text x="370" y="200" font-size="10" fill="#1A4B8C">• Water hardness compensation logic</text>
+  <text x="366" y="236" font-size="9" fill="#7A7A7A" font-style="italic">Assumption A-01: single control assembly; technology TBD</text>
+
+  <!-- ── USER INTERFACE PANEL (top-left) ── -->
+  <rect x="60" y="78" width="270" height="140" rx="10" fill="#E6F4F4" stroke="#0D5C5C" stroke-width="2"/>
+  <rect x="60" y="78" width="270" height="22" rx="10" fill="#0D5C5C"/>
+  <rect x="60" y="88" width="270" height="12" fill="#0D5C5C"/>
+  <text x="195" y="93" text-anchor="middle" font-size="11" font-weight="700" fill="white">User Interface Panel  [SS-1]</text>
+  <text x="70" y="116" font-size="10" fill="#0D5C5C">• Drink selection control</text>
+  <text x="70" y="130" font-size="10" fill="#0D5C5C">• Volume selection control</text>
+  <text x="70" y="144" font-size="10" fill="#0D5C5C">• Status indicator (consumables / fault)</text>
+  <text x="70" y="158" font-size="10" fill="#0D5C5C">• Legible in low-light conditions</text>
+  <text x="70" y="172" font-size="10" fill="#0D5C5C">• No instruction needed for operation</text>
+  <text x="66" y="204" font-size="9" fill="#7A7A7A" font-style="italic">Assumption A-02: panel-mounted, front-facing</text>
+
+  <!-- ── THERMAL ASSEMBLY (centre) ── -->
+  <rect x="360" y="278" width="300" height="150" rx="10" fill="#FDF3E0" stroke="#7A4E0D" stroke-width="2"/>
+  <rect x="360" y="278" width="300" height="22" rx="10" fill="#7A4E0D"/>
+  <rect x="360" y="288" width="300" height="12" fill="#7A4E0D"/>
+  <text x="510" y="293" text-anchor="middle" font-size="11" font-weight="700" fill="white">Thermal Assembly  [SS-2 part + SS-3 part]</text>
+  <text x="370" y="316" font-size="10" fill="#7A4E0D">• Heating element — water and milk heating</text>
+  <text x="370" y="330" font-size="10" fill="#7A4E0D">• Insulated fluid pathway — burn prevention</text>
+  <text x="370" y="344" font-size="10" fill="#7A4E0D">• Frother mechanism — milk aeration</text>
+  <text x="370" y="358" font-size="10" fill="#7A4E0D">• Dispensing outlet — mug-clearance ≥105mm</text>
+  <text x="370" y="372" font-size="10" fill="#7A4E0D">• Thermal cutout — max temp protection</text>
+  <text x="366" y="416" font-size="9" fill="#7A7A7A" font-style="italic">Assumption A-03: unified thermal path; no exposed elements</text>
+
+  <!-- ── FLUID STORE (left) ── -->
+  <rect x="60" y="258" width="270" height="170" rx="10" fill="#FDF3E0" stroke="#7A4E0D" stroke-width="2"/>
+  <rect x="60" y="258" width="270" height="22" rx="10" fill="#7A4E0D"/>
+  <rect x="60" y="268" width="270" height="12" fill="#7A4E0D"/>
+  <text x="195" y="273" text-anchor="middle" font-size="11" font-weight="700" fill="white">Fluid Store  [SS-3]</text>
+  <text x="70" y="296" font-size="10" fill="#7A4E0D">• Water reservoir — removable, cleanable</text>
+  <text x="70" y="310" font-size="10" fill="#7A4E0D">• Consumable store — ≥10 brew capacity</text>
+  <text x="70" y="324" font-size="10" fill="#7A4E0D">• Waste collection tray — recyclable waste</text>
+  <text x="70" y="338" font-size="10" fill="#7A4E0D">• Drip tray — spillage containment</text>
+  <text x="70" y="352" font-size="10" fill="#7A4E0D">• Level sensors — feeds SS-5 monitor</text>
+  <text x="70" y="366" font-size="10" fill="#7A4E0D">• Tool-free housekeeping access</text>
+  <text x="66" y="416" font-size="9" fill="#7A7A7A" font-style="italic">Assumption A-04: top or front-loading access for housekeeping</text>
+
+  <!-- ── POWER SUPPLY UNIT (bottom-left) ── -->
+  <rect x="60" y="458" width="270" height="150" rx="10" fill="#E8F5EC" stroke="#1A5C2A" stroke-width="2"/>
+  <rect x="60" y="458" width="270" height="22" rx="10" fill="#1A5C2A"/>
+  <rect x="60" y="468" width="270" height="12" fill="#1A5C2A"/>
+  <text x="195" y="473" text-anchor="middle" font-size="11" font-weight="700" fill="white">Power Supply Unit  [SS-4]</text>
+  <text x="70" y="496" font-size="10" fill="#1A5C2A">• Universal AC input — 110–240V, 50/60Hz</text>
+  <text x="70" y="510" font-size="10" fill="#1A5C2A">• Interchangeable connector module</text>
+  <text x="70" y="524" font-size="10" fill="#1A5C2A">• Regulated DC output rails</text>
+  <text x="70" y="538" font-size="10" fill="#1A5C2A">• Electrical isolation — IEC 60335</text>
+  <text x="70" y="552" font-size="10" fill="#1A5C2A">• EMC filtering — EN 55014</text>
+  <text x="70" y="566" font-size="10" fill="#1A5C2A">• Energy efficiency — EU rating A</text>
+  <text x="66" y="596" font-size="9" fill="#7A7A7A" font-style="italic">Assumption A-05: universal PSU, interchangeable plug module</text>
+
+  <!-- ── STRUCTURAL CHASSIS (bottom-right) ── -->
+  <rect x="690" y="458" width="290" height="150" rx="10" fill="#FDECEA" stroke="#7A2A1A" stroke-width="2"/>
+  <rect x="690" y="458" width="290" height="22" rx="10" fill="#7A2A1A"/>
+  <rect x="690" y="468" width="290" height="12" fill="#7A2A1A"/>
+  <text x="835" y="473" text-anchor="middle" font-size="11" font-weight="700" fill="white">Structural Chassis  [SS-6]</text>
+  <text x="700" y="496" font-size="10" fill="#7A2A1A">• Load-bearing internal frame</text>
+  <text x="700" y="510" font-size="10" fill="#7A2A1A">• Anti-theft anchor point / cable lug</text>
+  <text x="700" y="524" font-size="10" fill="#7A2A1A">• Outer casing — ≥50% recycled polymer</text>
+  <text x="700" y="538" font-size="10" fill="#7A2A1A">• Thermal / electrical shielding panels</text>
+  <text x="700" y="552" font-size="10" fill="#7A2A1A">• All connectors / seams electrically safe</text>
+  <text x="696" y="596" font-size="9" fill="#7A7A7A" font-style="italic">Assumption A-06: cable lug as anti-theft; bolt-in frame</text>
+
+  <!-- ── EXTERNAL INTERFACES (right) ── -->
+  <rect x="690" y="78" width="290" height="350" rx="10" fill="white" stroke="#D8DDE6" stroke-width="1.5"/>
+  <rect x="690" y="78" width="290" height="22" rx="10" fill="#4A4A4A"/>
+  <rect x="690" y="88" width="290" height="12" fill="#4A4A4A"/>
+  <text x="835" y="93" text-anchor="middle" font-size="11" font-weight="700" fill="white">External Interfaces</text>
+
+  <rect x="700" y="108" width="270" height="50" rx="6" fill="#EDE9F7" stroke="#3D2D7A" stroke-width="1"/>
+  <text x="835" y="125" text-anchor="middle" font-size="10" font-weight="700" fill="#3D2D7A">Mains power inlet</text>
+  <text x="835" y="140" text-anchor="middle" font-size="10" fill="#3D2D7A">Interchangeable plug module (BS1363 /</text>
+  <text x="835" y="153" text-anchor="middle" font-size="10" fill="#3D2D7A">NEMA 5-15 / CEE 7-16 + regional variants)</text>
+
+  <rect x="700" y="168" width="270" height="44" rx="6" fill="#EDE9F7" stroke="#3D2D7A" stroke-width="1"/>
+  <text x="835" y="185" text-anchor="middle" font-size="10" font-weight="700" fill="#3D2D7A">Wireless maintenance interface</text>
+  <text x="835" y="200" text-anchor="middle" font-size="10" fill="#3D2D7A">Tx maintenance status to hotel system</text>
+  <text x="835" y="210" text-anchor="middle" font-size="9" fill="#7A7A7A" font-style="italic">(technology TBD — SRS 1.9)</text>
+
+  <rect x="700" y="222" width="270" height="44" rx="6" fill="#EDE9F7" stroke="#3D2D7A" stroke-width="1"/>
+  <text x="835" y="239" text-anchor="middle" font-size="10" font-weight="700" fill="#3D2D7A">Beverage dispensing outlet</text>
+  <text x="835" y="254" text-anchor="middle" font-size="10" fill="#3D2D7A">≥105mm clearance; 100mm mug diameter</text>
+  <text x="835" y="264" text-anchor="middle" font-size="9" fill="#7A7A7A" font-style="italic">(SRS 2.2, 2.7)</text>
+
+  <rect x="700" y="276" width="270" height="44" rx="6" fill="#EDE9F7" stroke="#3D2D7A" stroke-width="1"/>
+  <text x="835" y="293" text-anchor="middle" font-size="10" font-weight="700" fill="#3D2D7A">Water fill inlet</text>
+  <text x="835" y="308" text-anchor="middle" font-size="10" fill="#3D2D7A">Removable reservoir — user / housekeeping</text>
+  <text x="835" y="318" text-anchor="middle" font-size="9" fill="#7A7A7A" font-style="italic">Assumption A-07: removable reservoir</text>
+
+  <rect x="700" y="330" width="270" height="44" rx="6" fill="#EDE9F7" stroke="#3D2D7A" stroke-width="1"/>
+  <text x="835" y="347" text-anchor="middle" font-size="10" font-weight="700" fill="#3D2D7A">Consumable / waste access</text>
+  <text x="835" y="362" text-anchor="middle" font-size="10" fill="#3D2D7A">Tool-free; housekeeping serviceable</text>
+  <text x="835" y="372" text-anchor="middle" font-size="9" fill="#7A7A7A" font-style="italic">(SRS 2.5)</text>
+
+  <!-- ── INTERFACE ARROWS ── -->
+  <!-- UI Panel → Control Assembly -->
+  <line x1="330" y1="148" x2="358" y2="148" stroke="#4A4A4A" stroke-width="1.5" marker-end="url(#ph)"/>
+  <text x="333" y="144" font-size="9" fill="#4A4A4A">control</text>
+
+  <!-- Control → Thermal -->
+  <line x1="510" y1="250" x2="510" y2="276" stroke="#4A4A4A" stroke-width="1.5" marker-end="url(#ph)"/>
+  <text x="515" y="266" font-size="9" fill="#4A4A4A">brew cmd</text>
+
+  <!-- Fluid Store → Thermal -->
+  <line x1="330" y1="343" x2="358" y2="343" stroke="#7A4E0D" stroke-width="1.5" marker-end="url(#ph)"/>
+  <text x="333" y="338" font-size="9" fill="#7A4E0D">fluid</text>
+
+  <!-- PSU → Control (power) -->
+  <line x1="250" y1="458" x2="430" y2="250" stroke="#1A5C2A" stroke-width="1" stroke-dasharray="4 3" marker-end="url(#ph-p)"/>
+
+  <!-- PSU → Thermal (power) -->
+  <line x1="195" y1="458" x2="400" y2="430" stroke="#1A5C2A" stroke-width="1" stroke-dasharray="4 3" marker-end="url(#ph-p)"/>
+
+  <!-- Control → External wireless -->
+  <line x1="660" y1="186" x2="698" y2="186" stroke="#3D2D7A" stroke-width="1.5" stroke-dasharray="5 3" marker-end="url(#ph-w)"/>
+
+  <!-- Thermal → Dispensing outlet -->
+  <line x1="620" y1="310" x2="698" y2="254" stroke="#4A4A4A" stroke-width="1.5" marker-end="url(#ph)"/>
+</svg>
+<div class="diagram-caption">Figure 2 — CoffCo physical architecture. Logical subsystems allocated to seven physical elements. Architectural assumptions recorded; detail design deferred.</div>
+</div>
+
+
+<!-- ══════════════════════════════════════════════════════
+     SECTION 4 — FUNCTION-TO-ELEMENT ALLOCATION
+══════════════════════════════════════════════════════ -->
+<div class="section-header">
+  <div class="section-num">4</div>
+  <div>
+    <div class="section-title">Requirement-to-element allocation</div>
+    <div class="section-sub">Every SRS requirement traced to its primary physical element</div>
+  </div>
+</div>
+
+<table class="alloc-table">
+  <thead>
+    <tr>
+      <th style="width:80px;">SRS Ref</th>
+      <th style="width:200px;">Requirement</th>
+      <th style="width:220px;">Primary physical element</th>
+      <th>Allocation rationale</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr><td><span class="req-tag">1.1</span><span class="req-tag">1.5</span></td><td>Americano brewing / Extraction pressure</td><td>Control Assembly + Thermal Assembly</td><td>Brew sequencer manages cycle; thermal assembly executes heating and extraction at 0.9–1.3 bar</td></tr>
+    <tr><td><span class="req-tag">1.2</span></td><td>Hot frothed milk</td><td>Thermal Assembly</td><td>Frother mechanism and thermal path heat and aerate milk to 60–90°C</td></tr>
+    <tr><td><span class="req-tag">1.3</span></td><td>Volume selection</td><td>User Interface Panel + Control Assembly</td><td>User selects via UI panel; control assembly executes the measured dispense</td></tr>
+    <tr><td><span class="req-tag">1.4</span></td><td>Consumable capacity (≥10 brews)</td><td>Fluid Store</td><td>Consumable store dimensioned to hold ≥10 brew quantities; water reservoir sized accordingly</td></tr>
+    <tr><td><span class="req-tag">1.6</span></td><td>Water hardness tolerance</td><td>Control Assembly</td><td>Water hardness compensation logic adjusts brew parameters; scale management designed in</td></tr>
+    <tr><td><span class="req-tag">1.7</span></td><td>Status indication</td><td>User Interface Panel + Fluid Store</td><td>Level sensors in fluid store feed status to UI panel indicators</td></tr>
+    <tr><td><span class="req-tag">1.8</span></td><td>Theft deterrence</td><td>Structural Chassis</td><td>Anti-theft anchor point and cable lug integrated into chassis — prevents grab-and-go removal</td></tr>
+    <tr><td><span class="req-tag">1.9</span></td><td>Maintenance comms (wireless)</td><td>Control Assembly</td><td>Wireless comms module in control assembly transmits maintenance status; technology TBD</td></tr>
+    <tr><td><span class="req-tag">2.1</span></td><td>Unaided operation</td><td>User Interface Panel</td><td>UI design must be intuitive; no instruction needed — design constraint on the panel</td></tr>
+    <tr><td><span class="req-tag">2.2</span><span class="req-tag">2.7</span></td><td>Mug compatibility / clearance</td><td>Thermal Assembly</td><td>Dispensing outlet positioned to provide ≥105mm clearance; 100mm diameter access</td></tr>
+    <tr><td><span class="req-tag">2.3</span><span class="req-tag">2.4</span><span class="req-tag">2.6</span></td><td>Power supply interfaces / connectors</td><td>Power Supply Unit</td><td>Universal AC input 110–240V; interchangeable plug module covers all regional variants</td></tr>
+    <tr><td><span class="req-tag">2.5</span></td><td>Housekeeping access</td><td>Fluid Store + Structural Chassis</td><td>Tool-free access panel in chassis; fluid store designed for quick-release replenishment</td></tr>
+    <tr><td><span class="req-tag">3.1</span><span class="req-tag">4.11</span></td><td>Dispense time ≤3 min</td><td>Control Assembly + Thermal Assembly</td><td>Thermal assembly must reach operating temperature; control assembly manages cycle timing</td></tr>
+    <tr><td><span class="req-tag">3.2</span><span class="req-tag">4.10</span></td><td>Footprint ≤300mm³ / Mass ≤10kg</td><td>Structural Chassis</td><td>Chassis determines overall envelope; all elements must pack within 300×300×300mm at ≤10kg</td></tr>
+    <tr><td><span class="req-tag">3.3</span><span class="req-tag">3.9</span></td><td>Maintenance interval / MTBF</td><td>All elements</td><td>MTBF ≥26,280h is a system-level reliability target; each element must be specified to contribute</td></tr>
+    <tr><td><span class="req-tag">3.4</span></td><td>Recycled material content ≥50%</td><td>Structural Chassis</td><td>Outer casing and chassis are the dominant mass items; recycled polymer specified</td></tr>
+    <tr><td><span class="req-tag">3.5</span></td><td>Energy efficiency rating A</td><td>Power Supply Unit + Thermal Assembly</td><td>PSU efficiency and thermal insulation are the primary energy consumption drivers</td></tr>
+    <tr><td><span class="req-tag">3.6</span></td><td>Colour scheme ≥80% black</td><td>Structural Chassis</td><td>External casing finish — ≥80% visible surface area black or transparent</td></tr>
+    <tr><td><span class="req-tag">3.7</span></td><td>Waste recyclability</td><td>Fluid Store</td><td>Waste collection tray designed for recyclable waste route; no landfill waste by design</td></tr>
+    <tr><td><span class="req-tag">3.8</span></td><td>EMC compliance</td><td>Power Supply Unit + Control Assembly</td><td>PSU EMC filtering; control assembly shielded; EN 55014 Class B compliance required</td></tr>
+    <tr><td><span class="req-tag">3.10</span></td><td>Prevent burns</td><td>Thermal Assembly + Structural Chassis</td><td>Insulated fluid pathway; enclosed heating elements; no exposed hot surfaces in assembled state</td></tr>
+    <tr><td><span class="req-tag">3.11</span></td><td>Prevent electrical shock</td><td>Power Supply Unit + Structural Chassis</td><td>Electrical isolation in PSU; all live parts enclosed by chassis; IEC 60335 compliance</td></tr>
+    <tr><td><span class="req-tag">4.1–4.3</span></td><td>Brew / milk temperatures</td><td>Thermal Assembly</td><td>Heating element and thermal cutout control temperatures within specified bands</td></tr>
+    <tr><td><span class="req-tag">4.4–4.5</span></td><td>Extraction pressure</td><td>Thermal Assembly + Control Assembly</td><td>Pressure source and regulation maintain 0.9–1.3 bar at coffee outlet</td></tr>
+    <tr><td><span class="req-tag">4.6–4.7</span></td><td>Dispense volume 200–400ml</td><td>Control Assembly + Thermal Assembly</td><td>Controlled dispense measured and cut off at user-selected volume</td></tr>
+    <tr><td><span class="req-tag">4.8</span></td><td>IEC 60335 compliance</td><td>Power Supply Unit + Structural Chassis</td><td>Electrical safety is a property of the whole product; PSU and chassis are primary carriers</td></tr>
+    <tr><td><span class="req-tag">4.9</span></td><td>Food safety compliance</td><td>Thermal Assembly + Fluid Store</td><td>All water and beverage contact surfaces in these elements must be food-grade and cleanable</td></tr>
+    <tr style="background:#FFF0F0"><td><span class="req-tag" style="background:#C00000">SAF-01</span></td><td>Independent thermal cutoff</td><td>Thermal Assembly (SS-2)</td><td>Bi-metallic TCO in series with heating element; non-resettable; hardware-only, firmware-independent</td></tr>
+    <tr style="background:#FFF8F8"><td><span class="req-tag" style="background:#C00000">SAF-02</span></td><td>Fluid level brew interlock</td><td>Control Assembly (SS-2)</td><td>Firmware inhibits heating element if level sensor &lt; minimum; FAULT/EMPTY state within 5 s</td></tr>
+    <tr style="background:#FFF0F0"><td><span class="req-tag" style="background:#C00000">SAF-03</span></td><td>Fluid path electrical isolation</td><td>Thermal Assembly + Fluid Store (SS-2/SS-3)</td><td>≥6 mm air gap or solid insulator between fluid paths and all electrical conductors</td></tr>
+    <tr style="background:#FFF8F8"><td><span class="req-tag" style="background:#C00000">SAF-04</span></td><td>No live surface — single fault</td><td>Power Supply Unit + Structural Chassis (SS-4/SS-6)</td><td>IEC 60335-1 Class II double insulation; no accessible surface becomes live under any single fault</td></tr>
+    <tr style="background:#FFF0F0"><td><span class="req-tag" style="background:#C00000">SAF-05</span></td><td>Surge immunity</td><td>Power Supply Unit (SS-4)</td><td>IEC 61000-4-5 Level 2 (2 kV) surge test; MOV/TVS in PSU primary circuit</td></tr>
+    <tr style="background:#FFF8F8"><td><span class="req-tag" style="background:#C00000">SAF-06</span></td><td>Dispensing outlet shroud</td><td>Thermal Assembly + Structural Chassis (SS-2/SS-6)</td><td>Physical shroud prevents hand contact with active beverage stream at outlet</td></tr>
+    <tr style="background:#FFF0F0"><td><span class="req-tag" style="background:#C00000">SAF-07</span></td><td>Hardware watchdog timer</td><td>Control Assembly (SS-2)</td><td>External watchdog IC; de-energises all actuators if firmware heartbeat absent &gt;500 ms</td></tr>
+    <tr style="background:#FFF8F8"><td><span class="req-tag" style="background:#C00000">SAF-08</span></td><td>Milk spoilage telemetry alert</td><td>Fluid Store + Monitoring &amp; Comms (SS-3/SS-5)</td><td>MILK-SPOILAGE-RISK alert if milk store &gt;4°C for &gt;30 min</td></tr>
+    <tr style="background:#FFF0F0"><td><span class="req-tag" style="background:#C00000">SAF-09</span></td><td>Telemetry comms watchdog</td><td>Monitoring &amp; Comms + User Interface (SS-5/SS-1)</td><td>COMMS-FAULT logged and MAINTENANCE REQUIRED displayed if wireless link down &gt;60 min</td></tr>
+    <tr style="background:#FFF8F8"><td><span class="req-tag" style="background:#C00000">SAF-10</span></td><td>Anti-tip stability + bracket</td><td>Structural Chassis (SS-6)</td><td>Stable under 50 N lateral force; anti-tip bracket supplied for M6 hotel furniture fixing</td></tr>
+    <tr style="background:#FFF0F0"><td><span class="req-tag" style="background:#C00000">SAF-11</span></td><td>Surface temperature ≤48°C</td><td>Structural Chassis (SS-6)</td><td>All accessible surfaces ≤48°C at steady state and 30 min post power-off in 25°C ambient</td></tr>
+    <tr style="background:#FFF8F8"><td><span class="req-tag" style="background:#C00000">SAF-12</span></td><td>Pressure relief valve</td><td>Thermal Assembly + Fluid Store (SS-2/SS-3)</td><td>Mechanical PRV ≤2.5 bar; hardware-only; vents into drip tray; firmware pressure guard at 1.5 bar</td></tr>
+    <tr style="background:#FFF0F0"><td><span class="req-tag" style="background:#C00000">SAF-13</span></td><td>Mains input fuse</td><td>Power Supply Unit (SS-4)</td><td>T-type fuse rated to minimum protective value at mains inlet; field-engineer accessible only</td></tr>
+    <tr style="background:#FFF8F8"><td><span class="req-tag" style="background:#C00000">SAF-14</span></td><td>IPX2 water ingress protection</td><td>Structural Chassis (SS-6)</td><td>Enclosure rated IPX2 (IEC 60529); protects live parts from cleaning drip ingress</td></tr>
+    <tr style="background:#FFF0F0"><td><span class="req-tag" style="background:#C00000">SAF-15</span></td><td>Drip tray full alert</td><td>Fluid Store + Monitoring &amp; Comms (SS-3/SS-5)</td><td>Drip tray level sensor triggers DRIP-TRAY-FULL telemetry and UI alert before overflow</td></tr>
+    <tr style="background:#FFF8F8"><td><span class="req-tag" style="background:#C00000">SAF-16</span></td><td>Automated descale cycle</td><td>Control Assembly + Monitoring &amp; Comms (SS-2/SS-5)</td><td>Firmware-scheduled descale; DESCALE-REQUIRED telemetry alert ≥10 brews before interval</td></tr>
+    <tr style="background:#FFF0F0"><td><span class="req-tag" style="background:#C00000">SAF-17</span></td><td>Consumable loading interlock</td><td>Fluid Store (SS-3)</td><td>Keyed geometry + mechanical interlock prevents extraction chamber sealing on incorrect consumable</td></tr>
+  </tbody>
+</table>
+
+
+<!-- ══════════════════════════════════════════════════════
+     SECTION 5 — ARCHITECTURAL ASSUMPTIONS AND NEW REQS
+══════════════════════════════════════════════════════ -->
+<div class="section-header">
+  <div class="section-num">5</div>
+  <div>
+    <div class="section-title">Architectural assumptions and requirement gaps</div>
+    <div class="section-sub">Decisions made during architecture development that are not mandated by the current SRS</div>
+  </div>
+</div>
+
+<p>The following assumptions were made during architecture development. Each will either be confirmed by further customer engagement, resolved by design analysis, or converted into a new requirement. Gaps identified during architecture — where the SRS did not provide sufficient guidance — are also recorded and proposed as new requirements.</p>
+
+<div class="card-row">
+  <div class="card assumption">
+    <div class="card-label">Assumption A-01</div>
+    <div class="card-title">Single integrated control assembly</div>
+    <div class="card-desc">The brew control and monitoring functions are allocated to a single control assembly. This is not mandated by the SRS — separate control and monitoring assemblies are architecturally feasible. Assumed for simplicity and footprint efficiency within the 300mm envelope.</div>
+  </div>
+  <div class="card assumption">
+    <div class="card-label">Assumption A-02</div>
+    <div class="card-title">Front-facing user interface panel</div>
+    <div class="card-desc">The UI panel is assumed to be front-facing on the machine. No SRS requirement specifies orientation. Front-facing is assumed as the most intuitive configuration for a desk-mounted appliance in a hotel room context.</div>
+  </div>
+  <div class="card assumption">
+    <div class="card-label">Assumption A-03</div>
+    <div class="card-title">Unified thermal path for coffee and milk</div>
+    <div class="card-desc">A single thermal assembly services both americano brewing and milk frothing. Separate dedicated thermal paths are an alternative. Unified path assumed to meet the footprint and mass constraints — but cross-contamination between coffee and milk must be addressed in detail design.</div>
+  </div>
+  <div class="card assumption">
+    <div class="card-label">Assumption A-04</div>
+    <div class="card-title">Top or front-loading consumable access</div>
+    <div class="card-desc">Housekeeping access for consumable replenishment is assumed to be from the top or front of the machine. The SRS requires tool-free access (2.5) but does not specify orientation. This assumption drives the internal layout of the fluid store.</div>
+  </div>
+  <div class="card assumption">
+    <div class="card-label">Assumption A-05</div>
+    <div class="card-title">Universal PSU with interchangeable plug module</div>
+    <div class="card-desc">A single universal power supply unit (110–240V, 50/60Hz) with a physically interchangeable plug module is assumed as the mechanism for regional connector compatibility. This satisfies SRS 2.3, 2.4, and 2.6 without market-specific PSU variants.</div>
+  </div>
+  <div class="card assumption">
+    <div class="card-label">Assumption A-06</div>
+    <div class="card-title">Cable lug as primary anti-theft mechanism</div>
+    <div class="card-desc">A Kensington-style cable anchor lug integrated into the structural chassis is assumed as the anti-theft mechanism (SRS 1.8). The SRS requires deterrence against opportunistic removal — a cable lug satisfies this without being a locking mechanism, which would create a housekeeping burden.</div>
+  </div>
+  <div class="card assumption">
+    <div class="card-label">Assumption A-07</div>
+    <div class="card-title">Removable water reservoir</div>
+    <div class="card-desc">The water supply is assumed to be via a removable, user-fillable reservoir rather than a plumbed connection. No SRS requirement specifies either. A removable reservoir requires no room plumbing modification (consistent with the operating environment) but creates a housekeeping refill burden not currently quantified in the SRS.</div>
+  </div>
+  <div class="card assumption">
+    <div class="card-label">Assumption A-08</div>
+    <div class="card-title">Wireless technology selection deferred</div>
+    <div class="card-desc">SRS 1.9 requires wireless maintenance communication but does not specify the technology. The architecture allocates this to the control assembly but defers technology selection. Wi-Fi, Bluetooth LE, and Zigbee are all feasible candidates — selection will depend on hotel infrastructure and range requirements.</div>
+  </div>
+</div>
+
+<div class="card-row" style="margin-top:14px;">
+  <div class="card gap">
+    <div class="card-label">Requirement gap RG-01</div>
+    <div class="card-title">Water reservoir capacity not specified</div>
+    <div class="card-desc">SRS 1.4 requires ≥10 brews between replenishment but does not state a water reservoir volume. At approximately 250ml per americano, 10 brews requires ≥2.5 litres. A reservoir volume requirement is needed to validate the fluid store design and confirm the footprint is achievable.</div>
+  </div>
+  <div class="card gap">
+    <div class="card-label">Requirement gap RG-02</div>
+    <div class="card-title">Standby power state not specified</div>
+    <div class="card-desc">The SRS requires EU energy efficiency rating A (3.5) but does not specify a standby power limit. The machine will spend the majority of its powered life in standby. A standby power requirement is needed to support the energy efficiency rating and prevent excessive heat generation in the room.</div>
+  </div>
+  <div class="card gap">
+    <div class="card-label">Requirement gap RG-03</div>
+    <div class="card-title">Acoustic output (noise) not specified</div>
+    <div class="card-desc">The primary use case is early morning in a hotel room. No noise limit is in the SRS. A brewing machine generates pump and heating noise. An acoustic output requirement is needed — particularly for the brewing cycle which occurs when guests and partners may be sleeping.</div>
+  </div>
+  <div class="card gap">
+    <div class="card-label">Requirement gap RG-04</div>
+    <div class="card-title">Cross-contamination (coffee / milk) not addressed</div>
+    <div class="card-desc">The architecture assumes a unified thermal path. No SRS requirement addresses the risk of coffee contaminating the milk path or vice versa. A food safety / contamination prevention requirement is needed, particularly given the HACCP obligation (SRS 4.9).</div>
+  </div>
+</div>
+
+<div class="card-row" style="margin-top:14px;">
+  <div class="card new-req">
+    <div class="card-label">Proposed new requirement NR-01</div>
+    <div class="card-title">Water reservoir minimum capacity</div>
+    <div class="card-desc">The system shall incorporate a water reservoir with a minimum capacity of 2.5 litres. Derived from SRS 1.4 (≥10 brews) at 250ml per americano. Verification: Test. Priority: High.</div>
+  </div>
+  <div class="card new-req">
+    <div class="card-label">Proposed new requirement NR-02</div>
+    <div class="card-title">Standby power limit</div>
+    <div class="card-desc">The system shall consume no more than 0.5W in standby mode. Derived from SRS 3.5 (EU energy efficiency rating A) and EU Ecodesign Regulation standby requirements. Verification: Test. Priority: Medium.</div>
+  </div>
+  <div class="card new-req">
+    <div class="card-label">Proposed new requirement NR-03</div>
+    <div class="card-title">Acoustic output limit</div>
+    <div class="card-desc">The system shall not exceed 55dB(A) at 1 metre during the brew cycle. Derived from the operating context (early morning hotel room, sleeping occupants) and WHO guidelines for indoor noise. Verification: Test. Priority: Medium.</div>
+  </div>
+  <div class="card new-req">
+    <div class="card-label">Proposed new requirement NR-04</div>
+    <div class="card-title">Beverage cross-contamination prevention</div>
+    <div class="card-desc">The system shall prevent cross-contamination between the coffee and milk fluid pathways. Derived from SRS 4.9 (food safety / HACCP) and the unified thermal path assumption. Verification: Analysis + Inspection. Priority: High.</div>
+  </div>
+</div>
+
+
+
+<!-- ══════════════════════════════════════════════════════
+     SECTION 6 — MBSE COMPLIANCE STATEMENT
+══════════════════════════════════════════════════════ -->
+<div class="section-header">
+  <div class="section-num">6</div>
+  <div>
+    <div class="section-title">MBSE compliance — viewpoint framework</div>
+    <div class="section-sub">How this architecture aligns to INCOSE Z8 and Z9 requirements for Model-Based Systems Engineering</div>
+  </div>
+</div>
+
+<p>The Z9 INCOSE guide defines MBSE as the formalised application of modelling to support system requirements, analysis, design, and verification and validation. The Z8 guide defines a complete architecture as one that addresses logical (functional), behavioural (process), and physical (layout) structure — with views formally connected through an underlying model rather than existing as standalone diagrams.</p>
+<p>This architecture document provides five formally connected view types, each addressing specific stakeholder concerns. The table below maps views to viewpoints, stakeholders, and concerns per the Z9 MBSE ontology. Sections 7–10 provide the additional views required to meet MBSE completeness beyond the logical and physical views already established in Sections 2–3.</p>
+
+<table class="concern-table">
+  <thead>
+    <tr>
+      <th style="width:120px;">View (this doc)</th>
+      <th style="width:140px;">Viewpoint type (Z8)</th>
+      <th style="width:180px;">Primary stakeholders</th>
+      <th>Concern addressed</th>
+      <th style="width:100px;">Section</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><strong>Logical architecture</strong></td>
+      <td>System — logical/functional</td>
+      <td>CoffCo engineering, investors</td>
+      <td>What functions does the system need to perform and how do they relate? Technology-agnostic decomposition.</td>
+      <td>Section 2</td>
+    </tr>
+    <tr>
+      <td><strong>Physical architecture</strong></td>
+      <td>System — physical/layout</td>
+      <td>CoffCo engineering, Vacation Stables</td>
+      <td>How are logical functions allocated to physical elements? What are the physical interfaces?</td>
+      <td>Section 3</td>
+    </tr>
+    <tr>
+      <td><strong>Structuring principles</strong></td>
+      <td>Technical standard</td>
+      <td>CoffCo engineering, Systems Design Authority</td>
+      <td>What principles govern architectural decisions? How is consistency maintained across the design?</td>
+      <td>Section 7</td>
+    </tr>
+    <tr>
+      <td><strong>Options and trade analysis</strong></td>
+      <td>System — decision/trade</td>
+      <td>CoffCo engineering, investors, SDA</td>
+      <td>What alternatives were considered? What is the rationale for the selected architecture? What risk is accepted?</td>
+      <td>Section 8</td>
+    </tr>
+    <tr>
+      <td><strong>Behavioural view</strong></td>
+      <td>System — behaviour/process</td>
+      <td>CoffCo engineering, Vacation Stables ops</td>
+      <td>How does the system behave through time? What are the operational states, sequences, and fault responses?</td>
+      <td>Section 9</td>
+    </tr>
+    <tr>
+      <td><strong>Operational view</strong></td>
+      <td>Operational</td>
+      <td>Vacation Stables, guests, housekeeping, CoffCo ops</td>
+      <td>Who does what, when? How do human actors interact with the system across its operational life?</td>
+      <td>Section 10</td>
+    </tr>
+    <tr>
+      <td><strong>Requirements traceability</strong></td>
+      <td>System — traceability</td>
+      <td>All stakeholders, verifiers</td>
+      <td>Which requirements are satisfied by which physical elements? Is coverage complete? Are there gaps?</td>
+      <td>Section 4</td>
+    </tr>
+  </tbody>
+</table>
+
+
+<!-- ══════════════════════════════════════════════════════
+     SECTION 7 — STRUCTURING PRINCIPLES
+══════════════════════════════════════════════════════ -->
+<div class="section-header">
+  <div class="section-num">7</div>
+  <div>
+    <div class="section-title">Architectural structuring principles</div>
+    <div class="section-sub">The governing principles applied to all architectural decisions — Technical Standard View</div>
+  </div>
+</div>
+
+<p>Per Z8, defining structuring principles is the first step in the architecting process. These principles are applied consistently across all architectural decisions and provide the basis for evaluating architecture options. Any decision that conflicts with a principle requires explicit justification and SDA approval.</p>
+
+<div class="principle-grid">
+  <div class="principle-card">
+    <div class="principle-num">SP-01</div>
+    <div class="principle-title">Safety isolation</div>
+    <div class="principle-desc">All thermal and electrical hazards shall be physically isolated from user-accessible surfaces by dedicated structural elements. Safety shall not be a property of any single subsystem — it shall be designed into the system architecture as a whole.</div>
+  </div>
+  <div class="principle-card">
+    <div class="principle-num">SP-02</div>
+    <div class="principle-title">Modularity</div>
+    <div class="principle-desc">Physical elements shall be designed as discrete, replaceable modules with defined interfaces. No element shall be so tightly coupled to another that replacement or upgrade of one requires redesign of another. This supports the 365-day maintenance-free target and future product evolution.</div>
+  </div>
+  <div class="principle-card">
+    <div class="principle-num">SP-03</div>
+    <div class="principle-title">Loose coupling</div>
+    <div class="principle-desc">Interfaces between subsystems shall be defined at the logical level before physical connections are specified. Changes to one subsystem shall not propagate to others unless the interface specification is changed. This minimises the impact of design changes during development.</div>
+  </div>
+  <div class="principle-card">
+    <div class="principle-num">SP-04</div>
+    <div class="principle-title">Single responsibility</div>
+    <div class="principle-desc">Each physical element shall have a clearly defined primary function. Elements that serve multiple unrelated functions are discouraged — they increase coupling, complicate testing, and make fault isolation harder. The thermal assembly does not control; the control assembly does not heat.</div>
+  </div>
+  <div class="principle-card">
+    <div class="principle-num">SP-05</div>
+    <div class="principle-title">Design for the operating environment</div>
+    <div class="principle-desc">Every architectural decision shall be evaluated against the operating environment constraints: 300×300×300mm envelope, ≤10kg, hotel room power only, untrained users, 365-day maintenance-free. No decision that compromises these constraints is acceptable regardless of functional benefit.</div>
+  </div>
+  <div class="principle-card">
+    <div class="principle-num">SP-06</div>
+    <div class="principle-title">Requirement necessity</div>
+    <div class="principle-desc">No architectural element shall be included that cannot be traced to at least one SRS requirement or documented architectural assumption. Architectural gold-plating is prohibited. Elements that cannot be traced shall be challenged and either justified or removed.</div>
+  </div>
+  <div class="principle-card">
+    <div class="principle-num">SP-07</div>
+    <div class="principle-title">Technology agnosticism at logical level</div>
+    <div class="principle-desc">Logical subsystem definitions shall remain technology-agnostic. Technology selection occurs at the physical level only. This preserves design freedom and prevents premature commitment to implementation approaches that may be superseded during detail design.</div>
+  </div>
+  <div class="principle-card">
+    <div class="principle-num">SP-08</div>
+    <div class="principle-title">Minimalism</div>
+    <div class="principle-desc">Paraphrasing Saint-Exupéry (Z8): the architecture is complete not when there is nothing left to add, but when there is nothing left to take away. Every element and interface added increases system complexity, mass, cost, and failure risk. The simplest architecture that meets all requirements is preferred.</div>
+  </div>
+  <div class="principle-card">
+    <div class="principle-num">SP-09</div>
+    <div class="principle-title">Assumption visibility</div>
+    <div class="principle-desc">All architectural assumptions shall be recorded explicitly (Section 5). Assumptions are not failures — they are expected and managed. An assumption that arrives unrecorded is a risk. Every assumption shall have an owner and a resolution path before the architecture is baselined.</div>
+  </div>
+</div>
+
+
+<!-- ══════════════════════════════════════════════════════
+     SECTION 8 — OPTIONS AND TRADE ANALYSIS
+══════════════════════════════════════════════════════ -->
+<div class="section-header">
+  <div class="section-num">8</div>
+  <div>
+    <div class="section-title">Architecture options and trade analysis</div>
+    <div class="section-sub">Alternatives considered for key architectural decisions — Decision/Trade View</div>
+  </div>
+</div>
+
+<p>Per Z8, the architecting process requires options to be defined, analysed, and selected with documented rationale. The following table records the key architectural decisions, the options considered, the evaluation criteria applied, and the selection made. This is the audit trail that demonstrates the architecture was derived through reasoned analysis, not assumption.</p>
+
+<table class="trade-table">
+  <thead>
+    <tr>
+      <th style="width:60px;">ID</th>
+      <th style="width:160px;">Decision point</th>
+      <th style="width:150px;">Option A</th>
+      <th style="width:150px;">Option B</th>
+      <th style="width:150px;">Option C</th>
+      <th>Evaluation criteria and selection rationale</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><strong>TD-01</strong></td>
+      <td><strong>Water supply method</strong><br/><em>How does the machine receive water?</em></td>
+      <td><span class="trade-sel">SELECTED</span><br/>Removable user-filled reservoir</td>
+      <td><span class="trade-rej">REJECTED</span><br/>Plumbed mains connection</td>
+      <td><span class="trade-rej">REJECTED</span><br/>Single-use water cartridge</td>
+      <td><strong>Criteria:</strong> No room modification (OPSCON), footprint, housekeeping burden, cost.<br/><strong>Rationale:</strong> Plumbed connection requires room infrastructure modification — excluded by OPSCON. Cartridge creates per-use waste cost and supply chain complexity. Removable reservoir requires no modification, is familiar to housekeeping, and is consistent with hotel room appliance norms. SRS gap NR-01 (reservoir capacity) raised as a result.</td>
+    </tr>
+    <tr>
+      <td><strong>TD-02</strong></td>
+      <td><strong>Thermal path architecture</strong><br/><em>Separate or unified heating for coffee and milk?</em></td>
+      <td><span class="trade-sel">SELECTED</span><br/>Unified thermal assembly with switching</td>
+      <td><span class="trade-rej">REJECTED</span><br/>Separate dedicated thermal paths</td>
+      <td>N/A</td>
+      <td><strong>Criteria:</strong> Footprint (≤300mm), mass (≤10kg), cost, cross-contamination risk.<br/><strong>Rationale:</strong> Two separate thermal paths increase component count, mass, footprint, and cost. Unified path with a switching/flushing mechanism is feasible within the envelope. Cross-contamination risk is managed by design (SRS gap NR-04 raised). Unified path selected subject to NR-04 resolution.</td>
+    </tr>
+    <tr>
+      <td><strong>TD-03</strong></td>
+      <td><strong>Regional power connector strategy</strong><br/><em>How are multiple markets supported?</em></td>
+      <td><span class="trade-sel">SELECTED</span><br/>Universal PSU + interchangeable plug module</td>
+      <td><span class="trade-rej">REJECTED</span><br/>Market-specific PSU variants</td>
+      <td><span class="trade-rej">REJECTED</span><br/>Universal PSU + fixed cable + adapter</td>
+      <td><strong>Criteria:</strong> SRS 2.3, 2.4, 2.6 (UK/EU/US + regional variants), supply chain simplicity, guest experience.<br/><strong>Rationale:</strong> Market-specific PSUs increase SKU count and supply chain complexity. A fixed cable with adapter is inelegant and creates a loose-parts management problem in hotel rooms. Interchangeable plug module is the industry standard for travel appliances — simple, clean, and extensible to new markets by adding a new module only.</td>
+    </tr>
+    <tr>
+      <td><strong>TD-04</strong></td>
+      <td><strong>Control and monitoring integration</strong><br/><em>Single or separate assemblies?</em></td>
+      <td><span class="trade-sel">SELECTED</span><br/>Single integrated control assembly (SS-2 + SS-5)</td>
+      <td><span class="trade-rej">REJECTED</span><br/>Separate brew control and monitoring assemblies</td>
+      <td>N/A</td>
+      <td><strong>Criteria:</strong> Footprint, MTBF, interface complexity, maintenance burden.<br/><strong>Rationale:</strong> Separate assemblies add an internal interface, increase component count and potential failure points, and consume footprint. Integration of monitoring into the same assembly as brew control reduces interface count and supports the 26,280h MTBF target. Technology selection for the control assembly is deferred (Assumption A-01).</td>
+    </tr>
+    <tr>
+      <td><strong>TD-05</strong></td>
+      <td><strong>Anti-theft mechanism</strong><br/><em>How is opportunistic removal prevented?</em></td>
+      <td><span class="trade-sel">SELECTED</span><br/>Integrated cable anchor lug (Kensington-style)</td>
+      <td><span class="trade-rej">REJECTED</span><br/>Mechanical lock to furniture</td>
+      <td><span class="trade-rej">REJECTED</span><br/>Weight-only deterrence</td>
+      <td><strong>Criteria:</strong> SRS 1.8 (opportunistic deterrence), housekeeping burden, Vacation Stables furniture compatibility.<br/><strong>Rationale:</strong> A mechanical lock requires a key managed by Vacation Stables — operational burden and potential lockout risk. Weight-only (10kg) provides some deterrence but is not a mechanism. Cable anchor lug is industry standard for hotel electronics, requires no key management, and satisfies the 60-second opportunistic removal threshold.</td>
+    </tr>
+    <tr>
+      <td><strong>TD-06</strong></td>
+      <td><strong>Wireless comms technology</strong><br/><em>How does the system transmit maintenance status?</em></td>
+      <td><span class="trade-rej">DEFERRED</span><br/>Wi-Fi (802.11)</td>
+      <td><span class="trade-rej">DEFERRED</span><br/>Bluetooth LE</td>
+      <td><span class="trade-rej">DEFERRED</span><br/>Zigbee / Z-Wave</td>
+      <td><strong>Criteria:</strong> SRS 1.9 (wireless maintenance comms), hotel infrastructure, range, power consumption, EMC (SRS 3.8).<br/><strong>Rationale:</strong> Technology selection is deferred pending confirmation of Vacation Stables hotel infrastructure and range requirements. All three options are technically feasible. Wi-Fi is most likely given hotel infrastructure ubiquity but has higher power and EMC implications. Decision required before detail design — Assumption A-08. NR-05 proposed: wireless technology selection shall be confirmed with Vacation Stables IT infrastructure requirements.</td>
+    </tr>
+  </tbody>
+</table>
+
+
+<!-- ══════════════════════════════════════════════════════
+     SECTION 9 — BEHAVIOURAL VIEW
+══════════════════════════════════════════════════════ -->
+<div class="section-header">
+  <div class="section-num">9</div>
+  <div>
+    <div class="section-title">Behavioural view — system state and process model</div>
+    <div class="section-sub">How the system behaves through time — states, transitions, and sequences — Behaviour/Process View (Z8)</div>
+  </div>
+</div>
+
+<p>The behavioural view is required by Z8 to complete the architecture. It describes how the system moves through operational states over time, and the sequences of events that drive transitions. This view is essential for identifying timing constraints, fault responses, and the interactions between subsystems during operation — none of which are visible in the logical or physical views alone.</p>
+
+<p>Two behavioural descriptions are provided: the <strong>system state model</strong> (what states can the system be in, and what causes transitions) and the <strong>brew cycle sequence</strong> (the detailed activity flow for the primary use case).</p>
+
+<div class="diagram-wrap">
+<div id="state" style="scroll-margin-top:60px"></div>
+<svg viewBox="0 0 1000 480" width="100%" xmlns="http://www.w3.org/2000/svg" font-family="Calibri, Segoe UI, Arial, sans-serif">
+  <rect width="1000" height="480" fill="#F7F8FA" rx="8"/>
+  <text x="500" y="26" text-anchor="middle" font-size="13" font-weight="700" fill="#1C2B4A">System state model — CoffCo coffee machine operational states</text>
+
+  <defs>
+    <marker id="bh" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M1 1L9 5L1 9" fill="none" stroke="#1C2B4A" stroke-width="1.5" stroke-linecap="round"/>
+    </marker>
+    <marker id="bhr" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M1 1L9 5L1 9" fill="none" stroke="#7A2A1A" stroke-width="1.5" stroke-linecap="round"/>
+    </marker>
+    <marker id="bhg" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M1 1L9 5L1 9" fill="none" stroke="#1A5C2A" stroke-width="1.5" stroke-linecap="round"/>
+    </marker>
+    <marker id="bha" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M1 1L9 5L1 9" fill="none" stroke="#7A4E0D" stroke-width="1.5" stroke-linecap="round"/>
+    </marker>
+  </defs>
+
+  <!-- INITIAL STATE -->
+  <circle cx="60" cy="80" r="14" fill="#1C2B4A"/>
+  <text x="60" y="110" text-anchor="middle" font-size="10" fill="#1C2B4A">Power on</text>
+  <line x1="60" y1="94" x2="60" y2="148" stroke="#1C2B4A" stroke-width="1.5" marker-end="url(#bh)"/>
+
+  <!-- STATE: INITIALISING -->
+  <rect x="20" y="150" width="160" height="60" rx="10" fill="#E8F0FA" stroke="#1A4B8C" stroke-width="2"/>
+  <text x="100" y="174" text-anchor="middle" font-size="11" font-weight="700" fill="#1A4B8C">INITIALISING</text>
+  <text x="100" y="190" text-anchor="middle" font-size="10" fill="#1A4B8C">Self-test · warm-up</text>
+  <text x="100" y="203" text-anchor="middle" font-size="10" fill="#1A4B8C">Hardness calibration</text>
+
+  <!-- INITIALISING → STANDBY -->
+  <line x1="180" y1="180" x2="248" y2="180" stroke="#1C2B4A" stroke-width="1.5" marker-end="url(#bh)"/>
+  <text x="192" y="174" font-size="9" fill="#1C2B4A">Self-test OK</text>
+
+  <!-- STATE: STANDBY -->
+  <rect x="250" y="150" width="160" height="60" rx="10" fill="#E6F4F4" stroke="#0D5C5C" stroke-width="2"/>
+  <text x="330" y="174" text-anchor="middle" font-size="11" font-weight="700" fill="#0D5C5C">STANDBY</text>
+  <text x="330" y="190" text-anchor="middle" font-size="10" fill="#0D5C5C">Idle · low power</text>
+  <text x="330" y="203" text-anchor="middle" font-size="10" fill="#0D5C5C">Monitoring active</text>
+
+  <!-- STANDBY → BREWING -->
+  <line x1="410" y1="180" x2="478" y2="180" stroke="#1C2B4A" stroke-width="1.5" marker-end="url(#bh)"/>
+  <text x="415" y="174" font-size="9" fill="#1C2B4A">User selection</text>
+
+  <!-- STATE: BREWING -->
+  <rect x="480" y="150" width="160" height="60" rx="10" fill="#FDF3E0" stroke="#7A4E0D" stroke-width="2"/>
+  <text x="560" y="174" text-anchor="middle" font-size="11" font-weight="700" fill="#7A4E0D">BREWING</text>
+  <text x="560" y="190" text-anchor="middle" font-size="10" fill="#7A4E0D">Heating · pressurising</text>
+  <text x="560" y="203" text-anchor="middle" font-size="10" fill="#7A4E0D">Extracting · dispensing</text>
+
+  <!-- BREWING → DISPENSING -->
+  <line x1="640" y1="180" x2="708" y2="180" stroke="#1C2B4A" stroke-width="1.5" marker-end="url(#bh)"/>
+  <text x="644" y="174" font-size="9" fill="#1C2B4A">Target temp / pressure</text>
+
+  <!-- STATE: DISPENSING -->
+  <rect x="710" y="150" width="160" height="60" rx="10" fill="#E8F5EC" stroke="#1A5C2A" stroke-width="2"/>
+  <text x="790" y="174" text-anchor="middle" font-size="11" font-weight="700" fill="#1A5C2A">DISPENSING</text>
+  <text x="790" y="190" text-anchor="middle" font-size="10" fill="#1A5C2A">Delivering beverage</text>
+  <text x="790" y="203" text-anchor="middle" font-size="10" fill="#1A5C2A">Measuring volume</text>
+
+  <!-- DISPENSING → STANDBY (return arc over top) -->
+  <path d="M 870 150 Q 870 80 560 80 Q 250 80 180 150" fill="none" stroke="#1C2B4A" stroke-width="1.5" marker-end="url(#bh)"/>
+  <text x="510" y="72" text-anchor="middle" font-size="9" fill="#1C2B4A">Volume reached → cycle complete → return to standby</text>
+
+  <!-- LOW CONSUMABLE state (below standby) -->
+  <rect x="250" y="290" width="160" height="60" rx="10" fill="#FDF3E0" stroke="#7A4E0D" stroke-width="2"/>
+  <text x="330" y="313" text-anchor="middle" font-size="11" font-weight="700" fill="#7A4E0D">LOW CONSUMABLE</text>
+  <text x="330" y="329" text-anchor="middle" font-size="10" fill="#7A4E0D">Status indicator active</text>
+  <text x="330" y="342" text-anchor="middle" font-size="10" fill="#7A4E0D">Brewing still possible</text>
+
+  <!-- Standby → Low consumable -->
+  <line x1="330" y1="210" x2="330" y2="288" stroke="#7A4E0D" stroke-width="1.5" marker-end="url(#bha)"/>
+  <text x="335" y="252" font-size="9" fill="#7A4E0D">Level sensor</text>
+  <text x="335" y="263" font-size="9" fill="#7A4E0D">threshold reached</text>
+
+  <!-- Low consumable → Standby (replenishment) -->
+  <line x1="310" y1="288" x2="310" y2="212" stroke="#1A5C2A" stroke-width="1.5" marker-end="url(#bhg)"/>
+  <text x="244" y="252" font-size="9" fill="#1A5C2A">Housekeeping</text>
+  <text x="244" y="263" font-size="9" fill="#1A5C2A">replenishes</text>
+
+  <!-- LOW CONSUMABLE → EMPTY -->
+  <line x1="410" y1="320" x2="478" y2="320" stroke="#7A2A1A" stroke-width="1.5" marker-end="url(#bhr)"/>
+  <text x="415" y="314" font-size="9" fill="#7A2A1A">Consumable</text>
+  <text x="415" y="325" font-size="9" fill="#7A2A1A">exhausted</text>
+
+  <!-- STATE: EMPTY / UNAVAILABLE -->
+  <rect x="480" y="290" width="160" height="60" rx="10" fill="#FDECEA" stroke="#7A2A1A" stroke-width="2"/>
+  <text x="560" y="313" text-anchor="middle" font-size="11" font-weight="700" fill="#7A2A1A">EMPTY / UNAVAILABLE</text>
+  <text x="560" y="329" text-anchor="middle" font-size="10" fill="#7A2A1A">No brewing possible</text>
+  <text x="560" y="342" text-anchor="middle" font-size="10" fill="#7A2A1A">Wireless alert sent</text>
+
+  <!-- EMPTY → LOW CONSUMABLE (replenished) -->
+  <line x1="560" y1="290" x2="430" y2="210" stroke="#1A5C2A" stroke-width="1.5" stroke-dasharray="4 3" marker-end="url(#bhg)"/>
+  <text x="460" y="265" font-size="9" fill="#1A5C2A">Replenished</text>
+
+  <!-- STATE: FAULT -->
+  <rect x="710" y="290" width="160" height="60" rx="10" fill="#FDECEA" stroke="#7A2A1A" stroke-width="3"/>
+  <text x="790" y="313" text-anchor="middle" font-size="11" font-weight="700" fill="#7A2A1A">FAULT</text>
+  <text x="790" y="329" text-anchor="middle" font-size="10" fill="#7A2A1A">Brewing suspended</text>
+  <text x="790" y="342" text-anchor="middle" font-size="10" fill="#7A2A1A">Wireless alert sent</text>
+
+  <!-- BREWING → FAULT -->
+  <line x1="720" y1="210" x2="790" y2="288" stroke="#7A2A1A" stroke-width="1.5" marker-end="url(#bhr)"/>
+  <text x="722" y="260" font-size="9" fill="#7A2A1A">Fault detected</text>
+  <text x="722" y="271" font-size="9" fill="#7A2A1A">(temp / pressure</text>
+  <text x="722" y="282" font-size="9" fill="#7A2A1A">out of range)</text>
+
+  <!-- STANDBY → FAULT -->
+  <line x1="870" y1="210" x2="870" y2="288" stroke="#7A2A1A" stroke-width="1.5" marker-end="url(#bhr)"/>
+  <text x="875" y="252" font-size="9" fill="#7A2A1A">Monitor</text>
+  <text x="875" y="263" font-size="9" fill="#7A2A1A">detects fault</text>
+
+  <!-- FAULT → STANDBY (after service) -->
+  <path d="M 870 350 Q 940 400 940 440 Q 940 460 500 460 Q 250 460 200 360 Q 180 330 250 320" fill="none" stroke="#1A5C2A" stroke-width="1.5" stroke-dasharray="5 3" marker-end="url(#bhg)"/>
+  <text x="500" y="456" text-anchor="middle" font-size="9" fill="#1A5C2A">Fault cleared by service / reset → return to initialising</text>
+
+  <!-- MAINTENANCE state -->
+  <rect x="100" y="290" width="130" height="60" rx="10" fill="#EDE9F7" stroke="#3D2D7A" stroke-width="2"/>
+  <text x="165" y="313" text-anchor="middle" font-size="11" font-weight="700" fill="#3D2D7A">MAINTENANCE</text>
+  <text x="165" y="329" text-anchor="middle" font-size="10" fill="#3D2D7A">Housekeeping</text>
+  <text x="165" y="342" text-anchor="middle" font-size="10" fill="#3D2D7A">service cycle</text>
+
+  <!-- Standby → Maintenance -->
+  <line x1="250" y1="195" x2="195" y2="288" stroke="#3D2D7A" stroke-width="1.5" marker-end="url(#bh)"/>
+  <text x="185" y="246" font-size="9" fill="#3D2D7A">Housekeeping</text>
+  <text x="185" y="257" font-size="9" fill="#3D2D7A">access panel open</text>
+
+  <!-- Maintenance → Standby -->
+  <line x1="140" y1="288" x2="268" y2="212" stroke="#1A5C2A" stroke-width="1.5" marker-end="url(#bhg)"/>
+  <text x="142" y="260" font-size="9" fill="#1A5C2A">Panel closed</text>
+  <text x="142" y="271" font-size="9" fill="#1A5C2A">/ complete</text>
+
+  <!-- LEGEND -->
+  <rect x="20" y="390" width="200" height="78" rx="6" fill="white" stroke="#D8DDE6" stroke-width="1"/>
+  <text x="28" y="406" font-size="10" font-weight="700" fill="#1C2B4A">State transition legend</text>
+  <line x1="28" y1="418" x2="58" y2="418" stroke="#1C2B4A" stroke-width="1.5" marker-end="url(#bh)"/>
+  <text x="64" y="422" font-size="9" fill="#1C2B4A">Normal transition</text>
+  <line x1="28" y1="433" x2="58" y2="433" stroke="#7A2A1A" stroke-width="1.5" marker-end="url(#bhr)"/>
+  <text x="64" y="437" font-size="9" fill="#7A2A1A">Fault transition</text>
+  <line x1="28" y1="448" x2="58" y2="448" stroke="#1A5C2A" stroke-width="1.5" marker-end="url(#bhg)"/>
+  <text x="64" y="452" font-size="9" fill="#1A5C2A">Recovery transition</text>
+  <line x1="28" y1="463" x2="58" y2="463" stroke="#1C2B4A" stroke-width="1" stroke-dasharray="5 3" marker-end="url(#bh)"/>
+  <text x="64" y="467" font-size="9" fill="#1C2B4A">Conditional / async</text>
+</svg>
+<div class="diagram-caption">Figure 3 — System state model. Eight operational states with transition triggers and fault/recovery paths. <strong style="color:#C00000">Safety update (Safety Engineering Review):</strong> Two additional safety-priority states added: <strong>SAFE-SHUTDOWN</strong> (triggered by any hardware safety interlock — TCO trip, PRV activation, watchdog reset, overpressure sensor, enclosure thermistor ≥45°C) and <strong>FLUID-EMPTY</strong> (triggered by level sensor &lt; minimum on brew command). Both states de-energise all actuators and supersede all other state transitions. SAFE-SHUTDOWN recovers by power cycle only; FLUID-EMPTY recovers automatically on refill. Derived from SRS operational requirements and OPSCON use cases.</div>
+</div>
+
+<div class="diagram-wrap" style="margin-top:20px;">
+<div id="activity" style="scroll-margin-top:60px"></div>
+<svg viewBox="0 0 1000 320" width="100%" xmlns="http://www.w3.org/2000/svg" font-family="Calibri, Segoe UI, Arial, sans-serif">
+  <rect width="1000" height="320" fill="#F7F8FA" rx="8"/>
+  <text x="500" y="24" text-anchor="middle" font-size="13" font-weight="700" fill="#1C2B4A">Brew cycle activity sequence — primary use case (americano, standard volume)</text>
+
+  <defs>
+    <marker id="ach" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M1 1L9 5L1 9" fill="none" stroke="#1C2B4A" stroke-width="1.5" stroke-linecap="round"/>
+    </marker>
+    <marker id="ach-r" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M1 1L9 5L1 9" fill="none" stroke="#7A2A1A" stroke-width="1.5" stroke-linecap="round"/>
+    </marker>
+  </defs>
+
+  <!-- Swimlane headers -->
+  <rect x="10" y="36" width="130" height="270" rx="6" fill="#EDE9F7" opacity="0.4"/>
+  <text x="75" y="58" text-anchor="middle" font-size="10" font-weight="700" fill="#3D2D7A">USER</text>
+  <rect x="150" y="36" width="200" height="270" rx="6" fill="#E6F4F4" opacity="0.4"/>
+  <text x="250" y="58" text-anchor="middle" font-size="10" font-weight="700" fill="#0D5C5C">USER INTERFACE</text>
+  <rect x="360" y="36" width="200" height="270" rx="6" fill="#E8F0FA" opacity="0.4"/>
+  <text x="460" y="58" text-anchor="middle" font-size="10" font-weight="700" fill="#1A4B8C">CONTROL ASSEMBLY</text>
+  <rect x="570" y="36" width="200" height="270" rx="6" fill="#FDF3E0" opacity="0.4"/>
+  <text x="670" y="58" text-anchor="middle" font-size="10" font-weight="700" fill="#7A4E0D">THERMAL ASSEMBLY</text>
+  <rect x="780" y="36" width="200" height="270" rx="6" fill="#E8F5EC" opacity="0.4"/>
+  <text x="880" y="58" text-anchor="middle" font-size="10" font-weight="700" fill="#1A5C2A">FLUID STORE</text>
+
+  <!-- Activity boxes and flow -->
+  <!-- Step 1: User selects drink -->
+  <rect x="18" y="72" width="114" height="32" rx="6" fill="#EDE9F7" stroke="#3D2D7A" stroke-width="1.5"/>
+  <text x="75" y="86" text-anchor="middle" font-size="10" fill="#3D2D7A">Selects drink</text>
+  <text x="75" y="98" text-anchor="middle" font-size="10" fill="#3D2D7A">+ volume</text>
+
+  <line x1="132" y1="88" x2="150" y2="88" stroke="#1C2B4A" stroke-width="1.5" marker-end="url(#ach)"/>
+
+  <!-- Step 2: UI accepts, displays -->
+  <rect x="158" y="72" width="184" height="32" rx="6" fill="#E6F4F4" stroke="#0D5C5C" stroke-width="1.5"/>
+  <text x="250" y="86" text-anchor="middle" font-size="10" fill="#0D5C5C">Accepts selection</text>
+  <text x="250" y="98" text-anchor="middle" font-size="10" fill="#0D5C5C">Displays confirmation</text>
+
+  <line x1="342" y1="88" x2="360" y2="88" stroke="#1C2B4A" stroke-width="1.5" marker-end="url(#ach)"/>
+
+  <!-- Step 3: Control issues brew command -->
+  <rect x="368" y="72" width="184" height="32" rx="6" fill="#E8F0FA" stroke="#1A4B8C" stroke-width="1.5"/>
+  <text x="460" y="86" text-anchor="middle" font-size="10" fill="#1A4B8C">Issues brew command</text>
+  <text x="460" y="98" text-anchor="middle" font-size="10" fill="#1A4B8C">Sets temp/pressure targets</text>
+
+  <line x1="552" y1="88" x2="570" y2="88" stroke="#1C2B4A" stroke-width="1.5" marker-end="url(#ach)"/>
+
+  <!-- Step 4: Thermal heats up -->
+  <rect x="578" y="72" width="184" height="32" rx="6" fill="#FDF3E0" stroke="#7A4E0D" stroke-width="1.5"/>
+  <text x="670" y="86" text-anchor="middle" font-size="10" fill="#7A4E0D">Heats water to target</text>
+  <text x="670" y="98" text-anchor="middle" font-size="10" fill="#7A4E0D">temp · builds pressure</text>
+
+  <!-- Step 5: Fluid store supplies water -->
+  <line x1="880" y1="88" x2="762" y2="88" stroke="#7A4E0D" stroke-width="1.5" marker-end="url(#ach-r)"/>
+  <rect x="788" y="72" width="184" height="32" rx="6" fill="#E8F5EC" stroke="#1A5C2A" stroke-width="1.5"/>
+  <text x="880" y="86" text-anchor="middle" font-size="10" fill="#1A5C2A">Supplies water from</text>
+  <text x="880" y="98" text-anchor="middle" font-size="10" fill="#1A5C2A">reservoir to thermal</text>
+
+  <!-- Step 6: Control confirms ready -->
+  <line x1="460" y1="180" x2="460" y2="140" stroke="#1A4B8C" stroke-width="1" stroke-dasharray="3 3"/>
+  <rect x="368" y="140" width="184" height="32" rx="6" fill="#E8F0FA" stroke="#1A4B8C" stroke-width="1.5"/>
+  <text x="460" y="154" text-anchor="middle" font-size="10" fill="#1A4B8C">Confirms target</text>
+  <text x="460" y="166" text-anchor="middle" font-size="10" fill="#1A4B8C">conditions reached</text>
+
+  <line x1="552" y1="156" x2="570" y2="156" stroke="#1C2B4A" stroke-width="1.5" marker-end="url(#ach)"/>
+
+  <!-- Step 7: Thermal extracts and dispenses -->
+  <rect x="578" y="140" width="184" height="32" rx="6" fill="#FDF3E0" stroke="#7A4E0D" stroke-width="1.5"/>
+  <text x="670" y="154" text-anchor="middle" font-size="10" fill="#7A4E0D">Extracts coffee at</text>
+  <text x="670" y="166" text-anchor="middle" font-size="10" fill="#7A4E0D">0.9–1.3 bar → dispenses</text>
+
+  <!-- Step 8: Volume measured -->
+  <line x1="460" y1="250" x2="460" y2="210" stroke="#1A4B8C" stroke-width="1" stroke-dasharray="3 3"/>
+  <rect x="368" y="210" width="184" height="32" rx="6" fill="#E8F0FA" stroke="#1A4B8C" stroke-width="1.5"/>
+  <text x="460" y="224" text-anchor="middle" font-size="10" fill="#1A4B8C">Measures dispensed</text>
+  <text x="460" y="236" text-anchor="middle" font-size="10" fill="#1A4B8C">volume → cuts off at target</text>
+
+  <!-- Step 9: Beverage ready -->
+  <line x1="368" y1="226" x2="342" y2="226" stroke="#1C2B4A" stroke-width="1.5" marker-end="url(#ach)"/>
+  <rect x="158" y="210" width="184" height="32" rx="6" fill="#E6F4F4" stroke="#0D5C5C" stroke-width="1.5"/>
+  <text x="250" y="224" text-anchor="middle" font-size="10" fill="#0D5C5C">Displays beverage</text>
+  <text x="250" y="236" text-anchor="middle" font-size="10" fill="#0D5C5C">ready indication</text>
+
+  <line x1="158" y1="226" x2="132" y2="226" stroke="#1C2B4A" stroke-width="1.5" marker-end="url(#ach)"/>
+
+  <!-- Step 10: User collects -->
+  <rect x="18" y="210" width="114" height="32" rx="6" fill="#EDE9F7" stroke="#3D2D7A" stroke-width="1.5"/>
+  <text x="75" y="224" text-anchor="middle" font-size="10" fill="#3D2D7A">Collects beverage</text>
+  <text x="75" y="236" text-anchor="middle" font-size="10" fill="#3D2D7A">from outlet</text>
+
+  <!-- Timing annotation -->
+  <line x1="10" y1="290" x2="990" y2="290" stroke="#D8DDE6" stroke-width="1" stroke-dasharray="3 3"/>
+  <text x="500" y="305" text-anchor="middle" font-size="10" fill="#7A7A7A" font-style="italic">Total elapsed time: ≤180 seconds (SRS 4.11) · Thermal heat-up is primary time driver</text>
+</svg>
+<div class="diagram-caption">Figure 4 — Brew cycle activity sequence (swimlane). Primary use case: americano at user-selected volume. SRS 4.11 (≤180 seconds total) constrains the thermal heat-up time as the critical path element.</div>
+</div>
+
+
+<!-- ══════════════════════════════════════════════════════
+     SECTION 10 — OPERATIONAL VIEW
+══════════════════════════════════════════════════════ -->
+<div class="section-header">
+  <div class="section-num">10</div>
+  <div>
+    <div class="section-title">Operational view — human activity system</div>
+    <div class="section-sub">Who does what, when — actors, roles, and system interactions across the operational life — Operational View (Z8/MODAF)</div>
+  </div>
+</div>
+
+<p>The operational view describes how human actors interact with the system across its operational lifecycle. This is distinct from the behavioural view (which describes system states) — it shows the operational activities of people, their roles, and the information and material flows between them and the system. This view addresses the concerns of Vacation Stables operations, hotel guests, and CoffCo service teams.</p>
+
+<div class="diagram-wrap">
+<svg viewBox="0 0 1000 440" width="100%" xmlns="http://www.w3.org/2000/svg" font-family="Calibri, Segoe UI, Arial, sans-serif">
+  <rect width="1000" height="440" fill="#F7F8FA" rx="8"/>
+  <text x="500" y="24" text-anchor="middle" font-size="13" font-weight="700" fill="#1C2B4A">Operational view — actors, roles and system interactions across operational lifecycle</text>
+
+  <defs>
+    <marker id="oph" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M1 1L9 5L1 9" fill="none" stroke="#4A4A4A" stroke-width="1.5" stroke-linecap="round"/>
+    </marker>
+    <marker id="oph-t" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M1 1L9 5L1 9" fill="none" stroke="#3D2D7A" stroke-width="1.5" stroke-linecap="round"/>
+    </marker>
+  </defs>
+
+  <!-- SYSTEM (centre) -->
+  <rect x="380" y="160" width="240" height="130" rx="12" fill="#E8F0FA" stroke="#1A4B8C" stroke-width="2.5"/>
+  <text x="500" y="186" text-anchor="middle" font-size="12" font-weight="700" fill="#1A4B8C">CoffCo Machine</text>
+  <text x="500" y="202" text-anchor="middle" font-size="10" fill="#1A4B8C">[System of Interest]</text>
+  <rect x="392" y="210" width="216" height="18" rx="4" fill="#1A4B8C" opacity="0.1"/>
+  <text x="500" y="222" text-anchor="middle" font-size="10" fill="#1A4B8C">Brews · monitors · communicates</text>
+  <rect x="392" y="232" width="216" height="18" rx="4" fill="#1A4B8C" opacity="0.1"/>
+  <text x="500" y="244" text-anchor="middle" font-size="10" fill="#1A4B8C">Indicates status · deters theft</text>
+  <rect x="392" y="254" width="216" height="18" rx="4" fill="#1A4B8C" opacity="0.1"/>
+  <text x="500" y="266" text-anchor="middle" font-size="10" fill="#1A4B8C">Manages consumables</text>
+
+  <!-- ACTOR: HOTEL GUEST (left) -->
+  <rect x="30" y="160" width="180" height="130" rx="10" fill="#EDE9F7" stroke="#3D2D7A" stroke-width="1.5"/>
+  <text x="120" y="182" text-anchor="middle" font-size="11" font-weight="700" fill="#3D2D7A">Hotel Guest</text>
+  <text x="120" y="198" text-anchor="middle" font-size="10" fill="#3D2D7A">Primary user</text>
+  <text x="40" y="216" font-size="10" fill="#3D2D7A">• Selects drink and volume</text>
+  <text x="40" y="230" font-size="10" fill="#3D2D7A">• Places mug at outlet</text>
+  <text x="40" y="244" font-size="10" fill="#3D2D7A">• Collects beverage</text>
+  <text x="40" y="258" font-size="10" fill="#3D2D7A">• No training required</text>
+  <text x="40" y="272" font-size="10" fill="#3D2D7A">• No maintenance role</text>
+
+  <!-- Guest ↔ Machine -->
+  <line x1="210" y1="210" x2="378" y2="210" stroke="#3D2D7A" stroke-width="1.5" marker-end="url(#oph-t)"/>
+  <text x="270" y="204" font-size="9" fill="#3D2D7A">Selection input</text>
+  <line x1="378" y1="230" x2="210" y2="230" stroke="#3D2D7A" stroke-width="1.5" marker-end="url(#oph-t)"/>
+  <text x="255" y="244" font-size="9" fill="#3D2D7A">Beverage + status display</text>
+
+  <!-- ACTOR: HOUSEKEEPING (bottom-left) -->
+  <rect x="30" y="330" width="180" height="100" rx="10" fill="#FDF3E0" stroke="#7A4E0D" stroke-width="1.5"/>
+  <text x="120" y="352" text-anchor="middle" font-size="11" font-weight="700" fill="#7A4E0D">Housekeeping</text>
+  <text x="120" y="368" text-anchor="middle" font-size="10" fill="#7A4E0D">Vacation Stables staff</text>
+  <text x="40" y="386" font-size="10" fill="#7A4E0D">• Restocks consumables</text>
+  <text x="40" y="400" font-size="10" fill="#7A4E0D">• Refills water reservoir</text>
+  <text x="40" y="414" font-size="10" fill="#7A4E0D">• Cleans drip tray / waste</text>
+  <text x="40" y="428" font-size="10" fill="#7A4E0D">• No tools required</text>
+
+  <!-- Housekeeping ↔ Machine -->
+  <line x1="210" y1="360" x2="420" y2="290" stroke="#7A4E0D" stroke-width="1.5" marker-end="url(#oph)"/>
+  <text x="268" y="320" font-size="9" fill="#7A4E0D">Replenishes / cleans</text>
+  <line x1="400" y1="290" x2="180" y2="370" stroke="#7A4E0D" stroke-width="1.5" marker-end="url(#oph)"/>
+  <text x="228" y="348" font-size="9" fill="#7A4E0D">Status indication / alerts</text>
+
+  <!-- ACTOR: COFFCO SERVICE (right) -->
+  <rect x="790" y="160" width="180" height="130" rx="10" fill="#E8F5EC" stroke="#1A5C2A" stroke-width="1.5"/>
+  <text x="880" y="182" text-anchor="middle" font-size="11" font-weight="700" fill="#1A5C2A">CoffCo Service</text>
+  <text x="880" y="198" text-anchor="middle" font-size="10" fill="#1A5C2A">Remote + field teams</text>
+  <text x="800" y="216" font-size="10" fill="#1A5C2A">• Receives wireless alerts</text>
+  <text x="800" y="230" font-size="10" fill="#1A5C2A">• Monitors fleet health</text>
+  <text x="800" y="244" font-size="10" fill="#1A5C2A">• Dispatches field engineer</text>
+  <text x="800" y="258" font-size="10" fill="#1A5C2A">• Performs fault resolution</text>
+  <text x="800" y="272" font-size="10" fill="#1A5C2A">• Annual service (≥365d)</text>
+
+  <!-- CoffCo ↔ Machine (wireless) -->
+  <line x1="620" y1="210" x2="788" y2="210" stroke="#1A5C2A" stroke-width="1.5" stroke-dasharray="6 3" marker-end="url(#oph)"/>
+  <text x="670" y="204" font-size="9" fill="#1A5C2A">Wireless maint. status (SRS 1.9)</text>
+  <line x1="788" y1="232" x2="620" y2="232" stroke="#1A5C2A" stroke-width="1" stroke-dasharray="4 3" marker-end="url(#oph)"/>
+  <text x="660" y="246" font-size="9" fill="#1A5C2A">Remote config / diagnostics</text>
+
+  <!-- ACTOR: VACATION STABLES MANAGEMENT (top) -->
+  <rect x="380" y="36" width="240" height="100" rx="10" fill="#E6F4F4" stroke="#0D5C5C" stroke-width="1.5"/>
+  <text x="500" y="58" text-anchor="middle" font-size="11" font-weight="700" fill="#0D5C5C">Vacation Stables Mgmt</text>
+  <text x="500" y="74" text-anchor="middle" font-size="10" fill="#0D5C5C">Commercial partner + host</text>
+  <text x="390" y="92" font-size="10" fill="#0D5C5C">• Sets deployment parameters</text>
+  <text x="390" y="106" font-size="10" fill="#0D5C5C">• Manages housekeeping SOP</text>
+  <text x="390" y="120" font-size="10" fill="#0D5C5C">• Receives guest satisfaction data</text>
+
+  <!-- VS Mgmt ↔ Machine -->
+  <line x1="500" y1="136" x2="500" y2="158" stroke="#0D5C5C" stroke-width="1.5" marker-end="url(#oph)"/>
+  <text x="505" y="152" font-size="9" fill="#0D5C5C">Config / brand standards</text>
+  <line x1="480" y1="158" x2="480" y2="136" stroke="#0D5C5C" stroke-width="1" stroke-dasharray="4 3" marker-end="url(#oph)"/>
+  <text x="430" y="148" font-size="9" fill="#0D5C5C">Usage / satisfaction data</text>
+
+  <!-- ACTOR: INVESTORS (bottom-right) -->
+  <rect x="790" y="330" width="180" height="80" rx="10" fill="#FDECEA" stroke="#7A2A1A" stroke-width="1.5"/>
+  <text x="880" y="352" text-anchor="middle" font-size="11" font-weight="700" fill="#7A2A1A">Investors</text>
+  <text x="800" y="370" font-size="10" fill="#7A2A1A">• Review MVP architecture</text>
+  <text x="800" y="384" font-size="10" fill="#7A2A1A">• Assess commercial viability</text>
+  <text x="800" y="398" font-size="10" fill="#7A2A1A">• Commit prototype funding</text>
+
+  <!-- Investors ↔ System (indirect - via documentation) -->
+  <line x1="790" y1="360" x2="622" y2="280" stroke="#7A2A1A" stroke-width="1" stroke-dasharray="4 3" marker-end="url(#oph)"/>
+  <text x="680" y="330" font-size="9" fill="#7A2A1A">Architecture / MVP review</text>
+</svg>
+<div class="diagram-caption">Figure 5 — Operational view. Five actor types and their operational relationships with the system. Addresses Vacation Stables, guest, housekeeping, CoffCo service, and investor stakeholder concerns per Z9 MBSE ontology.</div>
+</div>
+
+
+
+<!-- ══════════════════════════════════════════════════════
+     SECTION 11 — ADDITIONAL ARCHITECTURE VIEWS
+══════════════════════════════════════════════════════ -->
+<div class="section-header">
+  <div class="section-num">11</div>
+  <div>
+    <div class="section-title">Additional architecture views</div>
+    <div class="section-sub">Context diagram, logical BDD, physical BDD, and activity diagram aligned to design review — updated assumptions and new requirement</div>
+  </div>
+</div>
+
+<p>These views use block definition diagram (BDD)ms and activity diagrams in DrawIO). This section reproduces those views for the CoffCo system, aligned with our existing architecture but using the architecture's naming conventions and decomposition approach. Where our architecture makes different choices from the architecture's, those differences are noted and justified.</p>
+
+<div class="align-note">
+  <strong>Note on implementation neutrality:</strong> The design review decomposes the Coffee Dispenser into components including Bean Storage Tank and Bean Grinder. Our architecture deliberately avoids this — the customer's URD does not specify coffee beans or any particular brewing technology, and specifying beans at this stage would lock us into one implementation and exclude viable alternatives (ground coffee, concentrate, capsules). Our physical BDD therefore shows components at the functional level only, consistent with our requirement not to design by requirements. This difference is recorded as a design philosophy decision, not an error.
+</div>
+
+<div class="align-note" style="background:var(--green-lt); border-left-color:var(--green);">
+  <strong style="color:var(--green);">New assumption A-09 and requirement NR-05:</strong> Assumption A-09 introduces the </div>
+
+<!-- ── DIAGRAM 1: CONTEXT DIAGRAM ── -->
+<div class="section-header" style="margin-top:32px;">
+  <div class="section-num" style="background:#0D5C5C; font-size:12px;">1</div>
+  <div>
+    <div class="section-title">Context diagram — CoffCo coffee machine system boundary</div>
+    <div class="section-sub">External actors and interface flows</div>
+  </div>
+</div>
+<p>The context diagram shows the CoffCo coffee machine as a single system-of-interest block with all external actors and the labelled interface flows between them. This is the boundary view — it defines what is inside the system and what is outside it.</p>
+
+<div class="diagram-wrap">
+<svg viewBox="0 0 900 520" width="100%" xmlns="http://www.w3.org/2000/svg" font-family="Calibri, Segoe UI, Arial, sans-serif">
+  <rect width="900" height="520" fill="#111418" rx="6"/>
+  <defs>
+    <marker id="ctx-arr" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M1 1L9 5L1 9" fill="none" stroke="#AACCCC" stroke-width="1.5" stroke-linecap="round"/>
+    </marker>
+  </defs>
+
+  <!-- SYSTEM OF INTEREST — centre -->
+  <rect x="280" y="160" width="340" height="200" rx="8" fill="none" stroke="#FFFFFF" stroke-width="2"/>
+  <text x="450" y="255" text-anchor="middle" font-size="16" font-weight="700" fill="#FFFFFF">CoffCo Coffee Machine</text>
+  <text x="450" y="275" text-anchor="middle" font-size="11" fill="#AACCCC">System of Interest</text>
+
+  <!-- ACTOR: Hotel Housekeeping (top) -->
+  <rect x="310" y="28" width="280" height="56" rx="6" fill="none" stroke="#AACCCC" stroke-width="1.5"/>
+  <text x="450" y="53" text-anchor="middle" font-size="13" font-weight="700" fill="#FFFFFF">Hotel Housekeeping</text>
+  <text x="450" y="70" text-anchor="middle" font-size="11" fill="#AACCCC">Vacation Stables staff</text>
+
+  <!-- Housekeeping flows: three clean vertical lines, clearly spaced -->
+  <!-- consumables: HK → machine (downward) -->
+  <line x1="390" y1="84" x2="390" y2="158" stroke="#AACCCC" stroke-width="1.2" marker-end="url(#ctx-arr)"/>
+  <text x="270" y="124" font-size="10" fill="#AACCCC">coffee consumables →</text>
+  <!-- coffee waste: machine → HK (upward) -->
+  <line x1="450" y1="158" x2="450" y2="84" stroke="#AACCCC" stroke-width="1.2" marker-end="url(#ctx-arr)"/>
+  <text x="455" y="115" font-size="10" fill="#AACCCC">← coffee waste</text>
+  <!-- limescale waste: machine → HK (upward) -->
+  <line x1="510" y1="158" x2="510" y2="84" stroke="#AACCCC" stroke-width="1.2" marker-end="url(#ctx-arr)"/>
+  <text x="515" y="135" font-size="10" fill="#AACCCC">← limescale waste</text>
+
+  <!-- ACTOR: Hotel Guest (right) -->
+  <rect x="690" y="175" width="180" height="170" rx="6" fill="none" stroke="#AACCCC" stroke-width="1.5"/>
+  <text x="780" y="255" text-anchor="middle" font-size="13" font-weight="700" fill="#FFFFFF">Hotel Guest</text>
+  <text x="780" y="272" text-anchor="middle" font-size="11" fill="#AACCCC">Primary user</text>
+
+  <!-- Guest flows — all horizontal, clearly separated -->
+  <line x1="688" y1="210" x2="622" y2="210" stroke="#AACCCC" stroke-width="1.2" marker-end="url(#ctx-arr)"/>
+  <text x="628" y="204" font-size="10" fill="#AACCCC">milk</text>
+  <line x1="688" y1="232" x2="622" y2="232" stroke="#AACCCC" stroke-width="1.2" marker-end="url(#ctx-arr)"/>
+  <text x="628" y="226" font-size="10" fill="#AACCCC">water</text>
+  <line x1="688" y1="254" x2="622" y2="254" stroke="#AACCCC" stroke-width="1.2" marker-end="url(#ctx-arr)"/>
+  <text x="624" y="248" font-size="10" fill="#AACCCC">coffee request</text>
+  <line x1="622" y1="278" x2="688" y2="278" stroke="#AACCCC" stroke-width="1.2" marker-end="url(#ctx-arr)"/>
+  <text x="628" y="293" font-size="10" fill="#AACCCC">coffee</text>
+
+  <!-- ACTOR: Room Power Supply (left) -->
+  <rect x="30" y="200" width="185" height="60" rx="6" fill="none" stroke="#AACCCC" stroke-width="1.5"/>
+  <text x="122" y="225" text-anchor="middle" font-size="13" font-weight="700" fill="#FFFFFF">Room Power Supply</text>
+  <text x="122" y="243" text-anchor="middle" font-size="11" fill="#AACCCC">110–240V AC</text>
+
+  <!-- Power flow — clean horizontal into left edge of system box -->
+  <line x1="215" y1="230" x2="278" y2="230" stroke="#AACCCC" stroke-width="1.2" marker-end="url(#ctx-arr)"/>
+  <text x="218" y="224" font-size="10" fill="#AACCCC">electrical power</text>
+
+  <!-- ACTOR: CoffCo Server (bottom) -->
+  <rect x="310" y="432" width="280" height="56" rx="6" fill="none" stroke="#AACCCC" stroke-width="1.5"/>
+  <text x="450" y="457" text-anchor="middle" font-size="13" font-weight="700" fill="#FFFFFF">CoffCo Server</text>
+  <text x="450" y="474" text-anchor="middle" font-size="11" fill="#AACCCC">Remote monitoring and OTA</text>
+
+  <!-- Server flows — clean vertical lines from system box bottom -->
+  <!-- maintenance status: machine → server (downward) -->
+  <line x1="420" y1="360" x2="420" y2="430" stroke="#AACCCC" stroke-width="1.2" marker-end="url(#ctx-arr)"/>
+  <text x="272" y="398" font-size="10" fill="#AACCCC">maintenance status →</text>
+  <!-- OTA updates: server → machine (upward) -->
+  <line x1="480" y1="430" x2="480" y2="360" stroke="#AACCCC" stroke-width="1.2" marker-end="url(#ctx-arr)"/>
+  <text x="485" y="408" font-size="10" fill="#AACCCC">← OTA updates</text>
+
+  <!-- Title -->
+  <text x="450" y="510" text-anchor="middle" font-size="11" fill="#556677" font-style="italic">Context Diagram — CoffCo Coffee Machine | COFFCO-ARCH-001 v2.2</text>
+</svg>
+<div class="diagram-caption">Figure 6 — Context diagram. System boundary with all external actors and labelled interface flows. Adds CoffCo Server (OTA updates / maintenance status, SRS 1.9) and separates milk from water as distinct guest-provided inputs (Assumption A-09).</div>
+</div>
+
+<!-- ── DIAGRAM 2: LOGICAL BDD ── -->
+<div class="section-header" style="margin-top:32px;">
+  <div class="section-num" style="background:#1A4B8C; font-size:12px;">2</div>
+  <div>
+    <div class="section-title">Logical Block Definition Diagram (BDD) — functional decomposition</div>
+    <div class="section-sub">Top-level and first-level functional blocks</div>
+  </div>
+</div>
+<p>The logical BDD decomposes the CoffCo coffee machine into its four primary functional blocks.sition (filled diamond = composition). The block names align with the design review. Each block is labelled with the SRS requirements it satisfies.</p>
+
+<div class="diagram-wrap">
+<svg viewBox="0 0 900 340" width="100%" xmlns="http://www.w3.org/2000/svg" font-family="Calibri, Segoe UI, Arial, sans-serif">
+  <rect width="900" height="340" fill="#111418" rx="6"/>
+
+  <!-- TOP BLOCK -->
+  <rect x="290" y="28" width="320" height="56" rx="4" fill="none" stroke="#FFFFFF" stroke-width="2"/>
+  <text x="450" y="53" text-anchor="middle" font-size="14" font-weight="700" fill="#FFFFFF">CoffCo Coffee Machine</text>
+  <text x="450" y="72" text-anchor="middle" font-size="11" fill="#AACCCC">«block»</text>
+
+  <!-- Composition diamond -->
+  <polygon points="450,84 456,96 450,108 444,96" fill="#FFFFFF" stroke="#FFFFFF" stroke-width="1"/>
+  <line x1="100" y1="96" x2="444" y2="96" stroke="#FFFFFF" stroke-width="1.5"/>
+  <line x1="800" y1="96" x2="456" y2="96" stroke="#FFFFFF" stroke-width="1.5"/>
+  <line x1="100" y1="96" x2="100" y2="180" stroke="#FFFFFF" stroke-width="1.5"/>
+  <line x1="333" y1="96" x2="333" y2="180" stroke="#FFFFFF" stroke-width="1.5"/>
+  <line x1="567" y1="96" x2="567" y2="180" stroke="#FFFFFF" stroke-width="1.5"/>
+  <line x1="800" y1="96" x2="800" y2="180" stroke="#FFFFFF" stroke-width="1.5"/>
+
+  <!-- BLOCK 1: Coffee Dispenser -->
+  <rect x="28" y="180" width="144" height="88" rx="4" fill="none" stroke="#AACCCC" stroke-width="1.5"/>
+  <text x="100" y="208" text-anchor="middle" font-size="12" font-weight="700" fill="#FFFFFF">Coffee Dispenser</text>
+  <text x="100" y="226" text-anchor="middle" font-size="10" fill="#AACCCC">«block»</text>
+  <text x="100" y="244" text-anchor="middle" font-size="9" fill="#88AAAA">SRS 1.1, 1.5, 4.1,</text>
+  <text x="100" y="257" text-anchor="middle" font-size="9" fill="#88AAAA">4.4, 4.5, 4.6, 4.7</text>
+
+  <!-- BLOCK 2: Milk Frother -->
+  <rect x="261" y="180" width="144" height="88" rx="4" fill="none" stroke="#AACCCC" stroke-width="1.5"/>
+  <text x="333" y="208" text-anchor="middle" font-size="12" font-weight="700" fill="#FFFFFF">Milk Frother</text>
+  <text x="333" y="226" text-anchor="middle" font-size="10" fill="#AACCCC">«block»</text>
+  <text x="333" y="244" text-anchor="middle" font-size="9" fill="#88AAAA">SRS 1.2, 4.2, 4.3</text>
+  <text x="333" y="257" text-anchor="middle" font-size="9" fill="#88AAAA">NR-05 (refrigeration)</text>
+
+  <!-- BLOCK 3: Water Store -->
+  <rect x="495" y="180" width="144" height="88" rx="4" fill="none" stroke="#AACCCC" stroke-width="1.5"/>
+  <text x="567" y="208" text-anchor="middle" font-size="12" font-weight="700" fill="#FFFFFF">Water Store</text>
+  <text x="567" y="226" text-anchor="middle" font-size="10" fill="#AACCCC">«block»</text>
+  <text x="567" y="244" text-anchor="middle" font-size="9" fill="#88AAAA">SRS 1.4, 1.6, 1.7,</text>
+  <text x="567" y="257" text-anchor="middle" font-size="9" fill="#88AAAA">2.5, NR-01</text>
+
+  <!-- BLOCK 4: Drip Collector -->
+  <rect x="728" y="180" width="144" height="88" rx="4" fill="none" stroke="#AACCCC" stroke-width="1.5"/>
+  <text x="800" y="208" text-anchor="middle" font-size="12" font-weight="700" fill="#FFFFFF">Drip Collector</text>
+  <text x="800" y="226" text-anchor="middle" font-size="10" fill="#AACCCC">«block»</text>
+  <text x="800" y="244" text-anchor="middle" font-size="9" fill="#88AAAA">SRS 3.7</text>
+  <text x="800" y="257" text-anchor="middle" font-size="9" fill="#88AAAA">A-09 (waste)</text>
+
+  <!-- Legend -->
+  <polygon points="60,300 64,308 60,316 56,308" fill="#FFFFFF" stroke="#FFFFFF" stroke-width="1"/>
+  <line x1="64" y1="308" x2="90" y2="308" stroke="#FFFFFF" stroke-width="1.2"/>
+  <text x="95" y="313" font-size="10" fill="#AACCCC">Composition (whole contains part)</text>
+
+  <text x="450" y="330" text-anchor="middle" font-size="11" fill="#556677" font-style="italic">Logical BDD — CoffCo Coffee Machine top-level decomposition | COFFCO-ARCH-001 v2.2</text>
+</svg>
+<div class="diagram-caption">Figure 7 — Logical BDD (top level). Four functional blocks with SRS requirement allocation. Block names match design review; SRS references link blocks to the requirement baseline.</div>
+</div>
+
+<!-- ── DIAGRAM 3: PHYSICAL BDD ── -->
+<div class="section-header" style="margin-top:32px;">
+  <div class="section-num" style="background:#3D2D7A; font-size:12px;">3</div>
+  <div>
+    <div class="section-title">Physical Block Definition Diagram (BDD) — component decomposition</div>
+    <div class="section-sub">Second-level decomposition into physical components</div>
+  </div>
+</div>
+<p>The physical BDD decomposes each logical block one level further into the physical components that realise it. Component naming is deliberately kept at the functional level — we do not specify, for example, a bean grinder vs. a capsule mechanism, as that remains an implementation decision deferred to detail design and not mandated by the customer's requirements.</p>
+
+<div class="diagram-wrap">
+<svg viewBox="0 0 1040 440" width="100%" xmlns="http://www.w3.org/2000/svg" font-family="Calibri, Segoe UI, Arial, sans-serif">
+  <rect width="1040" height="440" fill="#111418" rx="6"/>
+
+  <!-- TOP BLOCK -->
+  <rect x="340" y="18" width="360" height="50" rx="4" fill="none" stroke="#FFFFFF" stroke-width="2"/>
+  <text x="520" y="42" text-anchor="middle" font-size="14" font-weight="700" fill="#FFFFFF">CoffCo Coffee Machine</text>
+  <text x="520" y="58" text-anchor="middle" font-size="10" fill="#AACCCC">«block»</text>
+
+  <!-- Top composition diamond -->
+  <polygon points="520,68 526,78 520,88 514,78" fill="#FFFFFF" stroke="#FFFFFF" stroke-width="1"/>
+  <line x1="120" y1="78" x2="514" y2="78" stroke="#FFFFFF" stroke-width="1.5"/>
+  <line x1="920" y1="78" x2="526" y2="78" stroke="#FFFFFF" stroke-width="1.5"/>
+  <line x1="120" y1="78" x2="120" y2="142" stroke="#FFFFFF" stroke-width="1.5"/>
+  <line x1="380" y1="78" x2="380" y2="142" stroke="#FFFFFF" stroke-width="1.5"/>
+  <line x1="660" y1="78" x2="660" y2="142" stroke="#FFFFFF" stroke-width="1.5"/>
+  <line x1="920" y1="78" x2="920" y2="142" stroke="#FFFFFF" stroke-width="1.5"/>
+
+  <!-- L2 BLOCK: Coffee Dispenser -->
+  <rect x="30" y="142" width="180" height="50" rx="4" fill="none" stroke="#FFFFFF" stroke-width="2"/>
+  <text x="120" y="166" text-anchor="middle" font-size="12" font-weight="700" fill="#FFFFFF">Coffee Dispenser</text>
+  <text x="120" y="182" text-anchor="middle" font-size="10" fill="#AACCCC">«block»</text>
+
+  <!-- Coffee Dispenser composition -->
+  <polygon points="120,192 126,202 120,212 114,202" fill="#FFFFFF" stroke="#FFFFFF" stroke-width="1"/>
+  <line x1="42" y1="202" x2="114" y2="202" stroke="#FFFFFF" stroke-width="1.2"/>
+  <line x1="198" y1="202" x2="126" y2="202" stroke="#FFFFFF" stroke-width="1.2"/>
+  <line x1="42" y1="202" x2="42" y2="262" stroke="#FFFFFF" stroke-width="1.2"/>
+  <line x1="120" y1="202" x2="120" y2="262" stroke="#FFFFFF" stroke-width="1.2"/>
+  <line x1="198" y1="202" x2="198" y2="262" stroke="#FFFFFF" stroke-width="1.2"/>
+  <!-- Coffee Dispenser children -->
+  <rect x="10" y="262" width="64" height="56" rx="3" fill="none" stroke="#AACCCC" stroke-width="1.2"/>
+  <text x="42" y="285" text-anchor="middle" font-size="9" fill="#FFFFFF">Consumable</text>
+  <text x="42" y="297" text-anchor="middle" font-size="9" fill="#FFFFFF">Store</text>
+  <text x="42" y="310" text-anchor="middle" font-size="8" fill="#88AAAA">SRS 1.4</text>
+  <rect x="88" y="262" width="64" height="56" rx="3" fill="none" stroke="#AACCCC" stroke-width="1.2"/>
+  <text x="120" y="285" text-anchor="middle" font-size="9" fill="#FFFFFF">Brew</text>
+  <text x="120" y="297" text-anchor="middle" font-size="9" fill="#FFFFFF">Mechanism</text>
+  <text x="120" y="310" text-anchor="middle" font-size="8" fill="#88AAAA">SRS 1.1, 1.5</text>
+  <rect x="166" y="262" width="64" height="56" rx="3" fill="none" stroke="#AACCCC" stroke-width="1.2"/>
+  <text x="198" y="285" text-anchor="middle" font-size="9" fill="#FFFFFF">Dispense</text>
+  <text x="198" y="297" text-anchor="middle" font-size="9" fill="#FFFFFF">Outlet</text>
+  <text x="198" y="310" text-anchor="middle" font-size="8" fill="#88AAAA">SRS 2.7, 4.6, 4.7</text>
+
+  <!-- L2 BLOCK: Milk Frother -->
+  <rect x="290" y="142" width="180" height="50" rx="4" fill="none" stroke="#FFFFFF" stroke-width="2"/>
+  <text x="380" y="166" text-anchor="middle" font-size="12" font-weight="700" fill="#FFFFFF">Milk Frother</text>
+  <text x="380" y="182" text-anchor="middle" font-size="10" fill="#AACCCC">«block»</text>
+  <!-- Milk Frother composition -->
+  <polygon points="380,192 386,202 380,212 374,202" fill="#FFFFFF" stroke="#FFFFFF" stroke-width="1"/>
+  <line x1="316" y1="202" x2="374" y2="202" stroke="#FFFFFF" stroke-width="1.2"/>
+  <line x1="444" y1="202" x2="386" y2="202" stroke="#FFFFFF" stroke-width="1.2"/>
+  <line x1="316" y1="202" x2="316" y2="262" stroke="#FFFFFF" stroke-width="1.2"/>
+  <line x1="380" y1="202" x2="380" y2="262" stroke="#FFFFFF" stroke-width="1.2"/>
+  <line x1="444" y1="202" x2="444" y2="262" stroke="#FFFFFF" stroke-width="1.2"/>
+  <!-- Milk Frother children -->
+  <rect x="284" y="262" width="64" height="56" rx="3" fill="none" stroke="#AACCCC" stroke-width="1.2"/>
+  <text x="316" y="285" text-anchor="middle" font-size="9" fill="#FFFFFF">Milk</text>
+  <text x="316" y="297" text-anchor="middle" font-size="9" fill="#FFFFFF">Refrigeration</text>
+  <text x="316" y="310" text-anchor="middle" font-size="8" fill="#88AAAA">NR-05</text>
+  <rect x="348" y="262" width="64" height="56" rx="3" fill="none" stroke="#AACCCC" stroke-width="1.2"/>
+  <text x="380" y="285" text-anchor="middle" font-size="9" fill="#FFFFFF">Milk Heater</text>
+  <text x="380" y="310" text-anchor="middle" font-size="8" fill="#88AAAA">SRS 1.2, 4.2, 4.3</text>
+  <rect x="412" y="262" width="64" height="56" rx="3" fill="none" stroke="#AACCCC" stroke-width="1.2"/>
+  <text x="444" y="285" text-anchor="middle" font-size="9" fill="#FFFFFF">Milk Whisk /</text>
+  <text x="444" y="297" text-anchor="middle" font-size="9" fill="#FFFFFF">Frother</text>
+  <text x="444" y="310" text-anchor="middle" font-size="8" fill="#88AAAA">SRS 1.2</text>
+
+  <!-- L2 BLOCK: Water Store -->
+  <rect x="570" y="142" width="180" height="50" rx="4" fill="none" stroke="#FFFFFF" stroke-width="2"/>
+  <text x="660" y="166" text-anchor="middle" font-size="12" font-weight="700" fill="#FFFFFF">Water Store</text>
+  <text x="660" y="182" text-anchor="middle" font-size="10" fill="#AACCCC">«block»</text>
+  <!-- Water Store composition -->
+  <polygon points="660,192 666,202 660,212 654,202" fill="#FFFFFF" stroke="#FFFFFF" stroke-width="1"/>
+  <line x1="596" y1="202" x2="654" y2="202" stroke="#FFFFFF" stroke-width="1.2"/>
+  <line x1="724" y1="202" x2="666" y2="202" stroke="#FFFFFF" stroke-width="1.2"/>
+  <line x1="596" y1="202" x2="596" y2="262" stroke="#FFFFFF" stroke-width="1.2"/>
+  <line x1="660" y1="202" x2="660" y2="262" stroke="#FFFFFF" stroke-width="1.2"/>
+  <line x1="724" y1="202" x2="724" y2="262" stroke="#FFFFFF" stroke-width="1.2"/>
+  <!-- Water Store children -->
+  <rect x="564" y="262" width="64" height="56" rx="3" fill="none" stroke="#AACCCC" stroke-width="1.2"/>
+  <text x="596" y="285" text-anchor="middle" font-size="9" fill="#FFFFFF">Storage</text>
+  <text x="596" y="297" text-anchor="middle" font-size="9" fill="#FFFFFF">Tank</text>
+  <text x="596" y="310" text-anchor="middle" font-size="8" fill="#88AAAA">NR-01</text>
+  <rect x="628" y="262" width="64" height="56" rx="3" fill="none" stroke="#AACCCC" stroke-width="1.2"/>
+  <text x="660" y="285" text-anchor="middle" font-size="9" fill="#FFFFFF">Water</text>
+  <text x="660" y="297" text-anchor="middle" font-size="9" fill="#FFFFFF">Filter</text>
+  <text x="660" y="310" text-anchor="middle" font-size="8" fill="#88AAAA">SRS 1.6</text>
+  <rect x="692" y="262" width="64" height="56" rx="3" fill="none" stroke="#AACCCC" stroke-width="1.2"/>
+  <text x="724" y="285" text-anchor="middle" font-size="9" fill="#FFFFFF">Level</text>
+  <text x="724" y="297" text-anchor="middle" font-size="9" fill="#FFFFFF">Indicator</text>
+  <text x="724" y="310" text-anchor="middle" font-size="8" fill="#88AAAA">SRS 1.7</text>
+
+  <!-- L2 BLOCK: Drip Collector -->
+  <rect x="830" y="142" width="180" height="50" rx="4" fill="none" stroke="#FFFFFF" stroke-width="2"/>
+  <text x="920" y="166" text-anchor="middle" font-size="12" font-weight="700" fill="#FFFFFF">Drip Collector</text>
+  <text x="920" y="182" text-anchor="middle" font-size="10" fill="#AACCCC">«block»</text>
+  <!-- Drip Collector — no sub-decomposition at this level -->
+  <text x="920" y="220" text-anchor="middle" font-size="9" fill="#88AAAA">SRS 3.7</text>
+  <text x="920" y="234" text-anchor="middle" font-size="9" fill="#88AAAA">Collects beverage drips</text>
+  <text x="920" y="248" text-anchor="middle" font-size="9" fill="#88AAAA">Removable tray</text>
+
+  <text x="520" y="428" text-anchor="middle" font-size="11" fill="#556677" font-style="italic">Physical BDD — CoffCo Coffee Machine two-level decomposition | COFFCO-ARCH-001 v2.2</text>
+</svg>
+<div class="diagram-caption">Figure 8 — Physical BDD. Two-level decomposition showing functional components. Milk Frother includes a Milk Refrigeration component (new, driven by Assumption A-09 / NR-05). Components remain technology-neutral — Brew Mechanism does not specify bean grinder, capsule, or other technology per our requirement not to constrain implementation prematurely.</div>
+</div>
+
+<!-- ── DIAGRAM 4: ACTIVITY DIAGRAM ── -->
+<div class="section-header" style="margin-top:32px;">
+  <div class="section-num" style="background:#0D5C5C; font-size:12px;">4</div>
+  <div>
+    <div class="section-title">Activity diagram — making a coffee from scratch (full cycle)</div>
+    <div class="section-sub">Swimlane activity diagram across all internal blocks and hotel guest</div>
+  </div>
+</div>
+<p>This activity diagram models the full coffee-making process from a fresh start, with the system decomposed into its four first-level physical blocks as swimlanes. Hotel Guest initiates and receives the beverage. The diagram shows internal interfaces (filtered water, frothed milk, coffee drips) that form the basis of the Interface Control Document.</p>
+
+<div class="diagram-wrap">
+<svg viewBox="0 0 1020 620" width="1020" height="620" xmlns="http://www.w3.org/2000/svg" font-family="Arial, sans-serif">
+  <rect width="1020" height="620" fill="#111418"/>
+  <defs>
+    <marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M1 1L9 5L1 9" fill="none" stroke="#AACCCC" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
+    </marker>
+    <marker id="arrw" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M1 1L9 5L1 9" fill="none" stroke="#FFFFFF" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
+    </marker>
+  </defs>
+
+  <!-- ═══ LANE BOUNDARIES ═══
+       Lane centres:  Guest=100  CoffeeDisp=300  MilkFrother=500  WaterStore=700  DripCollector=900
+       Lane edges:    10|190  210|390  410|590  610|790  810|1010
+       Block width=150, so blocks sit at: lane_centre-75 to lane_centre+75
+       Guest blocks:    x=25–175
+       CoffeeDisp:      x=225–375
+       MilkFrother:     x=425–575
+       WaterStore:      x=625–775
+       DripCollector:   x=825–975
+  -->
+
+  <!-- Lane header backgrounds -->
+  <rect x="10"  y="8"  width="180" height="28" rx="3" fill="#1A2A3A"/>
+  <rect x="210" y="8"  width="180" height="28" rx="3" fill="#1A2A3A"/>
+  <rect x="410" y="8"  width="180" height="28" rx="3" fill="#1A2A3A"/>
+  <rect x="610" y="8"  width="180" height="28" rx="3" fill="#1A2A3A"/>
+  <rect x="810" y="8"  width="200" height="28" rx="3" fill="#1A2A3A"/>
+
+  <!-- Lane header text -->
+  <text x="100" y="27" text-anchor="middle" font-size="12" font-weight="bold" fill="#FFFFFF">Hotel Guest</text>
+  <text x="300" y="27" text-anchor="middle" font-size="12" font-weight="bold" fill="#FFFFFF">Coffee Dispenser</text>
+  <text x="500" y="27" text-anchor="middle" font-size="12" font-weight="bold" fill="#FFFFFF">Milk Frother</text>
+  <text x="700" y="27" text-anchor="middle" font-size="12" font-weight="bold" fill="#FFFFFF">Water Store</text>
+  <text x="910" y="27" text-anchor="middle" font-size="12" font-weight="bold" fill="#FFFFFF">Drip Collector</text>
+
+  <!-- Lane dividers -->
+  <line x1="210" y1="8"  x2="210" y2="608" stroke="#2A3A4A" stroke-width="1" stroke-dasharray="5 4"/>
+  <line x1="410" y1="8"  x2="410" y2="608" stroke="#2A3A4A" stroke-width="1" stroke-dasharray="5 4"/>
+  <line x1="610" y1="8"  x2="610" y2="608" stroke="#2A3A4A" stroke-width="1" stroke-dasharray="5 4"/>
+  <line x1="810" y1="8"  x2="810" y2="608" stroke="#2A3A4A" stroke-width="1" stroke-dasharray="5 4"/>
+
+  <!-- ═══ ROW LAYOUT (top of block y-values)
+       Row 1  y=50:   START
+       Row 2  y=70:   Request coffee (Guest) | Dispense consumable (CoffeeDisp)
+       Row 3  y=140:  Provide milk (Guest)   | Heat water (CoffeeDisp) | [gap in MilkFrother] | Filter water (WaterStore)
+       Row 4  y=210:  [gap Guest]             | Extract coffee (CoffeeDisp) | Refrigerate milk (MilkFrother)
+       Row 5  y=285:  FORK BAR
+       Row 6  y=305:  [gap]                   | Infuse coffee (CoffeeDisp) | Froth milk (MilkFrother)
+       Row 7  y=375:  [gap]                   | Add milk (CoffeeDisp)      | Provide frothed milk (MilkFrother)
+       Row 8  y=450:  JOIN BAR
+       Row 9  y=470:  Receive coffee (Guest)  | Dispense coffee (CoffeeDisp) | [gap] | [gap] | Collect drips (DripColl)
+       Row 10 y=545:  END
+  ═══ -->
+
+  <!-- START dot -->
+  <circle cx="100" cy="52" r="9" fill="#FFFFFF"/>
+  <line x1="100" y1="61" x2="100" y2="75" stroke="#FFFFFF" stroke-width="1.5" marker-end="url(#arrw)"/>
+
+  <!-- ─── ROW 2: Request coffee (Guest) + Dispense consumable (CoffeeDisp) ─── -->
+  <rect x="25"  y="77" width="150" height="42" rx="7" fill="none" stroke="#FFFFFF"  stroke-width="1.5"/>
+  <text x="100" y="97"  text-anchor="middle" font-size="11" fill="#FFFFFF">Request coffee</text>
+  <text x="100" y="112" text-anchor="middle" font-size="9"  fill="#AACCCC">(drink + volume)</text>
+
+  <rect x="225" y="77" width="150" height="42" rx="7" fill="none" stroke="#AACCCC" stroke-width="1.5"/>
+  <text x="300" y="97"  text-anchor="middle" font-size="11" fill="#FFFFFF">Dispense</text>
+  <text x="300" y="112" text-anchor="middle" font-size="11" fill="#FFFFFF">consumable</text>
+
+  <!-- coffee request: right edge of Request coffee (x=175) → left edge of Dispense (x=225) -->
+  <line x1="175" y1="98" x2="225" y2="98" stroke="#AACCCC" stroke-width="1.2" marker-end="url(#arr)"/>
+  <text x="178" y="93" font-size="8" fill="#AACCCC">coffee request</text>
+
+  <!-- Dispense → Heat water (vertical within CoffeeDisp lane) -->
+  <line x1="300" y1="119" x2="300" y2="144" stroke="#AACCCC" stroke-width="1.2" marker-end="url(#arr)"/>
+
+  <!-- Request coffee → Provide milk (vertical within Guest lane) -->
+  <line x1="100" y1="119" x2="100" y2="144" stroke="#FFFFFF" stroke-width="1.2" marker-end="url(#arrw)"/>
+
+  <!-- ─── ROW 3: Provide milk (Guest) + Heat water (CoffeeDisp) + Filter water (WaterStore) ─── -->
+  <rect x="25"  y="146" width="150" height="42" rx="7" fill="none" stroke="#FFFFFF"  stroke-width="1.5"/>
+  <text x="100" y="166" text-anchor="middle" font-size="11" fill="#FFFFFF">Provide milk</text>
+  <text x="100" y="181" text-anchor="middle" font-size="9"  fill="#AACCCC">(to machine)</text>
+
+  <rect x="225" y="146" width="150" height="42" rx="7" fill="none" stroke="#AACCCC" stroke-width="1.5"/>
+  <text x="300" y="166" text-anchor="middle" font-size="11" fill="#FFFFFF">Heat water</text>
+  <text x="300" y="181" text-anchor="middle" font-size="9"  fill="#AACCCC">to target temp</text>
+
+  <rect x="625" y="146" width="150" height="42" rx="7" fill="none" stroke="#AACCCC" stroke-width="1.5"/>
+  <text x="700" y="166" text-anchor="middle" font-size="11" fill="#FFFFFF">Filter and</text>
+  <text x="700" y="181" text-anchor="middle" font-size="11" fill="#FFFFFF">supply water</text>
+
+  <!-- milk: right edge of Provide milk (x=175) → left edge of Milk Frother lane (x=410) — ABOVE row 3 at y=150 -->
+  <!-- Route: up from Provide milk top (y=146) to y=136, across to x=410, down to Refrigerate milk at row 4 -->
+  <line x1="100" y1="146" x2="100" y2="134" stroke="#AACCCC" stroke-width="1.2"/>
+  <line x1="100" y1="134" x2="500" y2="134" stroke="#AACCCC" stroke-width="1.2"/>
+  <line x1="500" y1="134" x2="500" y2="214" stroke="#AACCCC" stroke-width="1.2" marker-end="url(#arr)"/>
+  <text x="240" y="129" font-size="8" fill="#AACCCC">milk</text>
+
+  <!-- filtered water: Water Store left edge (x=625) → route below row3/row4 at y=200 → CoffeeDisp right edge x=376 -->
+  <!-- Both Heat water (y=146-188) and Refrigerate milk (y=216-258) are in the way of a straight horizontal -->
+  <!-- Route: Water Store left (x=625, y=167) → left to x=612 → down to y=200 → left to x=376 → up to Heat water bottom (y=188) -->
+  <line x1="625" y1="167" x2="612" y2="167" stroke="#AACCCC" stroke-width="1.2"/>
+  <line x1="612" y1="167" x2="612" y2="200" stroke="#AACCCC" stroke-width="1.2"/>
+  <line x1="612" y1="200" x2="376" y2="200" stroke="#AACCCC" stroke-width="1.2"/>
+  <line x1="376" y1="200" x2="376" y2="188" stroke="#AACCCC" stroke-width="1.2" marker-end="url(#arr)"/>
+  <text x="460" y="196" font-size="8" fill="#AACCCC">filtered water</text>
+
+  <!-- Heat water → Extract coffee (vertical) -->
+  <line x1="300" y1="188" x2="300" y2="214" stroke="#AACCCC" stroke-width="1.2" marker-end="url(#arr)"/>
+
+  <!-- ─── ROW 4: Extract coffee (CoffeeDisp) + Refrigerate milk (MilkFrother) ─── -->
+  <rect x="225" y="216" width="150" height="42" rx="7" fill="none" stroke="#AACCCC" stroke-width="1.5"/>
+  <text x="300" y="236" text-anchor="middle" font-size="11" fill="#FFFFFF">Extract coffee</text>
+  <text x="300" y="251" text-anchor="middle" font-size="9"  fill="#AACCCC">0.9–1.3 bar</text>
+
+  <rect x="425" y="216" width="150" height="42" rx="7" fill="none" stroke="#AACCCC" stroke-width="1.5"/>
+  <text x="500" y="236" text-anchor="middle" font-size="11" fill="#FFFFFF">Refrigerate milk</text>
+  <text x="500" y="251" text-anchor="middle" font-size="9"  fill="#AACCCC">≤4°C  (NR-05)</text>
+
+  <!-- Extract coffee → FORK BAR -->
+  <line x1="300" y1="258" x2="300" y2="282" stroke="#AACCCC" stroke-width="1.2" marker-end="url(#arr)"/>
+
+  <!-- ─── FORK BAR y=284 ─── -->
+  <rect x="225" y="284" width="350" height="5" rx="2" fill="#AACCCC"/>
+  <text x="400" y="300" text-anchor="middle" font-size="8" fill="#AACCCC" font-style="italic">parallel: infuse coffee AND froth milk</text>
+  <!-- Fork → Infuse coffee -->
+  <line x1="300" y1="289" x2="300" y2="312" stroke="#AACCCC" stroke-width="1.2" marker-end="url(#arr)"/>
+  <!-- Fork → Froth milk (froth request crosses from CoffeeDisp lane to MilkFrother lane) -->
+  <line x1="500" y1="289" x2="500" y2="312" stroke="#AACCCC" stroke-width="1.2" marker-end="url(#arr)"/>
+  <text x="504" y="304" font-size="8" fill="#AACCCC">froth request</text>
+
+  <!-- ─── ROW 6: Infuse coffee (CoffeeDisp) + Froth milk (MilkFrother) ─── -->
+  <rect x="225" y="314" width="150" height="42" rx="7" fill="none" stroke="#AACCCC" stroke-width="1.5"/>
+  <text x="300" y="338" text-anchor="middle" font-size="11" fill="#FFFFFF">Infuse coffee</text>
+
+  <rect x="425" y="314" width="150" height="42" rx="7" fill="none" stroke="#AACCCC" stroke-width="1.5"/>
+  <text x="500" y="334" text-anchor="middle" font-size="11" fill="#FFFFFF">Froth milk</text>
+  <text x="500" y="349" text-anchor="middle" font-size="9"  fill="#AACCCC">60–90°C</text>
+
+  <!-- Infuse coffee → Add milk -->
+  <line x1="300" y1="356" x2="300" y2="382" stroke="#AACCCC" stroke-width="1.2" marker-end="url(#arr)"/>
+  <!-- Froth milk → Provide frothed milk -->
+  <line x1="500" y1="356" x2="500" y2="382" stroke="#AACCCC" stroke-width="1.2" marker-end="url(#arr)"/>
+
+  <!-- ─── ROW 7: Add milk (CoffeeDisp) + Provide frothed milk (MilkFrother) ─── -->
+  <rect x="225" y="384" width="150" height="42" rx="7" fill="none" stroke="#AACCCC" stroke-width="1.5"/>
+  <text x="300" y="404" text-anchor="middle" font-size="11" fill="#FFFFFF">Add milk</text>
+  <text x="300" y="419" text-anchor="middle" font-size="9"  fill="#AACCCC">(if requested)</text>
+
+  <rect x="425" y="384" width="150" height="42" rx="7" fill="none" stroke="#AACCCC" stroke-width="1.5"/>
+  <text x="500" y="404" text-anchor="middle" font-size="11" fill="#FFFFFF">Provide</text>
+  <text x="500" y="419" text-anchor="middle" font-size="11" fill="#FFFFFF">frothed milk</text>
+
+  <!-- frothed milk: left edge of Provide frothed milk (x=425) → right edge of Add milk (x=375) -->
+  <line x1="425" y1="405" x2="375" y2="405" stroke="#AACCCC" stroke-width="1.2" marker-end="url(#arr)"/>
+  <text x="378" y="399" font-size="8" fill="#AACCCC">frothed milk</text>
+
+  <!-- Add milk and Provide frothed milk → JOIN BAR -->
+  <line x1="300" y1="426" x2="300" y2="449" stroke="#AACCCC" stroke-width="1.2"/>
+  <line x1="500" y1="426" x2="500" y2="449" stroke="#AACCCC" stroke-width="1.2"/>
+
+  <!-- ─── JOIN BAR y=449 ─── -->
+  <rect x="225" y="449" width="350" height="5" rx="2" fill="#AACCCC"/>
+  <text x="400" y="465" text-anchor="middle" font-size="8" fill="#AACCCC" font-style="italic">join: both paths complete</text>
+  <!-- Join → Dispense coffee -->
+  <line x1="300" y1="454" x2="300" y2="477" stroke="#AACCCC" stroke-width="1.2" marker-end="url(#arr)"/>
+
+  <!-- ─── ROW 9: Receive coffee (Guest) + Dispense coffee (CoffeeDisp) + Collect drips (DripCollector) ─── -->
+  <rect x="25"  y="479" width="150" height="42" rx="7" fill="none" stroke="#FFFFFF"  stroke-width="1.5"/>
+  <text x="100" y="499" text-anchor="middle" font-size="11" fill="#FFFFFF">Receive coffee</text>
+  <text x="100" y="514" text-anchor="middle" font-size="9"  fill="#AACCCC">(in mug)</text>
+
+  <rect x="225" y="479" width="150" height="42" rx="7" fill="none" stroke="#AACCCC" stroke-width="1.5"/>
+  <text x="300" y="499" text-anchor="middle" font-size="11" fill="#FFFFFF">Dispense coffee</text>
+  <text x="300" y="514" text-anchor="middle" font-size="9"  fill="#AACCCC">200–400ml into mug</text>
+
+  <rect x="855" y="479" width="155" height="42" rx="7" fill="none" stroke="#AACCCC" stroke-width="1.5"/>
+  <text x="932" y="499" text-anchor="middle" font-size="11" fill="#FFFFFF">Collect drips</text>
+  <text x="932" y="514" text-anchor="middle" font-size="9"  fill="#AACCCC">waste containment</text>
+
+  <!-- coffee: left edge of Dispense coffee (x=225) → right edge of Receive coffee (x=175) -->
+  <line x1="225" y1="500" x2="175" y2="500" stroke="#AACCCC" stroke-width="1.2" marker-end="url(#arr)"/>
+  <text x="178" y="494" font-size="8" fill="#AACCCC">coffee</text>
+
+  <!-- coffee drips: exit bottom of Dispense coffee (y=521) → down to y=534 → right to left edge of Collect drips block (x=825) -->
+  <!-- Block left edge is x=825, so arrow terminates at x=823 to ensure arrowhead is visible -->
+  <line x1="300" y1="521" x2="300" y2="546" stroke="#AACCCC" stroke-width="1.2"/>
+  <line x1="300" y1="546" x2="932" y2="546" stroke="#AACCCC" stroke-width="1.2"/>
+  <line x1="932" y1="546" x2="932" y2="483" stroke="#AACCCC" stroke-width="1.2" marker-end="url(#arr)"/>
+  <text x="580" y="541" font-size="8" fill="#AACCCC">coffee drips</text>
+
+  <!-- Receive coffee → END (vertical within Guest lane) -->
+  <line x1="100" y1="521" x2="100" y2="551" stroke="#FFFFFF" stroke-width="1.5" marker-end="url(#arrw)"/>
+
+  <!-- END dot -->
+  <circle cx="100" cy="562" r="9" fill="none" stroke="#FFFFFF" stroke-width="2"/>
+  <circle cx="100" cy="562" r="5" fill="#FFFFFF"/>
+
+  <!-- Caption -->
+  <text x="510" y="604" text-anchor="middle" font-size="10" fill="#556677" font-style="italic">Figure 9 — Activity Diagram: Making a coffee from scratch | COFFCO-ARCH-001 v2.2</text>
+</svg>
+
+
+<div class="diagram-caption">Figure 9 — Activity diagram (swimlane). Full coffee-making cycle showing Hotel Guest, Coffee Dispenser, Milk Frother, Water Store, and Drip Collector swimlanes. Internal interfaces (filtered water, frothed milk, coffee drips) are labelled and correspond to the Interface Control Document. Assumption A-09 (guest provides milk; machine refrigerates) is shown explicitly.</div>
+</div>
+
+<!-- ── ASSUMPTIONS UPDATE ── -->
+<div class="section-header" style="margin-top:32px;">
+  <div class="section-num" style="background:#7A4E0D; font-size:12px;">+</div>
+  <div>
+    <div class="section-title">Updated assumptions register — A-09 and NR-05</div>
+    <div class="section-sub">New assumption and derived requirement from operational concept analysis</div>
+  </div>
+</div>
+
+<div class="card-row">
+  <div class="card assumption">
+    <div class="card-label">Assumption A-09</div>
+    <div class="card-title">Guest provides milk; machine refrigerates until frothing</div>
+    <div class="card-desc">The hotel guest provides their own milk (from hotel minibar or room service). The machine incorporates a refrigerated milk store that keeps the milk at food-safe temperature until it is required for frothing. This assumption is not in the URD — it was introduced during architecture development and is consistent with the design review. It generates NR-05 (milk refrigeration) and adds a Milk Refrigeration component to the Milk Frother block in the physical BDD. The refrigeration function must be verified against food safety requirements (SRS 4.9) and adds a power consumption consideration for the energy efficiency requirement (SRS 3.5).</div>
+  </div>
+  <div class="card new-req">
+    <div class="card-label">Proposed new requirement NR-05</div>
+    <div class="card-title">Milk refrigeration</div>
+    <div class="card-desc">The system shall maintain guest-supplied milk at a food-safe temperature of ≤4°C until it is required for frothing. Derived from Assumption A-09 and SRS 4.9 (food safety / HACCP). Verification: Test (milk temperature measured after storage period). Priority: High. Cross-reference: SRS 3.5 (energy efficiency rating A must account for refrigeration power consumption).</div>
+  </div>
+</div>
+
+<div class="card-row" style="margin-top:12px;">
+  <div class="card assumption">
+    <div class="card-label">Assumption — Housekeeping empties waste and limescale</div>
+    <div class="card-title">Consistent with existing A-04</div>
+    <div class="card-desc">The design review states housekeeping will empty coffee waste and limescale from the machine. This is consistent with our existing Assumption A-04 (housekeeping available for consumable restocking and cleaning) and SRS 2.5 (housekeeping interface — consumable replenishment). No new assumption required — the Drip Collector block in the physical BDD captures the waste containment function, and the activity diagram shows housekeeping removing coffee waste as a distinct flow.</div>
+  </div>
+  <div class="card assumption">
+    <div class="card-label">Assumption — Housekeeping tops up coffee consumable</div>
+    <div class="card-title">Consistent with existing A-06</div>
+    <div class="card-desc">The design review states housekeeping will top up the coffee consumable (they call it coffee beans). This is consistent with our existing Assumption A-06 (coffee consumable supply) and SRS 2.5 and SRS 1.4. The difference in naming (beans vs. consumable) reflects our deliberate implementation neutrality — the customer has not specified beans, and the architecture must not constrain the design to a bean-based brewing mechanism.</div>
+  </div>
+</div>
+
+</div><!-- /body-wrap -->
+
+<div class="footer">
+  <span>CoffCo — System Architecture · COFFCO-ARCH-001 v2.2</span>
+  <span>Baseline: COFFCO-SRS-001 · School of Systems Engineering secondment</span>
+  <span>Investor Confidential</span>
+</div>
+
+</body>
+</html>

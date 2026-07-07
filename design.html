@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>CoffCo — System Design Description</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.19.0/dist/tabler-icons.min.css">
+<link rel="stylesheet" href="assets/coffco.css">
+<style>
+:root{--bg:#f8f7f4;--surface:#fff;--surface2:#f1f0ed;--border:rgba(0,0,0,.10);--border2:rgba(0,0,0,.20);--text:#1a1a18;--text2:#6b6a66;--text3:#9b9a96;--teal:#0F6E56;--teal-light:#E1F5EE;--teal-border:#5DCAA5;--teal-mid:#1D9E75;--amber:#854F0B;--amber-light:#FAEEDA;--amber-mid:#EF9F27;--amber-border:#EF9F27;--red:#A32D2D;--red-light:#FCEBEB;--red-border:#F09595;--red-mid:#E24B4A;--blue:#185FA5;--blue-light:#E6F1FB;--purple:#534AB7;--purple-light:#EEEDFE;--purple-border:#AFA9EC;--radius:8px;--radius-lg:12px;--mono:ui-monospace,'SF Mono','Fira Code',monospace;}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,sans-serif;background:var(--bg);color:var(--text);font-size:13px}
+.page-body{max-width:1100px;margin:0 auto;padding:28px 32px 80px}
+.kpi-row{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:10px;margin-bottom:24px}
+.kpi{background:var(--surface2);border-radius:var(--radius);padding:12px 14px}
+.kpi-label{font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px}
+.kpi-val{font-size:22px;font-weight:500;line-height:1;color:var(--text)}
+.kpi-val.good{color:var(--teal)}.kpi-val.warn{color:var(--amber)}.kpi-sub{font-size:10px;color:var(--text3);margin-top:4px}
+.panel{background:var(--surface);border:.5px solid var(--border);border-radius:var(--radius-lg);padding:18px 20px;margin-bottom:14px}
+.panel-title{font-size:12px;font-weight:500;color:var(--text);display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
+.section-banner{display:flex;align-items:center;gap:12px;margin:32px 0 14px;padding-bottom:10px;border-bottom:.5px solid var(--border2)}
+.section-icon{width:32px;height:32px;border-radius:var(--radius);display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0}
+.section-title{font-size:15px;font-weight:600;color:var(--text)}
+.section-sub{font-size:11px;color:var(--text3);margin-top:2px}
+table.ops{width:100%;border-collapse:collapse;font-size:12px}
+table.ops th{text-align:left;font-weight:500;color:var(--text3);padding:0 10px 8px 0;border-bottom:.5px solid var(--border2);font-size:10px;text-transform:uppercase;letter-spacing:.04em}
+table.ops th:first-child{padding-left:0}
+table.ops td{padding:8px 10px 8px 0;border-bottom:.5px solid var(--border);vertical-align:top;line-height:1.5;color:var(--text2)}
+table.ops td:first-child{padding-left:0}
+table.ops tr:last-child td{border-bottom:none}
+table.ops tr:hover td{background:var(--surface2)}
+table.ops td strong,table.ops td b{color:var(--text)}
+.pill{display:inline-flex;align-items:center;gap:3px;font-size:10px;padding:2px 8px;border-radius:20px;font-weight:500;white-space:nowrap}
+.pill-teal{background:var(--teal-light);color:var(--teal);border:.5px solid var(--teal-border)}
+.pill-amber{background:var(--amber-light);color:var(--amber);border:.5px solid var(--amber-border)}
+.pill-red{background:var(--red-light);color:var(--red);border:.5px solid var(--red-border)}
+.pill-blue{background:var(--blue-light);color:var(--blue);border:.5px solid #85B7EB}
+.pill-purple{background:var(--purple-light);color:var(--purple);border:.5px solid var(--purple-border)}
+.pill-grey{background:var(--surface2);color:var(--text3);border:.5px solid var(--border2)}
+.filter-row{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:12px}
+.filter-row input{flex:1;min-width:180px;padding:7px 11px;border:.5px solid var(--border2);border-radius:var(--radius);font-size:12px;background:var(--surface);color:var(--text);font-family:inherit;outline:none}
+.filter-row input:focus{border-color:var(--teal-mid)}
+.ftab{padding:5px 13px;border:.5px solid var(--border2);border-radius:20px;background:transparent;font-size:11px;color:var(--text2);cursor:pointer;font-family:inherit;transition:all .12s}
+.ftab:hover{background:var(--surface2)}.ftab.on{background:var(--text);color:#fff;border-color:var(--text)}
+.reset-btn{padding:5px 13px;border:.5px solid var(--teal-border);border-radius:20px;background:transparent;font-size:11px;color:var(--teal);cursor:pointer;font-family:inherit;transition:all .12s}
+.reset-btn:hover{background:var(--teal-light)}
+.count-line{font-size:11px;color:var(--text3);margin-bottom:10px}
+.count-line b{color:var(--text2)}
+.tab-bar{display:flex;gap:0;margin-bottom:20px;flex-wrap:wrap;}
+.tab{padding:8px 18px;font-size:12px;font-weight:500;color:var(--text2);cursor:pointer;border:.5px solid var(--border2);border-radius:var(--radius);margin-right:6px;transition:all .12s;background:var(--surface);font-family:inherit}
+.tab:hover{background:var(--surface2);color:var(--text)}
+.tab.on{background:var(--navy);color:#fff;border-color:var(--navy)}
+.tab-panel{display:none}.tab-panel.on{display:block}
+.acc-item{border:.5px solid var(--border);border-radius:var(--radius);margin-bottom:6px;overflow:hidden}
+.acc-head{display:flex;align-items:center;gap:10px;padding:11px 14px;cursor:pointer;background:var(--surface);user-select:none}
+.acc-head:hover{background:var(--surface2)}
+.acc-chevron{font-size:13px;color:var(--text3);transition:transform .15s;margin-left:auto;flex-shrink:0}
+.acc-item.open .acc-chevron{transform:rotate(180deg)}
+.acc-body{display:none;padding:0 14px 14px;border-top:.5px solid var(--border)}
+.acc-item.open .acc-body{display:block}
+.ss-card{background:var(--surface);border:.5px solid var(--border);border-radius:var(--radius-lg);padding:16px 18px;margin-bottom:10px}
+.ss-num{font-size:10px;font-family:var(--mono);color:var(--text3);margin-bottom:6px}
+.ss-name{font-size:15px;font-weight:600;color:var(--text);margin-bottom:4px}
+.ss-desc{font-size:12px;color:var(--text2);line-height:1.6;margin-bottom:12px}
+.trace-tag{display:inline-block;font-size:10px;font-family:var(--mono);background:var(--blue-light);color:var(--blue);border:.5px solid #85B7EB;border-radius:3px;padding:1px 5px;margin:2px}
+.cots-badge{font-size:10px;padding:2px 7px;border-radius:3px;font-weight:500;margin-left:4px}
+.cots-buy{background:var(--teal-light);color:var(--teal)}
+.cots-make{background:var(--amber-light);color:var(--amber)}
+</style>
+</head>
+<body>
+<nav class="sidebar"></nav>
+<main class="main">
+<div class="page-cover">
+  <div class="cover-eyebrow">DoD Deliverable 4 &middot; COFFCO-SDD-001 V1.0</div>
+  <h1 class="cover-title">System Design Description</h1>
+  <p class="cover-sub">4 subsystems &middot; COTS vs bespoke decisions &middot; Through Life Support linkage &middot; Requirements traceability &middot; Interface definitions</p>
+  <div class="cover-meta">
+    <span><strong>Issue:</strong> V1.0</span>
+    <span><strong>SRS baseline:</strong> V3.0 — 42 requirements</span>
+    <span><strong>Architecture baseline:</strong> V2.2</span>
+    <span><strong>Subsystems:</strong> SS-1, SS-2/5, SS-3/4, SS-6</span>
+  </div>
+  <div class="cover-download">
+    <a href="downloads/4-design.docx" class="btn-download">&#11015; Download V1.0 (.docx)</a>
+  </div>
+</div>
+<div class="page-body">
+
+<div class="kpi-row">
+  <div class="kpi"><div class="kpi-label">Subsystems described</div><div class="kpi-val">4</div></div>
+  <div class="kpi"><div class="kpi-label">COTS decisions</div><div class="kpi-val good">7</div><div class="kpi-sub">buy</div></div>
+  <div class="kpi"><div class="kpi-label">Bespoke elements</div><div class="kpi-val warn">4</div><div class="kpi-sub">CoffCo IP</div></div>
+  <div class="kpi"><div class="kpi-label">SRS requirements</div><div class="kpi-val">42</div><div class="kpi-sub">all allocated</div></div>
+  <div class="kpi"><div class="kpi-label">Open actions</div><div class="kpi-val warn">5</div><div class="kpi-sub">OA-IPS-01 to 05</div></div>
+</div>
+
+<!-- Subsystem tabs -->
+<div class="section-banner">
+  <div class="section-icon" style="background:var(--blue-light);color:var(--blue)"><i class="ti ti-cpu" aria-hidden="true"></i></div>
+  <div><div class="section-title">Subsystem Design Descriptions</div><div class="section-sub">Click a subsystem tab to view its design — behaviours, components, COTS/bespoke decisions, interfaces</div></div>
+</div>
+
+<div class="tab-bar">
+  <button class="tab on" onclick="showTab('ss2')">SS-2/5 Control &amp; Monitoring</button>
+  <button class="tab" onclick="showTab('ss3')">SS-3 Thermal Assembly</button>
+  <button class="tab" onclick="showTab('ss4')">SS-4 Power Supply</button>
+  <button class="tab" onclick="showTab('ss1')">SS-1 User Interface</button>
+</div>
+
+<!-- SS-2/5 Control Assembly -->
+<div class="tab-panel on" id="tab-ss2">
+<div class="ss-card">
+  <div class="ss-num">SS-2 + SS-5</div>
+  <div class="ss-name">Control and Monitoring Assembly</div>
+  <div class="ss-desc">The brain of the CoffCo machine — integrates brew control, safety firmware functions, wireless telemetry, and non-volatile fault logging into a single PCBA assembly. SS-2 (brew control) and SS-5 (monitoring and comms) were merged into a single control assembly at V2.2 to reduce the internal interface count from 3 to 2, eliminating one class of failure modes (TD-04).</div>
+  <div>
+    <span class="trace-tag">SRS 1.1</span><span class="trace-tag">SRS 1.3</span><span class="trace-tag">SRS 1.5</span>
+    <span class="trace-tag">SRS 1.7</span><span class="trace-tag">SRS 1.9</span><span class="trace-tag">SRS 1.10</span>
+    <span class="trace-tag">SRS 1.11</span><span class="trace-tag">SRS 3.9</span><span class="trace-tag">SRS 3.12</span>
+  </div>
+</div>
+<div class="panel">
+  <div class="panel-title">Key behaviours and modes</div>
+  <table class="ops">
+    <thead><tr><th style="width:200px">Behaviour / Mode</th><th>Description</th><th style="width:80px">SRS</th></tr></thead>
+    <tbody>
+      <tr><td><strong>Brew sequencing FSM</strong></td><td>10-state finite state machine — Initialising, Standby, Brewing, Dispensing, Flushing, Low-Consumable, Empty, Fault, SAFE-SHUTDOWN, OTA-Update. All state transitions are firmware-gated with hardware watchdog supervision.</td><td style="font-family:var(--mono);font-size:10px">1.7, 3.12</td></tr>
+      <tr><td><strong>Pressure and temperature regulation</strong></td><td>Closed-loop control of pump and heating element. Target: 0.9–1.3 bar extraction pressure; 60–90°C outlet temperature. FW-SF-01 dual-sensor temperature check; FW-SF-08 pressure guard at 1.5 bar firmware limit.</td><td style="font-family:var(--mono);font-size:10px">1.5, 4.1–4.5</td></tr>
+      <tr><td><strong>Volume dispensing</strong></td><td>Measured by flow sensor; brew halted when target volume ± tolerance reached. User-selectable 200–400 ml via UI panel.</td><td style="font-family:var(--mono);font-size:10px">1.3, 4.6, 4.7</td></tr>
+      <tr><td><strong>Safety-critical firmware functions</strong></td><td>FW-SF-01: dual-sensor temp check. FW-SF-02: fluid level interlock (dry-fire prevention). FW-SF-08: pressure guard. FW-SF-09: OTA A/B partition rollback. All hardware-supervised.</td><td style="font-family:var(--mono);font-size:10px">1.10, 3.10, 3.12, 3.13</td></tr>
+      <tr><td><strong>Wireless telemetry</strong></td><td>Transmits MILK-SPOILAGE-RISK, DRIP-TRAY-FULL, DESCALE-REQUIRED, COMMS-FAULT, SAFE-SHUTDOWN, UPDATE-COMPLETE, UPDATE-FAILED. COMMS watchdog: COMMS-FAULT logged locally if link unavailable >60 min.</td><td style="font-family:var(--mono);font-size:10px">1.9, 1.11</td></tr>
+      <tr><td><strong>Hardware watchdog</strong></td><td>Dual-source WDT IC (Maxim DS1232 or equivalent). If firmware heartbeat not received within 500 ms, IC asserts RESET and de-energises all actuators independently of firmware.</td><td style="font-family:var(--mono);font-size:10px">3.12</td></tr>
+      <tr><td><strong>Non-volatile logging</strong></td><td>Last N fault events and consumable level trend logged to COTS flash memory. Enables fault diagnosis between telemetry transmission windows.</td><td style="font-family:var(--mono);font-size:10px">1.9, 3.3</td></tr>
+    </tbody>
+  </table>
+</div>
+<div class="panel">
+  <div class="panel-title">COTS vs bespoke decisions</div>
+  <table class="ops">
+    <thead><tr><th>Element</th><th>Decision</th><th>Rationale</th></tr></thead>
+    <tbody>
+      <tr><td><strong>MCU (ARM Cortex-M)</strong><span class="cots-badge cots-buy">COTS</span></td><td>General-purpose COTS microcontroller</td><td>Bespoke ASIC not justified for a deterministic, low-frequency control loop. FPGA adds unnecessary cost and power.</td></tr>
+      <tr><td><strong>Wireless module</strong><span class="cots-badge cots-buy">COTS</span></td><td>COTS pre-certified module (TD-06 pending)</td><td>Pre-certified module eliminates independent EMC and regulatory certification burden. Technology TBD pending hotel IT survey.</td></tr>
+      <tr><td><strong>Flash memory</strong><span class="cots-badge cots-buy">COTS</span></td><td>Standard COTS flash</td><td>Adequate write endurance for fault logging frequency. Well within typical flash wear limits over 365-day service interval.</td></tr>
+      <tr><td><strong>Hardware WDT IC</strong><span class="cots-badge cots-buy">COTS</span></td><td>Maxim DS1232 or equivalent</td><td>High-volume, multi-sourced. Vetted for automotive and industrial applications. Provides hardware independence from firmware.</td></tr>
+      <tr><td><strong>Brew control firmware</strong><span class="cots-badge cots-make">Bespoke</span></td><td>CoffCo IP — core brewing logic and FSM</td><td>Brew sequencing logic, safety firmware functions FW-SF-01 to FW-SF-09, and OTA partition management are CoffCo's primary IP.</td></tr>
+    </tbody>
+  </table>
+</div>
+</div>
+
+<!-- SS-3 Thermal Assembly -->
+<div class="tab-panel" id="tab-ss3">
+<div class="ss-card">
+  <div class="ss-num">SS-2 / SS-3</div>
+  <div class="ss-name">Thermal Assembly</div>
+  <div class="ss-desc">The primary SWAP (Size, Weight, and Power) driver. Unified thermal assembly with fluid switching eliminates a separate milk thermal path, reducing component count and seal failure surface area by 40% vs a dual-path architecture (TD-02). Fan et al. (2009) identified scale accumulation as the #1 failure driver — the descale scheduling and PRV design directly address this.</div>
+  <div>
+    <span class="trace-tag">SRS 1.1</span><span class="trace-tag">SRS 1.2</span><span class="trace-tag">SRS 1.5</span>
+    <span class="trace-tag">SRS 1.6</span><span class="trace-tag">SRS 3.10</span><span class="trace-tag">SRS 3.13</span>
+    <span class="trace-tag">SRS 4.1</span><span class="trace-tag">SRS 4.2</span><span class="trace-tag">SRS 4.3</span>
+  </div>
+</div>
+<div class="panel">
+  <div class="panel-title">Key components and design characteristics</div>
+  <table class="ops">
+    <thead><tr><th style="width:200px">Component</th><th>Function and design characteristic</th><th style="width:80px">SRS</th></tr></thead>
+    <tbody>
+      <tr><td><strong>Heating element</strong><span class="cots-badge cots-buy">COTS</span></td><td>Standard resistive element. Heats water to 60–90°C within ≤180 s brew cycle. COTS commodity — meets performance requirement with adequate margin. Bespoke induction heating offers faster response but at materially higher MVP cost.</td><td style="font-family:var(--mono);font-size:10px">4.1, 4.11</td></tr>
+      <tr><td><strong>Bi-metallic TCO</strong><span class="cots-badge cots-buy">COTS</span></td><td>Non-resettable hardware thermal cutoff opens at ≥100°C independently of firmware. Safety-critical — provides hardware-layer protection independent of the MCU and firmware watchdog. Three-layer overtemperature protection: NTC firmware → thermostat → TCO.</td><td style="font-family:var(--mono);font-size:10px">3.10</td></tr>
+      <tr><td><strong>Pump (≤1.3 bar)</strong><span class="cots-badge cots-buy">COTS</span></td><td>Small-volume COTS pump. Provides extraction pressure 0.9–1.3 bar. Fan et al.: pump clogging from scale is the #1 failure component — descale scheduling (SRS 1.6) is the primary preventive control. Pump strainer specified (OA-IPS-02).</td><td style="font-family:var(--mono);font-size:10px">1.5, 4.4, 4.5</td></tr>
+      <tr><td><strong>Pressure Relief Valve</strong><span class="cots-badge cots-buy">COTS</span></td><td>Mechanical PRV ≤2.5 bar; hardware-only; vents exclusively into drip tray (not inside chassis). Fan et al. identified PRV venting inside chassis as a hidden design hazard — this design eliminates that failure mode by routing vent to drip tray. Annual PM-05 functional test.</td><td style="font-family:var(--mono);font-size:10px">3.13</td></tr>
+      <tr><td><strong>Milk refrigeration (Peltier)</strong><span class="cots-badge cots-buy">COTS</span></td><td>Compact thermoelectric cooler. Maintains milk store ≤4°C. Compressor-based refrigeration is oversized and heavier for the milk volume involved. Continuous power draw — largest single impact on EU energy efficiency target.</td><td style="font-family:var(--mono);font-size:10px">1.2, 4.2, 4.3</td></tr>
+      <tr><td><strong>Fluid pathway</strong><span class="cots-badge cots-make">Bespoke</span></td><td>CoffCo-designed thermoplastic channel. All fluid paths physically isolated from electrical conductors by ≥6 mm. Food-grade material throughout. FKM seals — annual replacement PM-03 (OA-IPS-03).</td><td style="font-family:var(--mono);font-size:10px">3.11, 4.9</td></tr>
+      <tr><td><strong>Frother / fluid switch</strong><span class="cots-badge cots-make">Bespoke</span></td><td>Milk aeration and coffee/milk path switching. Automated flush cycle between drink types prevents cross-contamination (SRS 4.9, FM-04). Bespoke design — no suitable COTS switching mechanism available at required performance and footprint.</td><td style="font-family:var(--mono);font-size:10px">1.2, 4.9</td></tr>
+    </tbody>
+  </table>
+</div>
+</div>
+
+<!-- SS-4 PSU -->
+<div class="tab-panel" id="tab-ss4">
+<div class="ss-card">
+  <div class="ss-num">SS-4</div>
+  <div class="ss-name">Power Supply Unit</div>
+  <div class="ss-desc">Fully COTS. A certified universal switch-mode PSU module eliminates the cost and schedule risk of independent IEC 60335 and EMC certification at MVP scale. Class II double insulation enables a standardised 2-pin plug across all three markets, removing earth-path dependency and supporting the interchangeable plug module strategy (TD-03).</div>
+  <div>
+    <span class="trace-tag">SRS 2.3</span><span class="trace-tag">SRS 2.4</span><span class="trace-tag">SRS 2.6</span>
+    <span class="trace-tag">SRS 3.5</span><span class="trace-tag">SRS 3.8</span><span class="trace-tag">SRS 3.11</span>
+    <span class="trace-tag">SRS 4.8</span>
+  </div>
+</div>
+<div class="panel">
+  <div class="panel-title">Key design characteristics</div>
+  <table class="ops">
+    <thead><tr><th style="width:200px">Characteristic</th><th>Design detail</th><th style="width:80px">SRS</th></tr></thead>
+    <tbody>
+      <tr><td><strong>Universal AC input</strong></td><td>100–240 V, 50/60 Hz switch-mode topology. Single PSU variant for UK, EU, and US markets. No hardware change between markets — only the interchangeable plug module changes.</td><td style="font-family:var(--mono);font-size:10px">2.3, 2.4</td></tr>
+      <tr><td><strong>IEC 60335-1 Class II</strong></td><td>Double insulation — no accessible surface presents live voltage under any single fault. Enables 2-pin plug across all markets. No earth-path dependency eliminates field failure risk from missing earth in hotel sockets.</td><td style="font-family:var(--mono);font-size:10px">3.11, 4.8</td></tr>
+      <tr><td><strong>Mains input fuse</strong></td><td>T-type slow-blow fuse at inlet. Hardware overcurrent protection independent of PSU internal protection. IEC 60335-1 Cl.25 compliance.</td><td style="font-family:var(--mono);font-size:10px">3.11</td></tr>
+      <tr><td><strong>Surge protection (MOV/TVS)</strong></td><td>Metal oxide varistor in PSU primary circuit. IEC 61000-4-5 Level 2 (2 kV) surge protection. Essential for hotel environments with HVAC switching transients.</td><td style="font-family:var(--mono);font-size:10px">2.3</td></tr>
+      <tr><td><strong>EMC filtering</strong></td><td>Primary-side filtering to EN 55014 Class B limits. Prevents switching noise from propagating to hotel room devices (TV, Wi-Fi, laptop).</td><td style="font-family:var(--mono);font-size:10px">3.8</td></tr>
+      <tr><td><strong>Interchangeable plug module</strong><span class="cots-badge cots-make">Bespoke</span></td><td>BS 1363 (UK), NEMA 5-15 (US), CEE 7/16 (EU) — replaceable without PSU modification. Field replacement in <2 minutes. Regulatory change in one market requires only plug module update, not PSU re-certification.</td><td style="font-family:var(--mono);font-size:10px">2.6</td></tr>
+    </tbody>
+  </table>
+</div>
+</div>
+
+<!-- SS-1 UI Panel -->
+<div class="tab-panel" id="tab-ss1">
+<div class="ss-card">
+  <div class="ss-num">SS-1</div>
+  <div class="ss-name">User Interface Panel</div>
+  <div class="ss-desc">Exactly 3 controls — drink type, volume, brew confirmation. This is deliberate: minimising the control surface minimises the error surface for first-time unaided use (SRS 2.1). The two-step brew confirmation (BREW → CONFIRM BREW) satisfies H-19 child misuse prevention. Icon-only status ring eliminates localisation requirements for multi-language deployment.</div>
+  <div>
+    <span class="trace-tag">SRS 1.3</span><span class="trace-tag">SRS 1.7</span><span class="trace-tag">SRS 2.1</span>
+  </div>
+</div>
+<div class="panel">
+  <div class="panel-title">HMI design decisions</div>
+  <table class="ops">
+    <thead><tr><th style="width:200px">Design decision</th><th>Rationale</th><th style="width:80px">Hazard / SRS</th></tr></thead>
+    <tbody>
+      <tr><td><strong>Exactly 3 controls</strong></td><td>Drink type selector, volume dial (200–400 ml), brew confirmation. No configuration menus. Minimised state space validated at VE-B1 (≥4/5 naive users succeed unaided first attempt).</td><td style="font-family:var(--mono);font-size:10px">SRS 2.1</td></tr>
+      <tr><td><strong>Two-step brew confirmation</strong></td><td>BREW → CONFIRM BREW two-step sequence. Child pressing a single button cannot initiate a brew cycle with a hot fluid path. Deliberate second confirmation required. Satisfies H-19 child misuse hazard.</td><td style="font-family:var(--mono);font-size:10px">H-19, SRS 1.7</td></tr>
+      <tr><td><strong>Icon-only status ring</strong></td><td>7 distinct states communicated by colour and icon, no text labels. Multi-language hotel deployment (UK, EU, US at minimum) — text labels require localisation. Icon-only works across all markets. Accessibility: colour is not the sole differentiator.</td><td style="font-family:var(--mono);font-size:10px">SRS 1.7, 2.1</td></tr>
+      <tr><td><strong>Volume dial 200–400 ml</strong></td><td>Stepped at 50 ml for tactile precision. Covers short americano to large travel mug format. Range set by Vacation Stables standard mug capacity (SRS 4.7).</td><td style="font-family:var(--mono);font-size:10px">SRS 1.3, 4.6, 4.7</td></tr>
+    </tbody>
+  </table>
+</div>
+<div style="text-align:center;margin-top:12px">
+  <a href="hmi.html" style="display:inline-flex;align-items:center;gap:6px;background:var(--teal-light);color:var(--teal);border:.5px solid var(--teal-border);padding:8px 18px;border-radius:var(--radius);font-size:12px;font-weight:500;text-decoration:none">
+    <i class="ti ti-device-mobile" aria-hidden="true"></i> Launch Interactive HMI Prototype
+  </a>
+</div>
+</div>
+
+<!-- Requirements traceability -->
+<div class="section-banner" style="margin-top:36px">
+  <div class="section-icon" style="background:var(--teal-light);color:var(--teal)"><i class="ti ti-arrows-transfer-down" aria-hidden="true"></i></div>
+  <div><div class="section-title">Requirements-to-Design Traceability</div>
+  <div class="section-sub">How SRS requirements are allocated to physical subsystems</div></div>
+</div>
+<div class="filter-row">
+  <input type="text" id="trSrch" placeholder="Search SRS IDs or functions&hellip;" oninput="filterTrace()">
+  <button class="ftab on" data-ss="ALL" onclick="setTraceSS(this)">All</button>
+  <button class="ftab" data-ss="SS-2/5" onclick="setTraceSS(this)">Control</button>
+  <button class="ftab" data-ss="SS-3" onclick="setTraceSS(this)">Thermal</button>
+  <button class="ftab" data-ss="SS-4" onclick="setTraceSS(this)">PSU</button>
+  <button class="ftab" data-ss="SS-1" onclick="setTraceSS(this)">UI Panel</button>
+  <button class="reset-btn" onclick="resetTrace()">&#8635; Reset</button>
+</div>
+<div class="count-line" id="trCount">Showing <b>6</b> of 6 allocations</div>
+<div class="panel" style="padding:0;overflow:hidden">
+<table class="ops" id="trTable">
+  <thead><tr>
+    <th style="padding-left:20px;width:160px">SRS requirements</th>
+    <th style="width:160px">Function</th>
+    <th style="width:110px">Physical element</th>
+    <th>Design characteristic</th>
+  </tr></thead>
+  <tbody id="trBody"></tbody>
+</table>
+</div>
+
+<!-- Open actions -->
+<div class="section-banner" style="margin-top:36px">
+  <div class="section-icon" style="background:var(--amber-light);color:var(--amber)"><i class="ti ti-alert-circle" aria-hidden="true"></i></div>
+  <div><div class="section-title">Open Actions for SDD V1.1</div>
+  <div class="section-sub">Design decisions deferred — required before production build</div></div>
+</div>
+<div class="panel" style="padding:0;overflow:hidden">
+<table class="ops">
+  <thead><tr>
+    <th style="padding-left:20px;width:80px">Ref</th>
+    <th style="width:200px">Action</th>
+    <th>Detail</th>
+    <th style="width:100px">Trigger</th>
+  </tr></thead>
+  <tbody>
+    <tr><td style="padding-left:20px"><span class="pill pill-amber">OA-IPS-01</span></td><td><strong>NTC holder upgrade PP → PPS</strong></td><td>Fan et al. simulation: PP NTC holder perforates at ~100°C. PPS (used for lid and chassis) operates safely at 220–240°C. Upgrade eliminates this manufacturing-quality failure pathway.</td><td>SDD V1.2</td></tr>
+    <tr><td style="padding-left:20px"><span class="pill pill-amber">OA-IPS-02</span></td><td><strong>Pump strainer specification</strong></td><td>Fan et al.: pump clogging from scale and debris is the #1 failure component. Strainer spec required to capture debris before pump inlet.</td><td>SDD V1.2</td></tr>
+    <tr><td style="padding-left:20px"><span class="pill pill-amber">OA-IPS-03</span></td><td><strong>FKM seal specification</strong></td><td>Fan et al.: seal aging is the primary fluid path failure driver. FKM seal grade and replacement interval to be specified in SDD V1.2 and IPS PM-03.</td><td>SDD V1.2</td></tr>
+    <tr><td style="padding-left:20px"><span class="pill pill-amber">OA-IPS-04</span></td><td><strong>Depot bench pump procurement</strong></td><td>Tier 2 depot repair requires a bench pump test rig for pump functional verification before refurbishment sign-off.</td><td>IPS V3.1</td></tr>
+    <tr><td style="padding-left:20px"><span class="pill pill-amber">OA-IPS-05</span></td><td><strong>Fleet analytics baseline</strong></td><td>Fan et al. failure rates to be used as initial fleet analytics baseline before CoffCo field data is available. Requires cloud platform configuration.</td><td>IPS V3.1</td></tr>
+  </tbody>
+</table>
+</div>
+
+</div>
+</main>
+<script src="assets/nav.js"></script>
+<script>
+function showTab(id) {
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('on'));
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('on'));
+  document.getElementById('tab-'+id).classList.add('on');
+  event.target.classList.add('on');
+}
+
+const TRACE = [
+  {ss:'SS-2/5', srs:'SRS 1.1, 1.5, 4.1–4.7, 4.11', fn:'Brew coffee; regulate pressure, temp, volume', elem:'Control Assembly', design:'FSM-gated brew sequencer; closed-loop pressure/temp control; flow-sensor volume measurement'},
+  {ss:'SS-2/5', srs:'SRS 1.7, 1.9, 1.11, 3.3, 3.9', fn:'Health monitoring; wireless telemetry; OTA', elem:'Control Assembly', design:'Non-volatile fault logger; MQTT-over-TLS telemetry; A/B partition OTA with rollback; hardware WDT IC'},
+  {ss:'SS-3', srs:'SRS 1.2, 4.2, 4.3, 1.6', fn:'Froth milk; refrigerate; descale', elem:'Thermal Assembly', design:'Fluid-switching valve; Peltier cooler ≤4°C; firmware-scheduled descale cycle; PRV vents to drip tray'},
+  {ss:'SS-3', srs:'SRS 2.7, 3.10', fn:'Dispense at clearance; prevent burn', elem:'Thermal Assembly', design:'Shrouded outlet ≥105 mm clearance; bi-metallic TCO hardware cutoff ≥100°C independent of firmware'},
+  {ss:'SS-4', srs:'SRS 2.3, 2.4, 2.6, 3.5, 3.8, 3.11, 4.8', fn:'Power supply; isolation; EMC; shock prevention', elem:'Power Supply Unit', design:'Universal 100–240 V COTS PSU; Class II double insulation; interchangeable plug module; EN 55014 Class B filter'},
+  {ss:'SS-1', srs:'SRS 1.3, 1.7, 2.1', fn:'Volume selection; status; unaided operation', elem:'UI Panel', design:'3-control interface; icon-only status ring (7 states); two-step brew confirmation (H-19); 200–400 ml dial'},
+];
+
+let traceSS = 'ALL';
+
+function renderTrace(list) {
+  const tb = document.getElementById('trBody');
+  tb.innerHTML = '';
+  list.forEach(r => {
+    const tr = document.createElement('tr');
+    tr.innerHTML = `<td style="padding-left:20px"><span class="pill pill-grey" style="font-family:var(--mono);font-size:10px">${r.ss}</span><br><span style="font-family:var(--mono);font-size:10px;color:var(--blue)">${r.srs}</span></td>
+      <td><strong>${r.fn}</strong></td>
+      <td><span class="pill pill-grey">${r.elem}</span></td>
+      <td style="font-size:11px">${r.design}</td>`;
+    tb.appendChild(tr);
+  });
+  document.getElementById('trCount').innerHTML = `Showing <b>${list.length}</b> of ${TRACE.length} allocations`;
+}
+
+function setTraceSS(btn) {
+  document.querySelectorAll('[data-ss]').forEach(b => b.classList.remove('on'));
+  btn.classList.add('on'); traceSS = btn.dataset.ss; filterTrace();
+}
+
+function resetTrace() {
+  document.getElementById('trSrch').value = '';
+  traceSS = 'ALL';
+  document.querySelectorAll('[data-ss]').forEach(b => b.classList.remove('on'));
+  document.querySelector('[data-ss="ALL"]').classList.add('on');
+  filterTrace();
+}
+
+function filterTrace() {
+  const q = document.getElementById('trSrch').value.toLowerCase();
+  renderTrace(TRACE.filter(r => {
+    if (traceSS !== 'ALL' && r.ss !== traceSS) return false;
+    if (q && !(r.srs+' '+r.fn+' '+r.design).toLowerCase().includes(q)) return false;
+    return true;
+  }));
+}
+
+renderTrace(TRACE);
+</script>
+</body>
+</html>

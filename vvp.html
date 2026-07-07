@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>CoffCo — V&V Plan</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.19.0/dist/tabler-icons.min.css">
+<link rel="stylesheet" href="assets/coffco.css">
+<style>
+:root{--bg:#f8f7f4;--surface:#fff;--surface2:#f1f0ed;--border:rgba(0,0,0,.10);--border2:rgba(0,0,0,.20);--text:#1a1a18;--text2:#6b6a66;--text3:#9b9a96;--teal:#0F6E56;--teal-light:#E1F5EE;--teal-border:#5DCAA5;--amber:#854F0B;--amber-light:#FAEEDA;--amber-border:#EF9F27;--red:#A32D2D;--red-light:#FCEBEB;--red-border:#F09595;--blue:#185FA5;--blue-light:#E6F1FB;--radius:8px;--radius-lg:12px;--mono:ui-monospace,'SF Mono','Fira Code',monospace;}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,sans-serif;background:var(--bg);color:var(--text);font-size:13px}
+.page-body{max-width:1100px;margin:0 auto;padding:28px 32px 80px}
+
+.kpi-row{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:10px;margin-bottom:24px}
+.kpi{background:var(--surface2);border-radius:var(--radius);padding:12px 14px}
+.kpi-label{font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px}
+.kpi-val{font-size:22px;font-weight:500;line-height:1;color:var(--text)}
+.kpi-val.good{color:var(--teal)}
+.kpi-sub{font-size:10px;color:var(--text3);margin-top:4px}
+
+.section-banner{display:flex;align-items:center;gap:12px;margin:32px 0 14px;padding-bottom:10px;border-bottom:.5px solid var(--border2)}
+.section-icon{width:32px;height:32px;border-radius:var(--radius);display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0}
+.section-title{font-size:15px;font-weight:600;color:var(--text)}
+.section-sub{font-size:11px;color:var(--text3);margin-top:2px}
+
+.panel{background:var(--surface);border:.5px solid var(--border);border-radius:var(--radius-lg);padding:18px 20px;margin-bottom:14px}
+.panel-title{font-size:12px;font-weight:500;color:var(--text);display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
+.panel-title-right{font-size:10px;color:var(--text3)}
+
+table.ops{width:100%;border-collapse:collapse;font-size:12px}
+table.ops th{text-align:left;font-weight:500;color:var(--text3);padding:0 10px 8px 0;border-bottom:.5px solid var(--border2);font-size:10px;text-transform:uppercase;letter-spacing:.04em}
+table.ops th:first-child{padding-left:0}
+table.ops td{padding:8px 10px 8px 0;border-bottom:.5px solid var(--border);vertical-align:top;line-height:1.5;color:var(--text2)}
+table.ops td:first-child{padding-left:0}
+table.ops tr:last-child td{border-bottom:none}
+table.ops tr:hover td{background:var(--surface2)}
+table.ops td strong{color:var(--text)}
+table.ops td b{color:var(--text)}
+
+.pill{display:inline-flex;align-items:center;gap:3px;font-size:10px;padding:2px 8px;border-radius:20px;font-weight:500;white-space:nowrap}
+.pill-grey{background:var(--surface2);color:var(--text3);border:.5px solid var(--border2)}
+.pill-teal{background:var(--teal-light);color:var(--teal);border:.5px solid var(--teal-border)}
+.pill-sc{background:var(--red-light);color:var(--red);border:.5px solid var(--red-border)}
+.pill-si{background:var(--amber-light);color:var(--amber);border:.5px solid var(--amber-border)}
+.pill-blue{background:var(--blue-light);color:var(--blue);border:.5px solid #85B7EB}
+
+.filter-row{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:12px}
+.filter-row input{flex:1;min-width:180px;padding:7px 11px;border:.5px solid var(--border2);border-radius:var(--radius);font-size:12px;background:var(--surface);color:var(--text);font-family:inherit;outline:none}
+.filter-row input:focus{border-color:var(--teal)}
+.ftab{padding:5px 13px;border:.5px solid var(--border2);border-radius:20px;background:transparent;font-size:11px;color:var(--text2);cursor:pointer;font-family:inherit;transition:all .12s}
+.ftab:hover{background:var(--surface2)}
+.ftab.on{background:var(--text);color:#fff;border-color:var(--text)}
+.count-line{font-size:11px;color:var(--text3);margin-bottom:10px}
+.count-line b{color:var(--text2)}
+
+.phase-track{display:grid;grid-template-columns:repeat(6,1fr);gap:8px;margin-bottom:20px}
+.phase-card{background:var(--surface2);border:.5px solid var(--border);border-radius:var(--radius);padding:10px 12px}
+.phase-num{font-size:10px;font-weight:500;color:var(--text3);margin-bottom:4px;text-transform:uppercase;letter-spacing:.06em}
+.phase-name{font-size:12px;font-weight:500;color:var(--text);margin-bottom:4px}
+.phase-acts{font-size:10px;color:var(--text2);line-height:1.4}
+.reset-btn{padding:5px 13px;border:.5px solid var(--teal-border);border-radius:20px;background:transparent;font-size:11px;color:var(--teal);cursor:pointer;font-family:inherit;transition:all .12s}.reset-btn:hover{background:var(--teal-light)}
+</style>
+</head>
+<body>
+<nav class="sidebar"></nav>
+<main class="main">
+<div class="page-cover">
+  <div class="cover-eyebrow">DoD Deliverable 8 &middot; COFFCO-VVP-001 V2.0</div>
+  <h1 class="cover-title">Verification and Validation Plan</h1>
+  <p class="cover-sub">6-phase programme &middot; 42-requirement VCRM &middot; IADT methods &middot; 11 test cases &middot; 4 validation events &middot; Interactive VCRM with search and filter</p>
+  <div class="cover-meta">
+    <span><strong>Issue:</strong> V2.0</span>
+    <span><strong>SRS baseline:</strong> V3.0 — 42 requirements</span>
+    <span><strong>Test cases:</strong> 11 defined</span>
+    <span><strong>Validation events:</strong> VE-R1, VE-D1, VE-B1, VE-C1</span>
+  </div>
+  <div class="cover-download">
+    <a href="downloads/8-vvp.docx" class="btn-download">&#11015; Download V2.0 (.docx)</a>
+  </div>
+</div>
+
+<div class="page-body">
+
+<div class="kpi-row">
+  <div class="kpi"><div class="kpi-label">Requirements</div><div class="kpi-val">42</div><div class="kpi-sub">all mapped in VCRM</div></div>
+  <div class="kpi"><div class="kpi-label">Safety-critical</div><div class="kpi-val" style="color:var(--red)">4</div><div class="kpi-sub">SRS 1.10, 3.10, 3.11, 3.12</div></div>
+  <div class="kpi"><div class="kpi-label">V&amp;V phases</div><div class="kpi-val">6</div><div class="kpi-sub">component → certification</div></div>
+  <div class="kpi"><div class="kpi-label">Test cases</div><div class="kpi-val good">11</div><div class="kpi-sub">TC-001 to TC-OTA-01</div></div>
+  <div class="kpi"><div class="kpi-label">Validation events</div><div class="kpi-val">4</div><div class="kpi-sub">VE-R1 through VE-C1</div></div>
+  <div class="kpi"><div class="kpi-label">Methods</div><div class="kpi-val" style="font-size:14px">IADT</div><div class="kpi-sub">Test · Analysis · Inspection · Demo</div></div>
+</div>
+
+<!-- PHASE PROGRAMME -->
+<div class="section-banner">
+  <div class="section-icon" style="background:var(--blue-light);color:var(--blue)"><i class="ti ti-timeline" aria-hidden="true"></i></div>
+  <div><div class="section-title">Six-Phase Verification Programme</div><div class="section-sub">Gate-controlled — each phase requires exit criterion before proceeding</div></div>
+</div>
+<div class="phase-track">
+  <div class="phase-card"><div class="phase-num">Phase 1</div><div class="phase-name">Component Qualification</div><div class="phase-acts">COTS certs · incoming inspection · PCB layout review · design inspection</div></div>
+  <div class="phase-card"><div class="phase-num">Phase 2</div><div class="phase-name">Subsystem Verification</div><div class="phase-acts">TC-FW-01 · TC-HE-01 · TC-PRV-01 · TC-008 · TC-CL-01 under QA witness</div></div>
+  <div class="phase-card"><div class="phase-num">Phase 3</div><div class="phase-name">Integration Verification</div><div class="phase-acts">TC-DT-01 · TC-DS-01 · TC-MS-01 · TC-MW-01 · telemetry and wireless</div></div>
+  <div class="phase-card"><div class="phase-num">Phase 4</div><div class="phase-name">System Verification</div><div class="phase-acts">TC-IPX2-01 · TC-ST-01 · TC-001 to TC-007 · full system in chassis</div></div>
+  <div class="phase-card"><div class="phase-num">Phase 5</div><div class="phase-name">Certification</div><div class="phase-acts">IEC 60335-1 type-test · EN 55014 EMC · CE/UKCA/UL marking</div></div>
+  <div class="phase-card" style="border-color:var(--teal-border)"><div class="phase-num">Phase 6</div><div class="phase-name" style="color:var(--teal)">Customer Validation</div><div class="phase-acts">VE-D1 PDR review · VE-B1 acceptance trial with Vacation Stables</div></div>
+</div>
+
+<!-- VCRM -->
+<div class="section-banner">
+  <div class="section-icon" style="background:var(--teal-light);color:var(--teal)"><i class="ti ti-list-check" aria-hidden="true"></i></div>
+  <div><div class="section-title">Requirement Verification and Compliance Matrix (VCRM)</div><div class="section-sub">All 42 SRS requirements · search and filter · click any row to expand acceptance criterion</div></div>
+</div>
+
+<div class="filter-row">
+  <input type="text" id="srch" placeholder="Search requirements, test cases, criteria&hellip;" oninput="go()">
+  <button class="ftab on" data-f="ALL" onclick="setF(this)">All</button>
+  <button class="ftab" data-f="T" onclick="setF(this)">Test</button>
+  <button class="ftab" data-f="A" onclick="setF(this)">Analysis</button>
+  <button class="ftab" data-f="I" onclick="setF(this)">Inspection</button>
+  <button class="ftab" data-f="D" onclick="setF(this)">Demonstration</button>
+  <button class="ftab" data-f="sc" onclick="setF(this)">Safety-critical</button>
+  <button class="ftab" data-f="si" onclick="setF(this)">Safety-impacted</button>
+<button class="reset-btn" onclick="resetVCRM()">&#8635; Reset</button>
+</div>
+<div class="count-line" id="cl">Showing <b>42</b> of 42 requirements</div>
+
+<div class="panel" style="padding:0;overflow:hidden">
+<table class="ops" id="vcrm-table">
+  <thead>
+    <tr>
+      <th style="padding-left:20px;width:48px">SRS</th>
+      <th style="width:170px">Name</th>
+      <th style="width:80px">Method</th>
+      <th style="width:80px">Phase</th>
+      <th>Acceptance criterion</th>
+      <th style="width:95px">Safety</th>
+    </tr>
+  </thead>
+  <tbody id="vcrm-body"></tbody>
+</table>
+</div>
+
+<!-- TEST CASES -->
+<div class="section-banner" style="margin-top:36px">
+  <div class="section-icon" style="background:var(--amber-light);color:var(--amber)"><i class="ti ti-test-pipe" aria-hidden="true"></i></div>
+  <div><div class="section-title">Selected Test Cases</div><div class="section-sub">11 test cases · highest-consequence and safety-critical requirements · full objective, setup, and pass criterion</div></div>
+</div>
+
+<div class="panel" style="padding:0;overflow:hidden">
+<table class="ops">
+  <thead>
+    <tr>
+      <th style="padding-left:20px;width:80px">Ref</th>
+      <th style="width:180px">Test case</th>
+      <th style="width:60px">Method</th>
+      <th style="width:55px">Phase</th>
+      <th>Procedure summary</th>
+      <th style="width:180px">Pass criterion</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><span style="font-family:var(--mono);font-size:11px">TC-001</span></td>
+      <td><strong>Brew temperature — americano</strong><br><span style="font-size:10px;color:var(--text3)">SRS 4.1</span></td>
+      <td style="text-align:center"><span class="pill pill-grey">T</span></td>
+      <td style="font-size:11px">2–4</td>
+      <td style="font-size:11px">Brew americano into insulated vessel, measure temperature with calibrated probe immediately at dispensation.</td>
+      <td style="font-size:11px;color:var(--teal)">≥60°C</td>
+    </tr>
+<tr>
+      <td><span style="font-family:var(--mono);font-size:11px">TC-002</span></td>
+      <td><strong>Milk temperature range</strong><br><span style="font-size:10px;color:var(--text3)">SRS 4.2/4.3</span></td>
+      <td style="text-align:center"><span class="pill pill-grey">T</span></td>
+      <td style="font-size:11px">2–4</td>
+      <td style="font-size:11px">Steam milk to hot frothed state, measure immediately at dispensation.</td>
+      <td style="font-size:11px;color:var(--teal)">60–90°C</td>
+    </tr>
+<tr>
+      <td><span style="font-family:var(--mono);font-size:11px">TC-003</span></td>
+      <td><strong>Cycle time</strong><br><span style="font-size:10px;color:var(--text3)">SRS 3.1/4.11</span></td>
+      <td style="text-align:center"><span class="pill pill-grey">T</span></td>
+      <td style="font-size:11px">2–4</td>
+      <td style="font-size:11px">Time from first user input (button press) to beverage ready at 400 ml worst case.</td>
+      <td style="font-size:11px;color:var(--teal)">≤180 s</td>
+    </tr>
+<tr>
+      <td><span style="font-family:var(--mono);font-size:11px">TC-004</span></td>
+      <td><strong>Unaided first-time operation</strong><br><span style="font-size:10px;color:var(--text3)">SRS 2.1</span></td>
+      <td style="text-align:center"><span class="pill pill-grey">D</span></td>
+      <td style="font-size:11px">4–6</td>
+      <td style="font-size:11px">5 naive test subjects with no briefing attempt americano production. No documentation permitted.</td>
+      <td style="font-size:11px;color:var(--teal)">≥4/5 succeed unaided</td>
+    </tr>
+<tr>
+      <td><span style="font-family:var(--mono);font-size:11px">TC-008</span></td>
+      <td><strong>Dry-fire prevention</strong><br><span style="font-size:10px;color:var(--text3)">SRS 1.10</span></td>
+      <td style="text-align:center"><span class="pill pill-grey">T</span></td>
+      <td style="font-size:11px">2</td>
+      <td style="font-size:11px">Empty reservoir. Initiate brew cycle. Measure heater element current. Confirm FLUID-EMPTY state and auto-recovery.</td>
+      <td style="font-size:11px;color:var(--teal)">0.0 A heater; FLUID-EMPTY within 5 s; auto-recovery on refill</td>
+    </tr>
+<tr>
+      <td><span style="font-family:var(--mono);font-size:11px">TC-HE-01</span></td>
+      <td><strong>Hardware thermal cutoff</strong><br><span style="font-size:10px;color:var(--text3)">SRS 3.10</span></td>
+      <td style="text-align:center"><span class="pill pill-grey">T</span></td>
+      <td style="font-size:11px">2</td>
+      <td style="font-size:11px">Apply controlled overtemperature. Confirm TCO opens at trip point.</td>
+      <td style="font-size:11px;color:var(--teal)">TCO opens at ≥100°C; heater de-energised</td>
+    </tr>
+<tr>
+      <td><span style="font-family:var(--mono);font-size:11px">TC-FW-01</span></td>
+      <td><strong>Firmware watchdog reset</strong><br><span style="font-size:10px;color:var(--text3)">SRS 3.12</span></td>
+      <td style="text-align:center"><span class="pill pill-grey">T</span></td>
+      <td style="font-size:11px">2</td>
+      <td style="font-size:11px">Halt firmware heartbeat deliberately. Confirm WDT IC asserts RESET and de-energises actuators.</td>
+      <td style="font-size:11px;color:var(--teal)">RESET within 500 ms; all actuators de-energised</td>
+    </tr>
+<tr>
+      <td><span style="font-family:var(--mono);font-size:11px">TC-PRV-01</span></td>
+      <td><strong>Pressure relief valve</strong><br><span style="font-size:10px;color:var(--text3)">SRS 3.13</span></td>
+      <td style="text-align:center"><span class="pill pill-grey">I+T</span></td>
+      <td style="font-size:11px">2</td>
+      <td style="font-size:11px">Pressurise fluid path incrementally. Confirm PRV opens at limit and vents to drip tray only.</td>
+      <td style="font-size:11px;color:var(--teal)">PRV opens ≤2.5 bar; vent to drip tray only; non-venting ≤1.3 bar</td>
+    </tr>
+<tr>
+      <td><span style="font-family:var(--mono);font-size:11px">TC-IPX2-01</span></td>
+      <td><strong>Enclosure IP rating</strong><br><span style="font-size:10px;color:var(--text3)">SRS 3.11</span></td>
+      <td style="text-align:center"><span class="pill pill-grey">T</span></td>
+      <td style="font-size:11px">2+4</td>
+      <td style="font-size:11px">Apply IPX2 drip test per IEC 60529.</td>
+      <td style="font-size:11px;color:var(--teal)">No water ingress to live parts; all functions nominal post-test</td>
+    </tr>
+<tr>
+      <td><span style="font-family:var(--mono);font-size:11px">TC-ST-01</span></td>
+      <td><strong>Surface temperature and stability</strong><br><span style="font-size:10px;color:var(--text3)">SRS 3.10/4.10</span></td>
+      <td style="text-align:center"><span class="pill pill-grey">T+I</span></td>
+      <td style="font-size:11px">4</td>
+      <td style="font-size:11px">Run full brew cycle. Measure all accessible external surfaces. Apply 50 N lateral force.</td>
+      <td style="font-size:11px;color:var(--teal)">No surface >48°C; stable under 50 N lateral</td>
+    </tr>
+<tr>
+      <td><span style="font-family:var(--mono);font-size:11px">TC-OTA-01</span></td>
+      <td><strong>Scheduled OTA firmware update</strong><br><span style="font-size:10px;color:var(--text3)">SRS 1.11</span></td>
+      <td style="text-align:center"><span class="pill pill-grey">T</span></td>
+      <td style="font-size:11px">3–4</td>
+      <td style="font-size:11px">Test all 5 OTA conditions: night-window only, STANDBY state-gate, 30 min activity-free, rollback on failed reboot, UPDATE-COMPLETE telemetry.</td>
+      <td style="font-size:11px;color:var(--teal)">All 5 conditions pass</td>
+    </tr>
+
+  </tbody>
+</table>
+</div>
+
+<!-- VALIDATION EVENTS -->
+<div class="section-banner" style="margin-top:36px">
+  <div class="section-icon" style="background:var(--teal-light);color:var(--teal)"><i class="ti ti-users" aria-hidden="true"></i></div>
+  <div><div class="section-title">Validation Events</div><div class="section-sub">Customer-facing and stakeholder validation — confirmation the right system was built</div></div>
+</div>
+
+<div class="panel" style="padding:0;overflow:hidden">
+<table class="ops">
+  <thead>
+    <tr>
+      <th style="padding-left:20px;width:60px">Event</th>
+      <th style="width:200px">Name</th>
+      <th style="width:110px">Timing</th>
+      <th>Description and success criterion</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr><td><span style="font-family:var(--mono);font-size:11px;color:var(--text)">VE-R1</span></td><td><strong>Requirements validation</strong></td><td style="font-size:11px">Completed</td><td>COFFCO-SRS-001 Issue 3.0 baselined. 42 requirements across 4 categories. All verifiable with acceptance criteria defined.</td></tr>
+<tr><td><span style="font-family:var(--mono);font-size:11px;color:var(--text)">VE-D1</span></td><td><strong>Design validation (PDR)</strong></td><td style="font-size:11px">T + 5 months</td><td>Preliminary Design Review against COFFCO-OC-001 with Vacation Stables representative. Success: Vacation Stables accepts design as consistent with operational concept. SDA and customer sign-off.</td></tr>
+<tr><td><span style="font-family:var(--mono);font-size:11px;color:var(--text)">VE-B1</span></td><td><strong>Build validation (acceptance trial)</strong></td><td style="font-size:11px">T + 9 months</td><td>5 naive test subjects produce americano and hot milk in hotel room simulation. Success: ≥4 of 5 succeed unaided within 3 minutes. Customer acceptance sign-off.</td></tr>
+<tr><td><span style="font-family:var(--mono);font-size:11px;color:var(--text)">VE-C1</span></td><td><strong>Certification</strong></td><td style="font-size:11px">T + 10 months</td><td>CE/UKCA Declaration of Conformity issued. IEC 60335 and EN 55014 certificates obtained. HACCP plan approved. All certificates received and Declaration signed.</td></tr>
+
+  </tbody>
+</table>
+</div>
+
+</div>
+</main>
+<script src="assets/nav.js"></script>
+<script>
+var D = [{"id": "1.1", "name": "Americano brewing", "method": "T", "phase": "2–4", "criterion": "Americano produced; outlet temp ≥60°C", "safety": ""}, {"id": "1.2", "name": "Frothed milk", "method": "T", "phase": "2–4", "criterion": "Frothed milk produced; temp 60–90°C", "safety": ""}, {"id": "1.3", "name": "Volume selection", "method": "D", "phase": "2–4", "criterion": "200–400 ml selectable; correct volume dispensed ±5 ml", "safety": ""}, {"id": "1.4", "name": "Consumable capacity + interlock", "method": "T+I", "phase": "2–4", "criterion": "≥10 brews from full load; incorrect consumable cannot close chamber (TC-CL-01)", "safety": "si"}, {"id": "1.5", "name": "Extraction pressure", "method": "T", "phase": "2–4", "criterion": "0.9–1.3 bar at outlet during extraction", "safety": ""}, {"id": "1.6", "name": "Water hardness + descale", "method": "T+D", "phase": "2–3", "criterion": "Operates across full hardness range; DESCALE-REQUIRED alert ≥10 brews prior (TC-DS-01)", "safety": "si"}, {"id": "1.7", "name": "Status indication", "method": "D", "phase": "3–4", "criterion": "All 7 states communicated without documentation", "safety": "si"}, {"id": "1.8", "name": "Theft deterrence", "method": "D", "phase": "4", "criterion": "Cannot remove in <60 s without tools", "safety": ""}, {"id": "1.9", "name": "Maintenance comms", "method": "T+D", "phase": "3–4", "criterion": "All 7 telemetry events confirmed at cloud ops dashboard (TC-MS-01, TC-MW-01)", "safety": "si"}, {"id": "1.10", "name": "Dry-fire prevention", "method": "T", "phase": "2", "criterion": "0.0 A on empty reservoir; FLUID-EMPTY within 5 s; auto-recovery on refill (TC-008)", "safety": "sc"}, {"id": "1.11", "name": "OTA firmware update", "method": "T", "phase": "3–4", "criterion": "All 5 conditions in TC-OTA-01 pass", "safety": "si"}, {"id": "2.1", "name": "Unaided operation", "method": "D", "phase": "4–6", "criterion": "Naive test subject produces americano unaided (TC-004); ≥4/5 at VE-B1", "safety": ""}, {"id": "2.2", "name": "Mug compatibility", "method": "T", "phase": "4", "criterion": "Dispenses into 100×100 mm vessel without spillage", "safety": ""}, {"id": "2.3", "name": "UK/EU power + surge", "method": "T+A", "phase": "2+cert", "criterion": "All functions at 230 V/50 Hz; IEC 61000-4-5 Level 2 cert", "safety": "si"}, {"id": "2.4", "name": "US power", "method": "T", "phase": "2", "criterion": "All functions at 110 V/60 Hz", "safety": ""}, {"id": "2.5", "name": "Housekeeping interface", "method": "D", "phase": "4", "criterion": "Trained HK restocks and cleans in <5 min without tools", "safety": ""}, {"id": "2.6", "name": "Regional connectors", "method": "T", "phase": "1–2", "criterion": "BS1363, NEMA 5-15, CEE 7/16 operation all confirmed", "safety": ""}, {"id": "2.7", "name": "Dispensing clearance", "method": "I", "phase": "4", "criterion": "≥105 mm clearance confirmed by measurement", "safety": ""}, {"id": "3.1", "name": "Dispensation time", "method": "T", "phase": "2–4", "criterion": "Full cycle ≤180 s (TC-003)", "safety": ""}, {"id": "3.2", "name": "Physical footprint", "method": "I", "phase": "4", "criterion": "≤300×300×300 mm confirmed by measurement", "safety": ""}, {"id": "3.3", "name": "Maintenance-free interval", "method": "A", "phase": "Design", "criterion": "365 days at 2 brews/day — from FMECA and component data", "safety": ""}, {"id": "3.4", "name": "Recycled content", "method": "A", "phase": "Design", "criterion": "≥50% recycled content confirmed by material certificates", "safety": ""}, {"id": "3.5", "name": "Energy efficiency", "method": "A+T", "phase": "4–5", "criterion": "EU rating A from regulatory submission and test data", "safety": ""}, {"id": "3.6", "name": "Colour scheme", "method": "I", "phase": "4", "criterion": "≥80% black or transparent visible surface area", "safety": ""}, {"id": "3.7", "name": "Waste recyclability", "method": "A", "phase": "Design", "criterion": "All waste streams confirmed recyclable before first deployment", "safety": ""}, {"id": "3.8", "name": "EMC compliance", "method": "T", "phase": "4–5", "criterion": "EN 55014 Class B at accredited EMC facility", "safety": ""}, {"id": "3.9", "name": "MTBF ≥26,280 h", "method": "A", "phase": "Design", "criterion": "Composite MTBF ≥26,280 h from FMECA and component reliability data", "safety": ""}, {"id": "3.10", "name": "Burn prevention", "method": "A+T+I", "phase": "2+4", "criterion": "No exposed burn surfaces; all external surfaces ≤48°C (TC-HE-01, TC-ST-01)", "safety": "sc"}, {"id": "3.11", "name": "Shock prevention", "method": "A+T+I", "phase": "1+2+4", "criterion": "IEC 60335 cert; fuse at inlet; IPX2 PASS (TC-IPX2-01); ≥6 mm isolation on drawings", "safety": "sc"}, {"id": "3.12", "name": "Firmware watchdog", "method": "T", "phase": "2", "criterion": "WDT IC RESET within 500 ms; all actuators de-energised (TC-FW-01)", "safety": "sc"}, {"id": "3.13", "name": "Pressure relief valve", "method": "I+T", "phase": "2", "criterion": "PRV opens ≤2.5 bar, vents to drip tray only (TC-PRV-01)", "safety": "sc"}, {"id": "4.1", "name": "Brew temp — americano min", "method": "T", "phase": "2–4", "criterion": "≥60°C at dispensation outlet (TC-001)", "safety": ""}, {"id": "4.2", "name": "Milk temp — max", "method": "T", "phase": "2–4", "criterion": "≤90°C at dispensation (TC-002)", "safety": ""}, {"id": "4.3", "name": "Milk temp — min", "method": "T", "phase": "2–4", "criterion": "≥60°C at dispensation (TC-002)", "safety": ""}, {"id": "4.4", "name": "Extraction pressure — min", "method": "T", "phase": "2–4", "criterion": "≥0.9 bar at coffee outlet", "safety": ""}, {"id": "4.5", "name": "Extraction pressure — max", "method": "T", "phase": "2–4", "criterion": "≤1.3 bar at coffee outlet", "safety": ""}, {"id": "4.6", "name": "Dispense volume — min", "method": "T", "phase": "2–4", "criterion": "200 ml ±5 ml", "safety": ""}, {"id": "4.7", "name": "Dispense volume — max", "method": "T", "phase": "2–4", "criterion": "400 ml ±10 ml", "safety": ""}, {"id": "4.8", "name": "IEC 60335 compliance", "method": "A", "phase": "5", "criterion": "IEC 60335-1 type-test certificate; CE/UKCA/UL Declaration of Conformity", "safety": "si"}, {"id": "4.9", "name": "Food safety", "method": "I+A", "phase": "2–4", "criterion": "Food-grade materials confirmed; HACCP plan approved", "safety": ""}, {"id": "4.10", "name": "System mass", "method": "I+T", "phase": "4", "criterion": "≤10 kg on calibrated scale; stable under 50 N lateral (TC-ST-01)", "safety": "si"}, {"id": "4.11", "name": "Dispense cycle time", "method": "T", "phase": "2–4", "criterion": "≤180 s from first user input (TC-003)", "safety": ""}];
+var filt = 'ALL', openId = null;
+
+function methodPills(m) {
+  return m.split('+').map(function(p) {
+    return '<span class="pill pill-grey" style="margin:1px">' + p.trim() + '</span>';
+  }).join('');
+}
+
+function safetyBadge(s) {
+  if (s === 'sc') return '<span class="pill pill-sc"><i class="ti ti-shield-bolt" aria-hidden="true"></i> safety-critical</span>';
+  if (s === 'si') return '<span class="pill pill-si"><i class="ti ti-shield" aria-hidden="true"></i> safety-impacted</span>';
+  return '<span style="color:var(--text3);font-size:11px">—</span>';
+}
+
+function render(list) {
+  var tb = document.getElementById('vcrm-body');
+  tb.innerHTML = '';
+  list.forEach(function(r) {
+    var isOpen = r.id === openId;
+    var tr = document.createElement('tr');
+    tr.style.cursor = 'pointer';
+    tr.innerHTML =
+      '<td style="padding-left:20px"><b>' + r.id + '</b></td>' +
+      '<td><strong>' + r.name + '</strong></td>' +
+      '<td>' + methodPills(r.method) + '</td>' +
+      '<td style="font-size:11px;color:var(--text2)">' + r.phase + '</td>' +
+      '<td style="font-size:12px">' + (isOpen ? r.criterion : r.criterion.substring(0,60) + (r.criterion.length > 60 ? '&hellip;' : '')) + '</td>' +
+      '<td>' + safetyBadge(r.safety) + '</td>';
+    tr.addEventListener('click', function() {
+      openId = (openId === r.id) ? null : r.id;
+      go();
+    });
+    if (isOpen) tr.style.background = 'var(--teal-light)';
+    tb.appendChild(tr);
+  });
+  document.getElementById('cl').innerHTML = 'Showing <b>' + list.length + '</b> of ' + D.length + ' requirements';
+}
+
+function setF(btn) {
+  document.querySelectorAll('.ftab').forEach(function(b) { b.classList.remove('on'); });
+  btn.classList.add('on');
+  filt = btn.dataset.f;
+  go();
+}
+
+function go() {
+  var q = document.getElementById('srch').value.toLowerCase();
+  render(D.filter(function(r) {
+    if (filt === 'sc') return r.safety === 'sc';
+    if (filt === 'si') return r.safety === 'si';
+    if (filt !== 'ALL' && r.method.indexOf(filt) < 0) return false;
+    if (q && (r.id + ' ' + r.name + ' ' + r.criterion).toLowerCase().indexOf(q) < 0) return false;
+    return true;
+  }));
+}
+
+go();
+</script>
+</body>
+</html>

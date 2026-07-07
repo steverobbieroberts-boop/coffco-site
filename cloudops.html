@@ -1,0 +1,1012 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CoffCo Cloud Ops — Fleet Dashboard &amp; Job Card</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.19.0/dist/tabler-icons.min.css">
+<style>
+  :root {
+    --bg:#f8f7f4;--surface:#fff;--surface2:#f1f0ed;--border:rgba(0,0,0,.10);--border2:rgba(0,0,0,.20);
+    --text:#1a1a18;--text2:#6b6a66;--text3:#9b9a96;
+    --teal:#0F6E56;--teal-light:#E1F5EE;--teal-border:#5DCAA5;--teal-mid:#1D9E75;
+    --amber:#854F0B;--amber-light:#FAEEDA;--amber-mid:#EF9F27;--amber-border:#EF9F27;
+    --red:#A32D2D;--red-light:#FCEBEB;--red-border:#F09595;--red-mid:#E24B4A;
+    --blue:#185FA5;--blue-light:#E6F1FB;--purple:#534AB7;--purple-light:#EEEDFE;--purple-border:#AFA9EC;
+    --radius:8px;--radius-lg:12px;--mono:ui-monospace,'SF Mono','Fira Code',monospace;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,sans-serif;background:var(--bg);color:var(--text);font-size:13px;min-height:100vh}
+  .topbar{background:var(--surface);border-bottom:.5px solid var(--border2);padding:0 28px;height:52px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100}
+  .topbar-left{display:flex;align-items:center;gap:16px}
+  .brand{font-size:13px;font-weight:500;letter-spacing:.12em}
+  .view-tabs{display:flex;gap:0}
+  .view-tab{font-size:12px;padding:6px 16px;border:.5px solid var(--border2);background:var(--surface2);color:var(--text2);cursor:pointer;font-family:inherit;transition:all .15s}
+  .view-tab:first-child{border-radius:var(--radius) 0 0 var(--radius)}
+  .view-tab:last-child{border-radius:0 var(--radius) var(--radius) 0;margin-left:-.5px}
+  .view-tab.active{background:var(--text);color:#fff;border-color:var(--text)}
+  .topbar-right{display:flex;align-items:center;gap:12px;font-size:11px;color:var(--text2)}
+  .live-dot{width:7px;height:7px;border-radius:50%;background:var(--teal-mid);display:inline-block;margin-right:4px}
+  .alert-pill{background:var(--red-light);color:var(--red);border:.5px solid var(--red-border);border-radius:20px;padding:3px 11px;font-size:11px;font-weight:500;cursor:pointer;font-family:inherit;transition:background .15s}
+  .alert-pill:hover{background:#F7C1C1}
+  select.site-sel{font-size:12px;padding:5px 10px;border:.5px solid var(--border2);border-radius:var(--radius);background:var(--surface);color:var(--text);font-family:inherit;cursor:pointer}
+  .view{display:none}.view.active{display:block}
+  .dash-body{padding:24px 28px}
+  .kpi-row{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:18px}
+  .kpi{background:var(--surface2);border-radius:var(--radius);padding:12px 14px}
+  .kpi-label{font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px}
+  .kpi-val{font-size:22px;font-weight:500;line-height:1}
+  .kpi-sub{font-size:10px;color:var(--text3);margin-top:4px}
+  .kpi-val.good{color:var(--teal)}.kpi-val.warn{color:var(--amber)}.kpi-val.bad{color:var(--red)}
+  .main-grid{display:grid;grid-template-columns:1.6fr 1fr;gap:14px;margin-bottom:14px}
+  .panel{background:var(--surface);border:.5px solid var(--border);border-radius:var(--radius-lg);padding:16px 18px}
+  .panel-title{font-size:12px;font-weight:500;display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
+  .panel-title-right{font-size:10px;font-weight:400;color:var(--text3)}
+  .fleet-tabs{display:flex;gap:0;border-bottom:.5px solid var(--border);margin-bottom:10px}
+  .fleet-tab{font-size:11px;padding:5px 14px;cursor:pointer;color:var(--text2);border-bottom:2px solid transparent;margin-bottom:-1px;background:none;border-top:none;border-left:none;border-right:none;font-family:inherit;transition:color .15s}
+  .fleet-tab.active{color:var(--text);border-bottom-color:var(--text);font-weight:500}
+  table.fleet{width:100%;border-collapse:collapse;font-size:11px}
+  table.fleet th{text-align:left;font-weight:500;color:var(--text3);padding:0 8px 7px 0;border-bottom:.5px solid var(--border);font-size:10px;text-transform:uppercase;letter-spacing:.04em}
+  table.fleet td{padding:7px 8px 7px 0;border-bottom:.5px solid var(--border);vertical-align:middle}
+  table.fleet tr:last-child td{border-bottom:none}
+  table.fleet tr.data-row{cursor:pointer;transition:background .1s}
+  table.fleet tr.data-row:hover td{background:var(--surface2)}
+  table.fleet tr.data-row.selected td{background:#f0faf6}
+  .pill{display:inline-flex;align-items:center;gap:3px;font-size:10px;padding:2px 7px;border-radius:20px;font-weight:500}
+  .pill-ok{background:var(--teal-light);color:var(--teal);border:.5px solid var(--teal-border)}
+  .pill-warn{background:var(--amber-light);color:var(--amber);border:.5px solid var(--amber-border)}
+  .pill-fault{background:var(--red-light);color:var(--red);border:.5px solid var(--red-border)}
+  .pill-maint{background:var(--purple-light);color:var(--purple);border:.5px solid var(--purple-border)}
+  .scale-wrap{display:flex;align-items:center;gap:6px;min-width:90px}
+  .scale-bg{flex:1;height:5px;border-radius:3px;background:var(--surface2);overflow:hidden}
+  .scale-fill{height:100%;border-radius:3px}
+  .sf-ok{background:var(--teal-mid)}.sf-warn{background:var(--amber-mid)}.sf-crit{background:var(--red-mid)}
+  .detail-grid{display:grid;grid-template-columns:1fr 1fr;gap:7px}
+  .d-item{background:var(--surface2);border-radius:var(--radius);padding:8px 10px}
+  .d-label{font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:.04em;margin-bottom:3px}
+  .d-val{font-size:13px;font-weight:500}
+  .d-val.good{color:var(--teal)}.d-val.warn{color:var(--amber)}.d-val.bad{color:var(--red)}
+  .event-log{display:flex;flex-direction:column;gap:0;margin-top:10px}
+  .ev-item{display:flex;gap:10px;padding:5px 0;border-bottom:.5px solid var(--border);font-size:11px}
+  .ev-item:last-child{border-bottom:none}
+  .ev-time{font-size:10px;color:var(--text3);min-width:52px;padding-top:1px;font-family:var(--mono)}
+  .ev-dot{width:8px;height:8px;border-radius:50%;margin-top:4px;flex-shrink:0}
+  .ev-ok{background:var(--teal-mid)}.ev-warn{background:var(--amber-mid)}.ev-err{background:var(--red-mid)}.ev-info{background:var(--blue)}
+  .ev-text{color:var(--text2);line-height:1.4}
+  .alert-list{display:flex;flex-direction:column;gap:7px}
+  .alert-item{display:flex;align-items:flex-start;gap:10px;padding:9px 11px;border:.5px solid var(--border);border-radius:var(--radius);cursor:pointer;transition:background .1s}
+  .alert-item.ack{opacity:.5}
+  .alert-item:hover{background:var(--surface2)}
+  .alert-ico{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0}
+  .ai-fault{background:var(--red-light);color:var(--red)}.ai-warn{background:var(--amber-light);color:var(--amber)}
+  .ai-info{background:var(--teal-light);color:var(--teal)}.ai-maint{background:var(--purple-light);color:var(--purple)}
+  .alert-body{flex:1;min-width:0}
+  .alert-room{font-size:11px;font-weight:500}
+  .alert-msg{font-size:10px;color:var(--text2);margin-top:2px;line-height:1.45}
+  .alert-link{font-size:10px;color:var(--blue);text-decoration:underline;cursor:pointer;margin-top:3px;display:inline-block;margin-right:8px}
+  .dispatch-btn{font-size:10px;padding:3px 10px;margin-top:4px;border:.5px solid var(--teal-border);border-radius:20px;background:var(--teal-light);color:var(--teal);cursor:pointer;font-family:inherit;font-weight:500;transition:background .15s}
+  .dispatch-btn:hover{background:var(--teal-border);color:#fff}
+  .ack-btn{font-size:10px;padding:3px 10px;margin-top:4px;margin-left:4px;border:.5px solid var(--border2);border-radius:20px;background:var(--surface2);color:var(--text2);cursor:pointer;font-family:inherit;transition:background .15s}
+  .ack-btn:hover{background:var(--border)}
+  .alert-time{font-size:10px;color:var(--text3);flex-shrink:0;padding-top:3px}
+  .brew-chart{display:flex;align-items:flex-end;gap:4px;height:80px;padding-top:8px}
+  .b-bar{flex:1;border-radius:2px 2px 0 0;background:var(--teal-light);min-height:4px}
+  .b-bar.today{background:var(--teal-mid)}
+  .brew-axis{display:flex;justify-content:space-between;font-size:10px;color:var(--text3);margin-top:4px}
+  .bottom-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+  .ota-bar{margin-bottom:9px}
+  .ota-row{display:flex;justify-content:space-between;font-size:11px;color:var(--text2);margin-bottom:4px}
+  .ota-track{height:5px;border-radius:3px;background:var(--surface2);overflow:hidden}
+  .ota-fill{height:100%;border-radius:3px}
+  .srs-row{display:flex;align-items:center;justify-content:space-between;padding:5px 0;border-bottom:.5px solid var(--border);font-size:11px}
+  .srs-row:last-child{border-bottom:none}
+  .srs-id{font-family:var(--mono);font-size:10px;color:var(--text3)}
+  .srs-tick{width:18px;height:18px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px}
+  .st-pass{background:var(--teal-light);color:var(--teal)}.st-warn{background:var(--amber-light);color:var(--amber)}.st-fail{background:var(--red-light);color:var(--red)}
+  .pred-item{margin-bottom:8px}
+  .pred-row{display:flex;justify-content:space-between;font-size:11px;margin-bottom:3px}
+  /* housekeeping */
+  .hk-body{padding:24px 28px}
+  .hk-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:12px;margin-top:16px}
+  .hk-card{background:var(--surface);border:.5px solid var(--border);border-radius:var(--radius-lg);padding:14px 16px}
+  .hk-card.needs-action{border-color:var(--amber-border);background:var(--amber-light)}
+  .hk-card.fault{border-color:var(--red-border);background:var(--red-light)}
+  .hk-room{font-size:13px;font-weight:500;margin-bottom:8px;display:flex;align-items:center;justify-content:space-between}
+  .hk-rows{display:flex;flex-direction:column;gap:5px}
+  .hk-row{display:flex;align-items:center;justify-content:space-between;font-size:11px}
+  .hk-label{color:var(--text2)}
+  .hk-val{font-weight:500}
+  .hk-val.ok{color:var(--teal)}.hk-val.warn{color:var(--amber)}.hk-val.bad{color:var(--red)}
+  .hk-actions{display:flex;gap:6px;margin-top:10px;flex-wrap:wrap}
+  .hk-btn{font-size:10px;padding:4px 10px;border:.5px solid var(--border2);border-radius:20px;background:var(--surface);color:var(--text2);cursor:pointer;font-family:inherit;transition:all .15s}
+  .hk-btn:hover{background:var(--surface2)}
+  .hk-btn.primary{border-color:var(--teal-border);background:var(--teal-light);color:var(--teal)}
+  .hk-btn.primary:hover{background:var(--teal-border);color:#fff}
+  .hk-summary{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:4px}
+  /* btns */
+  .btn{display:inline-flex;align-items:center;gap:6px;font-size:11px;padding:6px 13px;border:.5px solid var(--border2);border-radius:var(--radius);background:var(--surface);color:var(--text);cursor:pointer;font-family:inherit;transition:background .15s}
+  .btn:hover{background:var(--surface2)}
+  .btn.primary{border-color:var(--teal);color:var(--teal)}.btn.primary:hover{background:var(--teal-light)}
+  .btn.danger{border-color:var(--red);color:var(--red)}
+  .btn-row{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+  /* modal */
+  .modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.35);z-index:200;align-items:center;justify-content:center}
+  .modal-overlay.open{display:flex}
+  .modal{background:var(--surface);border-radius:var(--radius-lg);border:.5px solid var(--border2);padding:24px 28px;max-width:420px;width:90%}
+  .modal-title{font-size:15px;font-weight:500;margin-bottom:6px}
+  .modal-body{font-size:12px;color:var(--text2);line-height:1.6;margin-bottom:18px}
+  .modal-actions{display:flex;gap:10px;justify-content:flex-end}
+  /* job card */
+  .jc-body{padding:24px 28px;max-width:860px}
+  .jc-header{display:flex;justify-content:space-between;align-items:flex-start;padding-bottom:16px;border-bottom:.5px solid var(--border2);margin-bottom:16px;flex-wrap:wrap;gap:12px}
+  .jc-id{font-size:10px;font-family:var(--mono);color:var(--text3);margin-bottom:4px}
+  .jc-name{font-size:18px;font-weight:500}
+  .jc-sub{font-size:12px;color:var(--text2);margin-top:3px}
+  .jc-meta{font-size:11px;color:var(--text2);text-align:right;line-height:1.7}
+  .fault-banner{background:var(--red-light);border:.5px solid var(--red-border);border-radius:var(--radius);padding:11px 14px;display:flex;gap:10px;margin-bottom:16px}
+  .fb-icon{color:var(--red);font-size:20px;flex-shrink:0;margin-top:1px}
+  .fb-title{font-size:12px;font-weight:500;color:#791F1F}
+  .fb-detail{font-size:11px;color:var(--red);margin-top:3px;line-height:1.5}
+  .prog-strip{display:flex;gap:3px;margin-bottom:16px}
+  .ps{flex:1;height:4px;border-radius:2px;background:var(--border)}
+  .ps.done{background:var(--teal-mid)}.ps.active{background:var(--amber-mid)}
+  .meta-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:18px}
+  .m-item{background:var(--surface2);border-radius:var(--radius);padding:9px 11px}
+  .m-label{font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:.04em;margin-bottom:3px}
+  .m-val{font-size:13px;font-weight:500}
+  .m-val.good{color:var(--teal)}.m-val.warn{color:var(--amber)}.m-val.bad{color:var(--red)}
+  .two-col{display:grid;grid-template-columns:1.2fr 1fr;gap:14px;margin-bottom:14px}
+  table.parts{width:100%;border-collapse:collapse;font-size:11px}
+  table.parts th{font-size:10px;font-weight:500;color:var(--text3);text-transform:uppercase;letter-spacing:.04em;padding:0 8px 6px 0;border-bottom:.5px solid var(--border)}
+  table.parts td{padding:6px 8px 6px 0;border-bottom:.5px solid var(--border);vertical-align:top}
+  table.parts tr:last-child td{border-bottom:none}
+  .cp-crit,.cp-high,.cp-std{font-size:10px;padding:1px 7px;border-radius:20px;font-weight:500}
+  .cp-crit{background:var(--red-light);color:var(--red);border:.5px solid var(--red-border)}
+  .cp-high{background:var(--amber-light);color:var(--amber);border:.5px solid var(--amber-border)}
+  .cp-std{background:var(--teal-light);color:var(--teal);border:.5px solid var(--teal-border)}
+  .mttr-display{font-size:26px;font-weight:500;font-family:var(--mono)}
+  .mttr-limit{font-size:10px;color:var(--text3);margin-top:2px}
+  .mttr-track{height:8px;border-radius:4px;background:var(--surface2);overflow:hidden;margin:8px 0 4px}
+  .mttr-fill{height:100%;border-radius:4px;background:var(--teal-mid);transition:width .5s,background .5s}
+  .mttr-axis{display:flex;justify-content:space-between;font-size:10px;color:var(--text3)}
+  .warn-box{background:var(--amber-light);border:.5px solid var(--amber-border);border-radius:var(--radius);padding:9px 12px;font-size:11px;color:#633806;line-height:1.55;margin-bottom:10px}
+  .task-list{display:flex;flex-direction:column}
+  .task-item{display:flex;gap:12px;padding:10px 0;border-bottom:.5px solid var(--border);cursor:pointer;transition:background .1s}
+  .task-item:last-child{border-bottom:none}
+  .task-item:hover{background:var(--surface2);margin:0 -4px;padding-left:4px;padding-right:4px}
+  .task-num{width:24px;height:24px;border-radius:50%;border:.5px solid var(--border2);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:500;color:var(--text2);flex-shrink:0;background:var(--surface2);transition:all .15s}
+  .task-item.done .task-num{background:var(--teal-light);border-color:var(--teal-border);color:var(--teal)}
+  .task-body{flex:1}
+  .task-title{font-size:12px;font-weight:500;margin-bottom:2px}
+  .task-item.done .task-title{color:var(--text2);text-decoration:line-through}
+  .task-detail{font-size:11px;color:var(--text2);line-height:1.5}
+  .task-srs{font-size:10px;font-family:var(--mono);color:var(--text3);margin-top:3px}
+  .task-time{font-size:10px;color:var(--text3);flex-shrink:0;padding-top:4px}
+  .verify-item{display:flex;align-items:center;gap:10px;padding:7px 0;border-bottom:.5px solid var(--border);cursor:pointer}
+  .verify-item:last-child{border-bottom:none}
+  .v-tick{width:20px;height:20px;border-radius:50%;flex-shrink:0;border:.5px solid var(--border2);display:flex;align-items:center;justify-content:center;background:var(--surface2);font-size:11px;color:var(--text3);transition:all .15s}
+  .verify-item.done .v-tick{background:var(--teal-light);border-color:var(--teal-border);color:var(--teal)}
+  .v-test{font-size:11px}
+  .verify-item.done .v-test{color:var(--text2);text-decoration:line-through}
+  .v-srs{font-size:10px;font-family:var(--mono);color:var(--text3);margin-top:1px}
+  .sign-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+  .sign-field{border-bottom:.5px solid var(--border2);min-height:32px;padding-bottom:4px;font-size:12px;color:var(--text)}
+  .sign-lbl{font-size:10px;color:var(--text3);margin-top:4px}
+  .section-head{font-size:10px;font-weight:500;color:var(--text3);text-transform:uppercase;letter-spacing:.07em;margin-bottom:10px;padding-bottom:6px;border-bottom:.5px solid var(--border)}
+  footer{border-top:.5px solid var(--border);padding:10px 28px;display:flex;align-items:center;justify-content:space-between;font-size:10px;color:var(--text3);margin-top:32px}
+  @media(max-width:700px){
+    .kpi-row{grid-template-columns:1fr 1fr}
+    .main-grid,.two-col,.bottom-grid,.sign-grid,.hk-summary{grid-template-columns:1fr}
+    .meta-grid{grid-template-columns:1fr 1fr}
+  }
+</style>
+</head>
+<body>
+
+<nav class="topbar">
+  <div class="topbar-left">
+    <span class="brand">COFFCO</span>
+    <div class="view-tabs">
+      <button class="view-tab active" onclick="showView('dashboard')">Fleet dashboard</button>
+      <button class="view-tab" onclick="showView('housekeeping')">Housekeeping</button>
+      <button class="view-tab" id="jcTab" onclick="showView('jobcard')">Job card</button>
+    </div>
+    <select class="site-sel" id="siteSel" onchange="changeSite(this.value)">
+      <option value="london">Vacation Stables London</option>
+      <option value="edinburgh">Vacation Stables Edinburgh</option>
+      <option value="nyc">Vacation Stables New York</option>
+    </select>
+  </div>
+  <div class="topbar-right">
+    <span><span class="live-dot"></span>Live · updated 14s ago</span>
+    <button class="alert-pill" onclick="scrollAlerts()">
+      <i class="ti ti-bell"></i> <span id="alertCount">3</span> active alerts
+    </button>
+    <button class="btn" style="font-size:11px;padding:4px 12px" onclick="resetAll()">
+      <i class="ti ti-refresh"></i> Reset demo
+    </button>
+  </div>
+</nav>
+
+<!-- ═══ DASHBOARD ═══ -->
+<div id="view-dashboard" class="view active">
+<div class="dash-body">
+  <div class="kpi-row">
+    <div class="kpi"><div class="kpi-label">Fleet online</div><div class="kpi-val good" id="kpiOnline">—</div><div class="kpi-sub" id="kpiOnlineSub"></div></div>
+    <div class="kpi"><div class="kpi-label">Brews today</div><div class="kpi-val" id="kpiBrews">—</div><div class="kpi-sub" id="kpiBrewsSub"></div></div>
+    <div class="kpi"><div class="kpi-label">MTBF tracking</div><div class="kpi-val good" id="kpiMtbf">—</div><div class="kpi-sub" id="kpiMtbfSub"></div></div>
+    <div class="kpi"><div class="kpi-label">Days to next service</div><div class="kpi-val warn" id="kpiSvc">—</div><div class="kpi-sub" id="kpiSvcSub"></div></div>
+  </div>
+  <div class="main-grid">
+    <div class="panel">
+      <div class="panel-title">Fleet status — room by room <span class="panel-title-right">click row · dispatch to open job card</span></div>
+      <div class="fleet-tabs">
+        <button class="fleet-tab active" onclick="setTab('all',this)" id="tabAll">All</button>
+        <button class="fleet-tab" onclick="setTab('warn',this)" id="tabWarn">Attention</button>
+        <button class="fleet-tab" onclick="setTab('fault',this)" id="tabFault">Fault</button>
+      </div>
+      <table class="fleet"><thead><tr>
+        <th>Room</th><th>Status</th><th>Scale</th><th>Consumable</th><th>Last brew</th><th>Days to svc</th>
+      </tr></thead><tbody id="fleetBody"></tbody></table>
+    </div>
+    <div class="panel" id="detailPanel">
+      <div class="panel-title">Room detail <span class="panel-title-right" id="detailRoomLabel">— select a room</span></div>
+      <div id="detailContent" style="color:var(--text3);font-size:12px;padding:28px 0;text-align:center">
+        <i class="ti ti-device-desktop-analytics" style="font-size:36px;display:block;margin-bottom:10px;color:var(--border2)"></i>
+        Select a room to view telemetry
+      </div>
+    </div>
+  </div>
+  <div class="main-grid" id="alertAnchor">
+    <div class="panel">
+      <div class="panel-title">Active alerts <span class="panel-title-right">SRS 1.9 — wireless maintenance comms</span></div>
+      <div class="alert-list" id="alertList"></div>
+    </div>
+    <div class="panel">
+      <div class="panel-title">Brew volume — 7 days <span class="panel-title-right">fleet aggregate</span></div>
+      <div class="brew-chart" id="brewChart"></div>
+      <div class="brew-axis" id="brewAxis"></div>
+      <div style="margin-top:12px;font-size:11px;color:var(--text2)">
+        Avg cycle time vs SRS 3.1 (≤3 min). Today: <strong style="color:var(--text)" id="avgCycle">1 min 48s</strong> ✓
+      </div>
+    </div>
+  </div>
+  <div class="bottom-grid">
+    <div class="panel">
+      <div class="panel-title">Firmware · OTA status</div>
+      <div id="otaPanel"></div>
+      <button class="btn" style="margin-top:10px" onclick="pushOtaAll()">
+        <i class="ti ti-cloud-upload"></i> Push update to v2.2.x units
+      </button>
+    </div>
+    <div class="panel">
+      <div class="panel-title">SRS compliance monitor</div>
+      <div id="srsPanel"></div>
+    </div>
+    <div class="panel">
+      <div class="panel-title">Predictive maintenance</div>
+      <div style="font-size:11px;color:var(--text2);margin-bottom:10px">Scale accumulation — highest risk units</div>
+      <div id="predList"></div>
+      <div style="margin-top:10px;font-size:10px;color:var(--text3)">Scale is the primary maintenance driver (SRS 3.3 / FMECA).</div>
+      <button class="btn primary" style="margin-top:8px" onclick="showModal('schedule')">
+        <i class="ti ti-calendar"></i> Generate maintenance schedule
+      </button>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- ═══ HOUSEKEEPING ═══ -->
+<div id="view-housekeeping" class="view">
+<div class="hk-body">
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;flex-wrap:wrap;gap:10px">
+    <div>
+      <div style="font-size:16px;font-weight:500" id="hkSiteTitle">Housekeeping — Vacation Stables London</div>
+      <div style="font-size:11px;color:var(--text2);margin-top:3px">Daily service checklist · SRS 2.5 · tool-free restocking · 15-min onboarding</div>
+    </div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap">
+      <button class="btn" onclick="markAllRestocked()"><i class="ti ti-checks"></i> Mark all restocked</button>
+      <button class="btn primary" onclick="showView('dashboard')"><i class="ti ti-arrow-left"></i> Back to dashboard</button>
+    </div>
+  </div>
+  <div class="hk-summary" id="hkSummary"></div>
+  <div class="hk-grid" id="hkGrid"></div>
+</div>
+</div>
+
+<!-- ═══ JOB CARD ═══ -->
+<div id="view-jobcard" class="view">
+<div class="jc-body">
+  <div class="jc-header">
+    <div>
+      <div class="jc-id" id="jcDocId">COFFCO-JC-001 · Issue 1.0 · Corrective maintenance</div>
+      <div class="jc-name">Field engineer job card</div>
+      <div class="jc-sub" id="jcSubtitle"></div>
+    </div>
+    <div class="jc-meta" id="jcMeta">Dispatched: —<br>MTTR target: ≤4 hours<br><span style="font-family:var(--mono)">Alert ref: —</span></div>
+  </div>
+  <div class="fault-banner"><i class="ti ti-alert-circle fb-icon"></i>
+    <div><div class="fb-title" id="jcFaultTitle">Active faults</div><div class="fb-detail" id="jcFaultDetail">Loading…</div></div>
+  </div>
+  <div class="prog-strip" id="progStrip"></div>
+  <div class="meta-grid">
+    <div class="m-item"><div class="m-label">Maintenance type</div><div class="m-val">Corrective — unscheduled</div></div>
+    <div class="m-item"><div class="m-label">Trigger</div><div class="m-val">Wireless alert · SRS 1.9</div></div>
+    <div class="m-item"><div class="m-label">Scale level</div><div class="m-val good" id="jcScale">—</div></div>
+    <div class="m-item"><div class="m-label">Consumable</div><div class="m-val bad" id="jcConsumable">—</div></div>
+    <div class="m-item"><div class="m-label">Firmware</div><div class="m-val bad" id="jcFw">—</div></div>
+    <div class="m-item"><div class="m-label">Days since last service</div><div class="m-val" id="jcDaysSvc">—</div></div>
+  </div>
+  <div class="two-col">
+    <div class="panel">
+      <div class="section-head">Parts to bring from depot</div>
+      <table class="parts"><thead><tr><th>Item</th><th>Qty</th><th>Criticality</th></tr></thead>
+      <tbody>
+        <tr><td>Coffee consumable (full load)</td><td>1</td><td><span class="cp-crit">Critical</span></td></tr>
+        <tr><td>Control assembly (spare)</td><td>1</td><td><span class="cp-high">High</span></td></tr>
+        <tr><td>Thermal assembly (spare)</td><td>1</td><td><span class="cp-high">High</span></td></tr>
+        <tr><td>Harness set</td><td>1</td><td><span class="cp-std">Standard</span></td></tr>
+        <tr><td>Diagnostic device</td><td>1</td><td><span class="cp-high">High</span></td></tr>
+        <tr><td>Pressure gauge</td><td>1</td><td><span class="cp-std">Standard</span></td></tr>
+        <tr><td>Food-safe cleaning solution</td><td>1</td><td><span class="cp-std">Standard</span></td></tr>
+      </tbody></table>
+      <div style="margin-top:10px;font-size:10px;color:var(--text3)">No special tools required — tool-free design (SRS 2.5). Assemblies carried as swap-and-return.</div>
+    </div>
+    <div class="panel">
+      <div class="section-head">MTTR clock</div>
+      <div class="mttr-display" id="mttrDisplay">00:00:00</div>
+      <div class="mttr-limit">Target: ≤ 4:00:00 · SRS 3.3 / ILS plan</div>
+      <div class="mttr-track"><div class="mttr-fill" id="mttrFill" style="width:0%"></div></div>
+      <div class="mttr-axis"><span>Dispatch</span><span>2 hr</span><span>4 hr limit</span></div>
+      <div class="btn-row">
+        <button class="btn primary" id="timerBtn" onclick="toggleTimer()"><i class="ti ti-player-play" id="timerIcon"></i> <span id="timerLabel">Start clock on arrival</span></button>
+        <button class="btn" onclick="resetTimer()"><i class="ti ti-refresh"></i> Reset</button>
+      </div>
+    </div>
+  </div>
+  <div class="panel" style="margin-bottom:14px">
+    <div class="section-head">Task sequence — click each step to mark complete</div>
+    <div class="warn-box"><i class="ti ti-shield-lock" style="margin-right:5px"></i><strong>Safety pre-check:</strong> Confirm fault/locked state before opening. Isolate power before any physical intervention. IEC 60335 / SRS 3.11.</div>
+    <div class="task-list" id="taskList"></div>
+    <div class="btn-row" style="padding-top:12px;border-top:.5px solid var(--border)">
+      <button class="btn primary" onclick="markAllDone()"><i class="ti ti-checks"></i> Mark all complete</button>
+      <button class="btn" onclick="resetTasks()"><i class="ti ti-refresh"></i> Reset tasks</button>
+    </div>
+  </div>
+  <div class="panel" style="margin-bottom:14px">
+    <div class="section-head">Verification tests — must pass before sign-off</div>
+    <div id="verifyList"></div>
+  </div>
+  <div class="panel" style="margin-bottom:14px">
+    <div class="section-head">Sign-off</div>
+    <div class="sign-grid">
+      <div><div class="sign-field" id="engSign" style="cursor:pointer" onclick="signEng()"><span style="color:var(--text3);font-size:11px">Click to sign</span></div><div class="sign-lbl">Field engineer signature / ID</div></div>
+      <div><div class="sign-field"></div><div class="sign-lbl">Vacation Stables representative (optional)</div></div>
+      <div><div class="sign-field" id="closeoutTime"></div><div class="sign-lbl">Time of close-out</div></div>
+      <div><div class="sign-field" id="actualMttr"></div><div class="sign-lbl">Actual MTTR</div></div>
+    </div>
+    <div class="btn-row" style="margin-top:14px">
+      <button class="btn primary" onclick="submitCloseout()"><i class="ti ti-cloud-upload"></i> Submit to cloud ops</button>
+      <button class="btn" onclick="showView('dashboard')"><i class="ti ti-arrow-left"></i> Back to dashboard</button>
+    </div>
+  </div>
+</div>
+</div>
+
+<div class="modal-overlay" id="modalOverlay" onclick="closeModal(event)">
+  <div class="modal">
+    <div class="modal-title" id="modalTitle">Confirm action</div>
+    <div class="modal-body" id="modalBody">—</div>
+    <div class="modal-actions">
+      <button class="btn" onclick="closeModal()">Cancel</button>
+      <button class="btn primary" id="modalConfirm" onclick="closeModal()">Confirm</button>
+    </div>
+  </div>
+</div>
+
+<footer>
+  <span>CoffCo Cloud Ops · COFFCO-CLOUD-001 Issue 1.0 · School of Systems Engineering secondment · Investor Confidential</span>
+  <span>SS-5 Monitoring &amp; Comms · SRS 1.9, 3.3, 3.9</span>
+</footer>
+
+<script>
+/* ═══════════════════════════════════════════════════
+   SITE DATA — three distinct fleet profiles
+═══════════════════════════════════════════════════ */
+var SITES = {
+  london: {
+    name: 'Vacation Stables London', roomCount: 48,
+    kpi: { online:'47 / 48', onlineSub:'1 in maintenance mode', brews:84, brewsSub:'of ~96 expected (2/room)', mtbf:'31,420 hrs', mtbfSub:'target ≥26,280 · SRS 3.9', svc:38, svcSub:'3 units due <60 days' },
+    brewVals: [78,82,88,91,76,69,84], cycle:'1 min 48s',
+    ota: { current:44, legacy:3, critical:1 },
+    rooms: [
+      {id:'101',status:'ok',   scale:12,consumable:85,lastBrew:'08:42',daysToSvc:280,temp:88, pressure:1.10,brews:714, fw:'2.4.1',drip:'ok',  events:[{t:'09:02',cls:'ev-ok',msg:'Brew completed — 300ml americano'},{t:'07:15',cls:'ev-ok',msg:'Brew completed — 200ml americano'},{t:'06:30',cls:'ev-info',msg:'Telemetry sync — status OK'},{t:'Yesterday',cls:'ev-ok',msg:'Brew completed — 400ml americano'}]},
+      {id:'102',status:'ok',   scale:18,consumable:60,lastBrew:'09:15',daysToSvc:274,temp:87, pressure:1.00,brews:698, fw:'2.4.1',drip:'ok',  events:[{t:'09:15',cls:'ev-ok',msg:'Brew completed — 250ml americano'},{t:'07:45',cls:'ev-ok',msg:'Brew completed — 300ml americano'},{t:'06:00',cls:'ev-info',msg:'Telemetry sync — status OK'}]},
+      {id:'103',status:'warn', scale:74,consumable:90,lastBrew:'07:30',daysToSvc:38, temp:85, pressure:0.95,brews:1820,fw:'2.4.1',drip:'ok',  events:[{t:'07:30',cls:'ev-ok',msg:'Brew completed — 300ml americano'},{t:'06:10',cls:'ev-warn',msg:'Scale level 74% — approaching service threshold'},{t:'Yesterday',cls:'ev-ok',msg:'Brew completed — 350ml americano'},{t:'2d ago',cls:'ev-warn',msg:'Scale 70% warning logged'}]},
+      {id:'104',status:'ok',   scale:9, consumable:70,lastBrew:'10:02',daysToSvc:310,temp:89, pressure:1.10,brews:445, fw:'2.4.1',drip:'ok',  events:[{t:'10:02',cls:'ev-ok',msg:'Brew completed — 300ml americano'},{t:'08:30',cls:'ev-ok',msg:'Brew completed — 200ml americano'},{t:'06:00',cls:'ev-info',msg:'Telemetry sync — status OK'}]},
+      {id:'105',status:'warn', scale:81,consumable:55,lastBrew:'06:55',daysToSvc:22, temp:84, pressure:0.92,brews:1960,fw:'2.3.8',drip:'full', events:[{t:'06:55',cls:'ev-ok',msg:'Brew completed — 300ml americano'},{t:'06:20',cls:'ev-warn',msg:'Scale level 81% — service overdue'},{t:'Yesterday',cls:'ev-warn',msg:'Drip tray approaching capacity'},{t:'2d ago',cls:'ev-ok',msg:'Brew completed — 400ml americano'}]},
+      {id:'106',status:'fault',scale:45,consumable:0, lastBrew:'—',   daysToSvc:180,temp:0,  pressure:0,   brews:1100,fw:'2.2.1',drip:'ok',  events:[{t:'11:14',cls:'ev-err',msg:'FAULT: Consumable empty — dry-fire lock active (SRS 1.10)'},{t:'10:55',cls:'ev-warn',msg:'Consumable low warning — 10% remaining'},{t:'09:30',cls:'ev-ok',msg:'Brew completed — 300ml americano'},{t:'08:12',cls:'ev-ok',msg:'Brew completed — 200ml americano'}]},
+      {id:'107',status:'ok',   scale:33,consumable:95,lastBrew:'09:48',daysToSvc:195,temp:88, pressure:1.05,brews:900, fw:'2.4.1',drip:'ok',  events:[{t:'09:48',cls:'ev-ok',msg:'Brew completed — 350ml americano'},{t:'07:22',cls:'ev-ok',msg:'Brew completed — 300ml americano'},{t:'06:00',cls:'ev-info',msg:'Telemetry sync — status OK'}]},
+      {id:'108',status:'warn', scale:68,consumable:40,lastBrew:'08:10',daysToSvc:55, temp:86, pressure:0.98,brews:1750,fw:'2.3.8',drip:'ok',  events:[{t:'08:10',cls:'ev-ok',msg:'Brew completed — 200ml americano'},{t:'07:00',cls:'ev-warn',msg:'Scale level 68% — monitor'},{t:'Yesterday',cls:'ev-ok',msg:'Brew completed — 300ml americano'}]},
+      {id:'201',status:'ok',   scale:22,consumable:75,lastBrew:'09:30',daysToSvc:250,temp:88, pressure:1.08,brews:760, fw:'2.4.1',drip:'ok',  events:[{t:'09:30',cls:'ev-ok',msg:'Brew completed — 300ml americano'},{t:'07:10',cls:'ev-ok',msg:'Brew completed — 400ml americano'},{t:'06:00',cls:'ev-info',msg:'Telemetry sync — status OK'}]},
+      {id:'202',status:'maint',scale:0, consumable:100,lastBrew:'—',  daysToSvc:365,temp:0,  pressure:0,   brews:1100,fw:'2.4.1',drip:'ok',  events:[{t:'09:00',cls:'ev-info',msg:'Maintenance mode entered — field engineer on site'},{t:'08:45',cls:'ev-info',msg:'Annual service commenced'},{t:'Yesterday',cls:'ev-ok',msg:'Brew completed — 300ml americano'}]},
+      {id:'203',status:'ok',   scale:14,consumable:88,lastBrew:'08:55',daysToSvc:298,temp:89, pressure:1.12,brews:620, fw:'2.4.1',drip:'ok',  events:[{t:'08:55',cls:'ev-ok',msg:'Brew completed — 250ml americano'},{t:'07:00',cls:'ev-ok',msg:'Brew completed — 300ml americano'},{t:'06:00',cls:'ev-info',msg:'Telemetry sync — status OK'}]},
+      {id:'204',status:'warn', scale:76,consumable:20,lastBrew:'07:45',daysToSvc:41, temp:85, pressure:0.94,brews:1880,fw:'2.3.8',drip:'full', events:[{t:'07:45',cls:'ev-ok',msg:'Brew completed — 300ml americano'},{t:'07:00',cls:'ev-warn',msg:'Scale 76% and consumable 20% — two thresholds approaching'},{t:'2d ago',cls:'ev-ok',msg:'Brew completed — 200ml americano'}]},
+    ],
+    alerts: [
+      {type:'fault',room:'106',msg:'Consumable empty — dry-fire prevention active. Brew locked (SRS 1.10). Housekeeping dispatch required.',time:'2 min ago',ack:false},
+      {type:'warn', room:'105',msg:'Scale level 81% — predicted maintenance due in 22 days. Engineer dispatch recommended (SRS 3.3).',time:'47 min ago',ack:false},
+      {type:'warn', room:'103',msg:'Scale level 74% and consumable low. Two concurrent thresholds approaching.',time:'1h 12m ago',ack:false},
+      {type:'maint',room:'202',msg:'Maintenance mode active. Field engineer on site. Annual service in progress.',time:'3h 04m ago',ack:false},
+    ]
+  },
+  edinburgh: {
+    name: 'Vacation Stables Edinburgh', roomCount: 24,
+    kpi: { online:'23 / 24', onlineSub:'1 with scale warning', brews:41, brewsSub:'of ~48 expected (2/room)', mtbf:'28,910 hrs', mtbfSub:'target ≥26,280 · SRS 3.9', svc:62, svcSub:'1 unit due <90 days' },
+    brewVals: [44,46,48,43,40,38,41], cycle:'1 min 52s',
+    ota: { current:24, legacy:0, critical:0 },
+    rooms: [
+      {id:'301',status:'ok',   scale:8, consumable:90,lastBrew:'08:55',daysToSvc:310,temp:88, pressure:1.10,brews:380, fw:'2.4.1',drip:'ok',  events:[{t:'08:55',cls:'ev-ok',msg:'Brew completed — 300ml americano'},{t:'07:00',cls:'ev-ok',msg:'Brew completed — 200ml americano'},{t:'06:00',cls:'ev-info',msg:'Telemetry sync — status OK'}]},
+      {id:'302',status:'ok',   scale:11,consumable:75,lastBrew:'09:22',daysToSvc:295,temp:87, pressure:1.05,brews:410, fw:'2.4.1',drip:'ok',  events:[{t:'09:22',cls:'ev-ok',msg:'Brew completed — 250ml americano'},{t:'07:30',cls:'ev-ok',msg:'Brew completed — 300ml americano'}]},
+      {id:'303',status:'ok',   scale:19,consumable:85,lastBrew:'10:10',daysToSvc:270,temp:89, pressure:1.08,brews:455, fw:'2.4.1',drip:'ok',  events:[{t:'10:10',cls:'ev-ok',msg:'Brew completed — 400ml americano'},{t:'08:00',cls:'ev-ok',msg:'Brew completed — 300ml americano'}]},
+      {id:'304',status:'ok',   scale:6, consumable:95,lastBrew:'09:05',daysToSvc:340,temp:89, pressure:1.12,brews:290, fw:'2.4.1',drip:'ok',  events:[{t:'09:05',cls:'ev-ok',msg:'Brew completed — 300ml americano'},{t:'07:10',cls:'ev-ok',msg:'Brew completed — 200ml americano'}]},
+      {id:'305',status:'warn', scale:78,consumable:65,lastBrew:'07:40',daysToSvc:62, temp:85, pressure:0.93,brews:1640,fw:'2.4.1',drip:'ok',  events:[{t:'07:40',cls:'ev-ok',msg:'Brew completed — 300ml americano'},{t:'06:50',cls:'ev-warn',msg:'Scale level 78% — service due within 90 days'},{t:'2d ago',cls:'ev-ok',msg:'Brew completed — 350ml americano'}]},
+      {id:'306',status:'ok',   scale:14,consumable:80,lastBrew:'08:30',daysToSvc:285,temp:88, pressure:1.07,brews:520, fw:'2.4.1',drip:'ok',  events:[{t:'08:30',cls:'ev-ok',msg:'Brew completed — 300ml americano'},{t:'06:45',cls:'ev-ok',msg:'Brew completed — 250ml americano'}]},
+      {id:'307',status:'ok',   scale:22,consumable:70,lastBrew:'09:48',daysToSvc:255,temp:87, pressure:1.02,brews:630, fw:'2.4.1',drip:'ok',  events:[{t:'09:48',cls:'ev-ok',msg:'Brew completed — 350ml americano'},{t:'07:20',cls:'ev-ok',msg:'Brew completed — 300ml americano'}]},
+      {id:'308',status:'ok',   scale:5, consumable:92,lastBrew:'10:02',daysToSvc:355,temp:89, pressure:1.11,brews:215, fw:'2.4.1',drip:'ok',  events:[{t:'10:02',cls:'ev-ok',msg:'Brew completed — 200ml americano'},{t:'07:55',cls:'ev-ok',msg:'Brew completed — 300ml americano'}]},
+    ],
+    alerts: [
+      {type:'warn',room:'305',msg:'Scale level 78% — service due within 90 days. Recommend scheduling preventive maintenance (SRS 3.3).',time:'1h 30m ago',ack:false},
+    ]
+  },
+  nyc: {
+    name: 'Vacation Stables New York', roomCount: 32,
+    kpi: { online:'30 / 32', onlineSub:'2 with alerts', brews:61, brewsSub:'of ~64 expected (2/room)', mtbf:'29,840 hrs', mtbfSub:'target ≥26,280 · SRS 3.9', svc:44, svcSub:'2 units due <60 days' },
+    brewVals: [55,58,62,60,57,52,61], cycle:'1 min 55s',
+    ota: { current:29, legacy:2, critical:1 },
+    rooms: [
+      {id:'501',status:'ok',   scale:24,consumable:80,lastBrew:'09:10',daysToSvc:260,temp:88, pressure:1.09,brews:820, fw:'2.4.1',drip:'ok',  events:[{t:'09:10',cls:'ev-ok',msg:'Brew completed — 300ml americano'},{t:'07:20',cls:'ev-ok',msg:'Brew completed — 250ml americano'},{t:'06:00',cls:'ev-info',msg:'Telemetry sync — status OK'}]},
+      {id:'502',status:'ok',   scale:16,consumable:65,lastBrew:'09:45',daysToSvc:275,temp:87, pressure:1.04,brews:710, fw:'2.4.1',drip:'ok',  events:[{t:'09:45',cls:'ev-ok',msg:'Brew completed — 400ml americano'},{t:'07:30',cls:'ev-ok',msg:'Brew completed — 300ml americano'}]},
+      {id:'503',status:'warn', scale:72,consumable:35,lastBrew:'07:55',daysToSvc:44, temp:84, pressure:0.94,brews:1780,fw:'2.3.8',drip:'ok',  events:[{t:'07:55',cls:'ev-ok',msg:'Brew completed — 300ml americano'},{t:'07:00',cls:'ev-warn',msg:'Scale 72% and consumable 35% — two thresholds'},{t:'2d ago',cls:'ev-ok',msg:'Brew completed — 200ml americano'}]},
+      {id:'504',status:'ok',   scale:31,consumable:90,lastBrew:'10:05',daysToSvc:215,temp:89, pressure:1.06,brews:940, fw:'2.4.1',drip:'ok',  events:[{t:'10:05',cls:'ev-ok',msg:'Brew completed — 350ml americano'},{t:'07:50',cls:'ev-ok',msg:'Brew completed — 300ml americano'}]},
+      {id:'505',status:'fault',scale:38,consumable:0, lastBrew:'—',   daysToSvc:195,temp:0,  pressure:0,   brews:1240,fw:'2.2.3',drip:'ok',  events:[{t:'10:30',cls:'ev-err',msg:'FAULT: Consumable empty — dry-fire lock active (SRS 1.10)'},{t:'10:12',cls:'ev-warn',msg:'Consumable low — 8% remaining'},{t:'09:00',cls:'ev-ok',msg:'Brew completed — 300ml americano'}]},
+      {id:'506',status:'ok',   scale:9, consumable:88,lastBrew:'09:55',daysToSvc:320,temp:89, pressure:1.10,brews:490, fw:'2.4.1',drip:'ok',  events:[{t:'09:55',cls:'ev-ok',msg:'Brew completed — 300ml americano'},{t:'07:40',cls:'ev-ok',msg:'Brew completed — 200ml americano'}]},
+      {id:'507',status:'warn', scale:65,consumable:45,lastBrew:'08:25',daysToSvc:52, temp:85, pressure:0.96,brews:1590,fw:'2.3.8',drip:'full', events:[{t:'08:25',cls:'ev-ok',msg:'Brew completed — 300ml americano'},{t:'07:30',cls:'ev-warn',msg:'Scale 65% and drip tray approaching capacity'},{t:'Yesterday',cls:'ev-ok',msg:'Brew completed — 350ml americano'}]},
+      {id:'508',status:'ok',   scale:28,consumable:72,lastBrew:'09:35',daysToSvc:240,temp:87, pressure:1.03,brews:870, fw:'2.4.1',drip:'ok',  events:[{t:'09:35',cls:'ev-ok',msg:'Brew completed — 250ml americano'},{t:'07:10',cls:'ev-ok',msg:'Brew completed — 300ml americano'}]},
+    ],
+    alerts: [
+      {type:'fault',room:'505',msg:'Consumable empty — dry-fire prevention active. Brew locked (SRS 1.10). Housekeeping dispatch required.',time:'5 min ago',ack:false},
+      {type:'warn', room:'503',msg:'Scale level 72% and consumable low (35%). Two thresholds approaching. Service due in 44 days.',time:'2h 05m ago',ack:false},
+      {type:'warn', room:'507',msg:'Scale 65% and drip tray nearing capacity. Housekeeping service recommended today.',time:'3h 40m ago',ack:false},
+    ]
+  }
+};
+
+/* ═══ TASK & VERIFY DATA ═══ */
+var TASKS = [
+  {title:'Notify Vacation Stables duty manager',detail:'Inform front desk of maintenance visit. Confirm room is unoccupied or obtain access permission. Start MTTR clock on arrival.',srs:'TEPIDOIL · O (Organisation)',time:'5 min'},
+  {title:'Isolate machine — do not open powered',detail:'Confirm fault state (red ring). Unplug from mains before any chassis opening. IEC 60335 class II — follow safe isolation procedure.',srs:'SRS 3.11 · IEC 60335 · FMECA: mains voltage exposure (RPN 16)',time:'3 min'},
+  {title:'Connect diagnostic device',detail:'Read fault log from non-volatile storage: confirm dry-fire lock (SRS 1.10) and consumable-empty state. Record fault codes.',srs:'SRS 1.9 · SRS 1.10 · Control Assembly (SS-2/SS-5)',time:'5 min'},
+  {title:'Check firmware version — confirm v2.2.x critical',detail:'Diagnostic device confirms firmware version. v2.2.x is critical — OTA update to v2.4.1 mandatory before close-out.',srs:'COFFCO-CLOUD-001 · OTA update requirement',time:'2 min'},
+  {title:'Repower and perform OTA firmware update',detail:'Reconnect mains. Initiate OTA update via diagnostic device or Wi-Fi direct. Duration approx 8–12 min. Do not interrupt power.',srs:'SS-5 Monitoring & Comms · firmware v2.4.1',time:'15 min'},
+  {title:'Verify OTA update successful',detail:'Confirm firmware reads v2.4.1. Machine completes self-test without fault. If update fails, escalate to cloud ops.',srs:'COFFCO-CLOUD-001 · SRS 3.9',time:'3 min'},
+  {title:'Isolate power — load consumable',detail:'Unplug from mains. Open consumable access (tool-free per SRS 2.5). Load full consumable. Confirm seating and latch. Empty drip tray.',srs:'SRS 1.4 · SRS 1.10 · SRS 2.5 · HACCP',time:'8 min'},
+  {title:'Inspect fluid path and seals',detail:'Visual inspection of all fluid path connections for seal degradation. Check drip collector. If seal failure suspected, swap Thermal Assembly.',srs:'FMECA: fluid path leak (RPN 15) · SRS 3.10',time:'5 min'},
+  {title:'Repower — confirm fault clear and run verification brew',detail:'Reconnect mains. Machine should enter Standby (green ring). Run full americano brew (300ml). Confirm dispensed within 3 minutes.',srs:'SRS 1.1 · SRS 3.1 · SRS 1.10 · SRS 2.1',time:'5 min'},
+  {title:'Run milk froth verification',detail:'Trigger hot milk froth independently. Confirm 60–90°C at dispensation. Confirm no cross-contamination indicators.',srs:'SRS 1.2 · SRS 4.2 · SRS 4.3 · NR-04 · HACCP',time:'5 min'},
+  {title:'Confirm wireless telemetry restored',detail:'Cloud ops dashboard confirms machine online, Standby/OK state. Alert should auto-clear on first successful brew transmission.',srs:'SRS 1.9 · SS-5 Comms · COFFCO-CLOUD-001',time:'3 min'},
+  {title:'Update job card, return assemblies, close out',detail:'Record actual MTTR. Package swapped assemblies for depot return. Brief Vacation Stables duty manager. Submit close-out report.',srs:'ILS plan · TEPIDOIL L (Logistics)',time:'5 min'},
+];
+var VERIFY = [
+  {test:'Firmware reads v2.4.1 on diagnostic device',srs:'OTA requirement'},
+  {test:'Machine enters Standby (green ring) after self-test',srs:'SRS 1.7'},
+  {test:'Full americano brew completed within 3 minutes',srs:'SRS 1.1 · SRS 3.1'},
+  {test:'Beverage volume within 200–400ml range',srs:'SRS 1.3 · SRS 4.6/4.7'},
+  {test:'Milk froth cycle completes at 60–90°C',srs:'SRS 1.2 · SRS 4.2/4.3'},
+  {test:'No fluid leaks observed during or after brew',srs:'FMECA RPN 15 · SRS 3.10'},
+  {test:'Wireless alert cleared in cloud ops dashboard',srs:'SRS 1.9'},
+  {test:'Consumable level reads >90% in telemetry',srs:'SRS 1.4 · SRS 1.10'},
+];
+
+/* ═══ STATE ═══ */
+var currentSite = 'london';
+var ROOMS = [];
+var ALERTS = [];
+var otaCounts = {};
+var currentTab = 'all';
+var selectedRoom = null;
+var taskDone = [], verifyDone = [];
+var timerRunning = false, timerStart = null, timerElapsed = 0, timerInterval = null;
+var activeRoom = null;
+
+/* Deep-clone site data into working state */
+function loadSite(key) {
+  var s = SITES[key];
+  ROOMS = s.rooms.map(function(r){ return Object.assign({},r,{events:r.events.map(function(e){return Object.assign({},e);})}); });
+  ALERTS = s.alerts.map(function(a){ return Object.assign({},a); });
+  otaCounts = Object.assign({}, s.ota);
+  currentSite = key;
+  selectedRoom = null;
+}
+
+/* ═══ VIEW ═══ */
+function showView(v) {
+  document.querySelectorAll('.view').forEach(function(el){ el.classList.remove('active'); });
+  document.getElementById('view-'+v).classList.add('active');
+  var tabs = document.querySelectorAll('.view-tab');
+  var order = ['dashboard','housekeeping','jobcard'];
+  tabs.forEach(function(t,i){ t.classList.toggle('active', order[i]===v); });
+}
+
+/* ═══ SITE CHANGE ═══ */
+function changeSite(key) {
+  loadSite(key);
+  currentTab = 'all';
+  document.querySelectorAll('.fleet-tab').forEach(function(t,i){ t.classList.toggle('active',i===0); });
+  document.getElementById('detailRoomLabel').textContent = '— select a room';
+  document.getElementById('detailContent').innerHTML = '<i class="ti ti-device-desktop-analytics" style="font-size:36px;display:block;margin-bottom:10px;color:var(--border2)"></i>Select a room to view telemetry';
+  renderAll();
+}
+
+function renderAll() {
+  var s = SITES[currentSite];
+  var kpi = s.kpi;
+  document.getElementById('kpiOnline').textContent  = kpi.online;
+  document.getElementById('kpiOnlineSub').textContent = kpi.onlineSub;
+  document.getElementById('kpiBrews').textContent   = kpi.brews;
+  document.getElementById('kpiBrewsSub').textContent = kpi.brewsSub;
+  document.getElementById('kpiMtbf').textContent    = kpi.mtbf;
+  document.getElementById('kpiMtbfSub').textContent = kpi.mtbfSub;
+  document.getElementById('kpiSvc').textContent     = kpi.svc;
+  document.getElementById('kpiSvcSub').textContent  = kpi.svcSub;
+  document.getElementById('avgCycle').textContent   = s.cycle;
+  document.getElementById('hkSiteTitle').textContent = 'Housekeeping — ' + s.name;
+  var activeCount = ALERTS.filter(function(a){ return !a.ack; }).length;
+  document.getElementById('alertCount').textContent = activeCount;
+  renderFleet();
+  renderAlerts();
+  renderBrewChart();
+  renderPred();
+  renderOta();
+  renderSrs();
+  renderHousekeeping();
+}
+
+/* ═══ FLEET ═══ */
+function pillHTML(s) {
+  var m = {ok:'<span class="pill pill-ok"><i class="ti ti-check"></i>OK</span>',warn:'<span class="pill pill-warn"><i class="ti ti-alert-triangle"></i>Attention</span>',fault:'<span class="pill pill-fault"><i class="ti ti-alert-circle"></i>Fault</span>',maint:'<span class="pill pill-maint"><i class="ti ti-settings"></i>Maint.</span>'};
+  return m[s]||s;
+}
+function scaleHTML(pct) {
+  var cls = pct<50?'sf-ok':pct<70?'sf-warn':'sf-crit';
+  return '<div class="scale-wrap"><div class="scale-bg"><div class="scale-fill '+cls+'" style="width:'+pct+'%"></div></div><span style="font-size:10px;color:var(--text3);min-width:26px;text-align:right">'+pct+'%</span></div>';
+}
+function renderFleet() {
+  var rows = ROOMS.filter(function(r){
+    if(currentTab==='all') return true;
+    if(currentTab==='warn') return r.status==='warn'||r.status==='fault';
+    if(currentTab==='fault') return r.status==='fault';
+    return true;
+  });
+  var total = ROOMS.length;
+  var warn = ROOMS.filter(function(r){return r.status==='warn'||r.status==='fault';}).length;
+  var fault = ROOMS.filter(function(r){return r.status==='fault';}).length;
+  document.getElementById('tabAll').textContent = 'All ('+total+')';
+  document.getElementById('tabWarn').textContent = 'Attention ('+warn+')';
+  document.getElementById('tabFault').textContent = 'Fault ('+fault+')';
+  var html = '';
+  rows.forEach(function(r){
+    var sel = selectedRoom===r.id?' selected':'';
+    var svcStyle = r.daysToSvc<60?'style="color:var(--amber);font-weight:500"':'';
+    html += '<tr class="data-row'+sel+'" onclick="selectRoom(\''+r.id+'\')">';
+    html += '<td style="font-weight:500">'+r.id+'</td><td>'+pillHTML(r.status)+'</td><td>'+scaleHTML(r.scale)+'</td>';
+    html += '<td>'+r.consumable+'%</td><td style="color:var(--text2)">'+r.lastBrew+'</td><td '+svcStyle+'>'+r.daysToSvc+'d</td></tr>';
+  });
+  document.getElementById('fleetBody').innerHTML = html;
+}
+function setTab(tab,el) {
+  currentTab = tab;
+  document.querySelectorAll('.fleet-tab').forEach(function(t){t.classList.remove('active');});
+  el.classList.add('active');
+  renderFleet();
+}
+function dItem(label,val,cls){ return '<div class="d-item"><div class="d-label">'+label+'</div><div class="d-val '+cls+'">'+val+'</div></div>'; }
+
+function selectRoom(id) {
+  selectedRoom = id;
+  var r = ROOMS.find(function(x){return x.id===id;});
+  document.getElementById('detailRoomLabel').textContent = '— Room '+id;
+  var sc = r.scale>=70?'warn':'good';
+  var co = r.consumable<30?'bad':r.consumable<60?'warn':'good';
+  var fw = r.fw==='2.4.1'?'good':'warn';
+  var te = r.temp>0&&r.temp<=90?'good':(r.temp===0?'':'warn');
+  var pr = r.pressure>=0.9&&r.pressure<=1.3?'good':(r.pressure===0?'':'warn');
+  var sv = r.daysToSvc<60?'warn':'good';
+  var html = '<div class="detail-grid">';
+  html += dItem('Machine state',r.status.charAt(0).toUpperCase()+r.status.slice(1),'');
+  html += dItem('Firmware',r.fw,fw);
+  html += dItem('Scale level',r.scale+'%',sc);
+  html += dItem('Consumable',r.consumable+'%',co);
+  html += dItem('Last temp',r.temp>0?r.temp+'°C':'—',te);
+  html += dItem('Pressure',r.pressure>0?r.pressure+' bar':'—',pr);
+  html += dItem('Total brews',r.brews.toLocaleString(),'');
+  html += dItem('Days to service',r.daysToSvc+'d',sv);
+  html += '</div>';
+  /* event log */
+  html += '<div style="margin-top:12px;padding-top:10px;border-top:.5px solid var(--border)"><div style="font-size:10px;font-weight:500;color:var(--text3);text-transform:uppercase;letter-spacing:.07em;margin-bottom:6px">Recent events</div>';
+  html += '<div class="event-log">';
+  (r.events||[]).forEach(function(ev){
+    html += '<div class="ev-item"><span class="ev-time">'+ev.t+'</span><div class="ev-dot '+ev.cls+'"></div><span class="ev-text">'+ev.msg+'</span></div>';
+  });
+  html += '</div></div>';
+  /* actions */
+  html += '<div style="margin-top:12px;padding-top:10px;border-top:.5px solid var(--border);display:flex;gap:8px;flex-wrap:wrap">';
+  if(r.status==='fault'||r.status==='warn'){ html += '<button class="btn primary" onclick="dispatch(\''+r.id+'\')"><i class="ti ti-tool"></i> Dispatch engineer</button>'; }
+  if(r.consumable<50&&r.consumable>0){ html += '<button class="btn" onclick="restock(\''+r.id+'\')"><i class="ti ti-package"></i> Restock consumable</button>'; }
+  if(r.consumable===0){ html += '<button class="btn danger" onclick="restock(\''+r.id+'\')"><i class="ti ti-package"></i> Restock consumable</button>'; }
+  if(r.scale>0){ html += '<button class="btn" onclick="startDescale(\''+r.id+'\')"><i class="ti ti-droplet"></i> Descale unit</button>'; }
+  if(r.fw!=='2.4.1'){ html += '<button class="btn" onclick="pushFirmware(\''+r.id+'\')"><i class="ti ti-cloud-upload"></i> Push firmware</button>'; }
+  html += '<button class="btn" onclick="showModal(\'fault-'+r.id+'\')"><i class="ti ti-list"></i> Fault history</button>';
+  html += '</div>';
+  document.getElementById('detailContent').innerHTML = html;
+  renderFleet();
+}
+
+/* ═══ RESTOCK ═══ */
+function restock(roomId) {
+  var r = ROOMS.find(function(x){return x.id===roomId;});
+  if(!r) return;
+  showProgressModal('Restocking consumable — Room '+roomId,
+    'Triggering housekeeping restock request for Room '+roomId+'. Consumable level will update on confirmation from housekeeping staff (SRS 2.5).',
+    2500, function(){
+      r.consumable = 98;
+      r.events.unshift({t:'Now',cls:'ev-ok',msg:'Consumable restocked to 98% — housekeeping confirmed'});
+      if(r.status==='fault'&&r.scale<70) {
+        r.status='ok';
+        r.lastBrew='—';
+        /* remove fault alert */
+        ALERTS = ALERTS.filter(function(a){return a.room!==roomId||a.type!=='fault';});
+      }
+      renderFleet();
+      renderAlerts();
+      renderHousekeeping();
+      if(selectedRoom===roomId) selectRoom(roomId);
+      document.getElementById('alertCount').textContent = ALERTS.filter(function(a){return !a.ack;}).length;
+    });
+}
+
+/* ═══ ALERTS ═══ */
+function renderAlerts(){
+  var icoClass={fault:'ai-fault',warn:'ai-warn',info:'ai-info',maint:'ai-maint'};
+  var icoName={fault:'ti-alert-circle',warn:'ti-alert-triangle',info:'ti-check',maint:'ti-settings'};
+  var active = ALERTS.filter(function(a){return !a.ack;});
+  var html='';
+  if(active.length===0){html='<div style="font-size:12px;color:var(--teal);padding:12px 0;text-align:center"><i class="ti ti-circle-check" style="display:block;font-size:28px;margin-bottom:6px"></i>All alerts acknowledged</div>';}
+  ALERTS.forEach(function(a,i){
+    html+='<div class="alert-item'+(a.ack?' ack':'')+'">';
+    html+='<div class="alert-ico '+(icoClass[a.type]||'ai-info')+'"><i class="ti '+(icoName[a.type]||'ti-info-circle')+'"></i></div>';
+    html+='<div class="alert-body"><div class="alert-room">Room '+a.room+(a.ack?' <span style="font-size:9px;color:var(--text3)">· acknowledged</span>':'')+' </div>';
+    html+='<div class="alert-msg">'+a.msg+'</div>';
+    if(!a.ack){
+      var rm=ROOMS.find(function(x){return x.id===a.room;});
+      if(rm&&(rm.status==='fault'||rm.status==='warn')){ html+='<button class="dispatch-btn" onclick="dispatch(\''+a.room+'\')"><i class="ti ti-tool"></i> Dispatch engineer</button>'; }
+      html+='<span class="alert-link" onclick="selectRoom(\''+a.room+'\')">View telemetry</span>';
+      html+='<button class="ack-btn" onclick="ackAlert('+i+')"><i class="ti ti-check"></i> Acknowledge</button>';
+    }
+    html+='</div><div class="alert-time">'+a.time+'</div></div>';
+  });
+  document.getElementById('alertList').innerHTML=html;
+}
+function ackAlert(i){
+  ALERTS[i].ack=true;
+  var count=ALERTS.filter(function(a){return !a.ack;}).length;
+  document.getElementById('alertCount').textContent=count;
+  renderAlerts();
+}
+
+/* ═══ BREW CHART ═══ */
+function renderBrewChart(){
+  var days=['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
+  var vals=SITES[currentSite].brewVals;
+  var max=Math.max.apply(null,vals);
+  var bars='',axis='';
+  vals.forEach(function(v,i){
+    var h=Math.round((v/max)*70);
+    bars+='<div class="b-bar'+(i===6?' today':'')+'" style="height:'+h+'px" title="'+days[i]+': '+v+' brews"></div>';
+    axis+='<span>'+days[i]+'</span>';
+  });
+  document.getElementById('brewChart').innerHTML=bars;
+  document.getElementById('brewAxis').innerHTML=axis;
+}
+
+/* ═══ PREDICTIVE ═══ */
+function renderPred(){
+  var pred=ROOMS.filter(function(r){return r.scale>=50;}).sort(function(a,b){return b.scale-a.scale;}).slice(0,4);
+  if(pred.length===0){document.getElementById('predList').innerHTML='<div style="font-size:11px;color:var(--teal);padding:8px 0">All units below threshold — no maintenance predicted.</div>';return;}
+  var html='';
+  pred.forEach(function(p){
+    var cls=p.scale>=80?'sf-crit':p.scale>=70?'sf-warn':'sf-ok';
+    var tc=p.scale>=80?'color:var(--red)':p.scale>=70?'color:var(--amber)':'';
+    html+='<div class="pred-item"><div class="pred-row"><span>Room '+p.id+'</span><span style="'+tc+'">'+p.scale+'%</span></div>';
+    html+='<div class="scale-bg" style="height:5px;border-radius:3px"><div class="scale-fill '+cls+'" style="width:'+p.scale+'%"></div></div></div>';
+  });
+  document.getElementById('predList').innerHTML=html;
+}
+
+/* ═══ OTA ═══ */
+function renderOta(){
+  var total=SITES[currentSite].roomCount;
+  var html='';
+  html+='<div class="ota-bar"><div class="ota-row"><span>v2.4.1 current</span><span>'+otaCounts.current+' / '+total+'</span></div><div class="ota-track"><div class="ota-fill" style="width:'+Math.round(otaCounts.current/total*100)+'%;background:var(--teal-mid)"></div></div></div>';
+  html+='<div class="ota-bar"><div class="ota-row"><span>v2.3.8 legacy</span><span>'+otaCounts.legacy+' / '+total+'</span></div><div class="ota-track"><div class="ota-fill" style="width:'+Math.round(otaCounts.legacy/total*100)+'%;background:var(--amber-mid)"></div></div></div>';
+  var critLabel=otaCounts.critical>0?'v2.2.x — update required':'v2.2.x — all clear';
+  var critColor=otaCounts.critical>0?'color:var(--red)':'color:var(--teal)';
+  html+='<div class="ota-bar"><div class="ota-row" style="'+critColor+'"><span>'+critLabel+'</span><span>'+otaCounts.critical+' / '+total+'</span></div><div class="ota-track"><div class="ota-fill" style="width:'+Math.round(otaCounts.critical/total*100)+'%;background:'+(otaCounts.critical>0?'var(--red-mid)':'var(--teal-mid)')+'"></div></div></div>';
+  document.getElementById('otaPanel').innerHTML=html;
+  var btn=document.querySelector('button[onclick="pushOtaAll()"]');
+  if(btn){btn.disabled=otaCounts.critical===0;btn.style.opacity=otaCounts.critical===0?'0.4':'1';}
+}
+
+/* ═══ SRS ═══ */
+function renderSrs(){
+  var hasLowCon = ROOMS.some(function(r){return r.consumable<30;});
+  var hasOverdue = ROOMS.some(function(r){return r.daysToSvc<45;});
+  function row(id,label,pass){ return '<div class="srs-row"><span class="srs-id">'+id+'</span><span>'+label+'</span><div class="srs-tick '+(pass?'st-pass':'st-warn')+'">'+(pass?'<i class="ti ti-check"></i>':'<i class="ti ti-minus"></i>')+'</div></div>'; }
+  var html = row('SRS 3.1','Cycle ≤3 min',true)+row('SRS 3.3','365-day interval',!hasOverdue)+row('SRS 3.9','MTBF ≥26,280 hrs',true)+row('SRS 1.9','Wireless alerts',true)+row('SRS 1.4','Consumable capacity',!hasLowCon)+row('SRS 1.10','Dry-fire check',true);
+  html += '<div style="margin-top:8px;font-size:10px;color:var(--text3)"><i class="ti ti-minus" style="font-size:10px"></i> = approaching threshold · live</div>';
+  document.getElementById('srsPanel').innerHTML=html;
+}
+
+/* ═══ HOUSEKEEPING ═══ */
+function renderHousekeeping(){
+  var needAction=ROOMS.filter(function(r){return r.consumable<50||r.drip==='full';}).length;
+  var fault=ROOMS.filter(function(r){return r.status==='fault';}).length;
+  var ok=ROOMS.filter(function(r){return r.consumable>=50&&r.drip!=='full'&&r.status!=='fault';}).length;
+  var html='<div class="kpi"><div class="kpi-label">Rooms OK</div><div class="kpi-val good">'+ok+'</div><div class="kpi-sub">no action needed</div></div>';
+  html+='<div class="kpi"><div class="kpi-label">Needs restock</div><div class="kpi-val warn">'+needAction+'</div><div class="kpi-sub">consumable or drip tray</div></div>';
+  html+='<div class="kpi"><div class="kpi-label">Fault — locked</div><div class="kpi-val bad">'+fault+'</div><div class="kpi-sub">engineer required</div></div>';
+  html+='<div class="kpi"><div class="kpi-label">Total rooms</div><div class="kpi-val">'+ROOMS.length+'</div><div class="kpi-sub">this site</div></div>';
+  document.getElementById('hkSummary').innerHTML=html;
+  var cards='';
+  ROOMS.forEach(function(r){
+    var isAction=r.consumable<50||r.drip==='full';
+    var isFault=r.status==='fault';
+    var cardCls=isFault?'hk-card fault':isAction?'hk-card needs-action':'hk-card';
+    var conCls=r.consumable<30?'bad':r.consumable<60?'warn':'ok';
+    var dripCls=r.drip==='full'?'bad':'ok';
+    cards+='<div class="'+cardCls+'">';
+    cards+='<div class="hk-room"><span>Room '+r.id+'</span>'+pillHTML(r.status)+'</div>';
+    cards+='<div class="hk-rows">';
+    cards+='<div class="hk-row"><span class="hk-label"><i class="ti ti-package" style="font-size:12px;vertical-align:-2px;margin-right:4px"></i>Consumable</span><span class="hk-val '+conCls+'">'+r.consumable+'%</span></div>';
+    cards+='<div class="hk-row"><span class="hk-label"><i class="ti ti-droplet" style="font-size:12px;vertical-align:-2px;margin-right:4px"></i>Drip tray</span><span class="hk-val '+(r.drip==='full'?'bad':'ok')+'">'+(r.drip==='full'?'Full — empty':'OK')+'</span></div>';
+    cards+='<div class="hk-row"><span class="hk-label"><i class="ti ti-calendar" style="font-size:12px;vertical-align:-2px;margin-right:4px"></i>Last cleaned</span><span class="hk-val">Today 07:00</span></div>';
+    cards+='</div>';
+    cards+='<div class="hk-actions">';
+    if(r.consumable<50||r.consumable===0){ cards+='<button class="hk-btn primary" onclick="hkRestock(\''+r.id+'\')"><i class="ti ti-package"></i> Restock</button>'; }
+    if(r.drip==='full'){ cards+='<button class="hk-btn primary" onclick="hkEmptyDrip(\''+r.id+'\')"><i class="ti ti-droplet-off"></i> Empty drip</button>'; }
+    if(isFault){ cards+='<button class="hk-btn" onclick="dispatch(\''+r.id+'\')"><i class="ti ti-alert-circle"></i> Report fault</button>'; }
+    if(!isAction&&!isFault){ cards+='<span style="font-size:10px;color:var(--teal)"><i class="ti ti-check" style="vertical-align:-2px"></i> No action needed</span>'; }
+    cards+='</div></div>';
+  });
+  document.getElementById('hkGrid').innerHTML=cards;
+}
+function hkRestock(id){
+  var r=ROOMS.find(function(x){return x.id===id;});
+  if(!r) return;
+  r.consumable=98;
+  r.events.unshift({t:'Now',cls:'ev-ok',msg:'Consumable restocked to 98% by housekeeping (SRS 2.5)'});
+  if(r.status==='fault'){r.status='ok'; ALERTS=ALERTS.filter(function(a){return a.room!==id||a.type!=='fault';});}
+  renderHousekeeping(); renderFleet(); renderAlerts(); renderSrs();
+  document.getElementById('alertCount').textContent=ALERTS.filter(function(a){return !a.ack;}).length;
+  if(selectedRoom===id) selectRoom(id);
+}
+function hkEmptyDrip(id){
+  var r=ROOMS.find(function(x){return x.id===id;});
+  if(!r) return;
+  r.drip='ok';
+  r.events.unshift({t:'Now',cls:'ev-ok',msg:'Drip tray emptied by housekeeping (SRS 2.5)'});
+  renderHousekeeping(); renderFleet();
+  if(selectedRoom===id) selectRoom(id);
+}
+function markAllRestocked(){
+  ROOMS.forEach(function(r){
+    if(r.consumable<50){r.consumable=98;r.events.unshift({t:'Now',cls:'ev-ok',msg:'Consumable restocked to 98% (batch housekeeping)'});}
+    if(r.drip==='full'){r.drip='ok';r.events.unshift({t:'Now',cls:'ev-ok',msg:'Drip tray emptied (batch housekeeping)'});}
+    if(r.status==='fault'){r.status='ok';}
+  });
+  ALERTS=ALERTS.filter(function(a){return a.type!=='fault';});
+  document.getElementById('alertCount').textContent=ALERTS.filter(function(a){return !a.ack;}).length;
+  renderAll();
+}
+
+/* ═══ DESCALE ═══ */
+function startDescale(roomId){
+  var r=ROOMS.find(function(x){return x.id===roomId;});
+  if(!r) return;
+  showProgressModal('Descaling — Room '+roomId,'Descale cycle initiated remotely via SS-5 comms. Machine unavailable during cycle (~25–35 min). Scale reading will reset on completion.',4000,function(){
+    r.scale=0; r.daysToSvc=Math.min(365,r.daysToSvc+180);
+    r.events.unshift({t:'Now',cls:'ev-ok',msg:'Descale cycle completed — scale reset to 0%'});
+    if(r.status==='warn'){var stillWarn=r.consumable<30||r.daysToSvc<45;r.status=stillWarn?'warn':'ok';}
+    renderFleet(); renderPred(); renderSrs();
+    if(selectedRoom===roomId) selectRoom(roomId);
+  });
+}
+
+/* ═══ FIRMWARE ═══ */
+function pushFirmware(roomId){
+  var r=ROOMS.find(function(x){return x.id===roomId;});
+  if(!r||r.fw==='2.4.1') return;
+  var old=r.fw;
+  showProgressModal('OTA firmware update — Room '+roomId,'Pushing v2.4.1 to Room '+roomId+' (currently '+old+'). Do not interrupt power. Duration approx 8–12 minutes.',5000,function(){
+    var wasCrit=r.fw.startsWith('2.2'),wasLeg=r.fw.startsWith('2.3');
+    r.fw='2.4.1';
+    r.events.unshift({t:'Now',cls:'ev-info',msg:'Firmware updated: '+old+' → v2.4.1 (OTA)'});
+    if(wasCrit){otaCounts.critical=Math.max(0,otaCounts.critical-1);otaCounts.current++;}
+    else if(wasLeg){otaCounts.legacy=Math.max(0,otaCounts.legacy-1);otaCounts.current++;}
+    renderOta(); renderFleet();
+    if(selectedRoom===roomId) selectRoom(roomId);
+  });
+}
+function pushOtaAll(){
+  if(otaCounts.critical===0){showModal('ota-clear');return;}
+  showProgressModal('Pushing v2.4.1 to all v2.2.x units','Initiating OTA update on '+otaCounts.critical+' unit(s) running v2.2.x. Engineer must verify on-site for units in fault state.',5000,function(){
+    ROOMS.forEach(function(r){
+      if(r.fw.startsWith('2.2')){r.fw='2.4.1';r.events.unshift({t:'Now',cls:'ev-info',msg:'Firmware updated v2.2.x → v2.4.1 (OTA batch)'});otaCounts.current++;}
+    });
+    otaCounts.critical=0;
+    renderOta(); renderFleet();
+    if(selectedRoom) selectRoom(selectedRoom);
+  });
+}
+
+/* ═══ DISPATCH ═══ */
+function dispatch(roomId){
+  var r=ROOMS.find(function(x){return x.id===roomId;});
+  if(!r) return;
+  activeRoom=r; taskDone=[]; verifyDone=[]; resetTimer();
+  var now=new Date();
+  var timeStr=now.toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'});
+  var dateStr=now.toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'});
+  document.getElementById('jcDocId').textContent='COFFCO-JC-'+roomId+' · Issue 1.0 · Corrective maintenance';
+  document.getElementById('jcSubtitle').innerHTML='Room '+roomId+' · '+SITES[currentSite].name+' · <span style="color:var(--red);font-weight:500">Fault state — brew locked</span>';
+  document.getElementById('jcMeta').innerHTML='Dispatched: '+dateStr+' · '+timeStr+'<br>MTTR target: ≤4 hours<br><span style="font-family:var(--mono)">Alert ref: ALT-'+roomId+'-0623</span>';
+  var sc=r.scale>=70?'warn':'good', co=r.consumable<=0?'bad':r.consumable<30?'warn':'good', fw=r.fw==='2.4.1'?'good':'bad';
+  document.getElementById('jcScale').className='m-val '+sc; document.getElementById('jcScale').textContent=r.scale+'%';
+  document.getElementById('jcConsumable').className='m-val '+co; document.getElementById('jcConsumable').textContent=r.consumable+'%'+(r.consumable<=0?' — empty':'');
+  document.getElementById('jcFw').className='m-val '+fw; document.getElementById('jcFw').textContent=r.fw+(fw==='bad'?' — critical':' — current');
+  document.getElementById('jcDaysSvc').textContent=r.daysToSvc+' days';
+  document.getElementById('jcFaultTitle').textContent='Active faults: consumable empty + firmware critical';
+  document.getElementById('jcFaultDetail').textContent='Dry-fire prevention active — brew cycle locked per SRS 1.10. Consumable at '+r.consumable+'%. Firmware '+r.fw+' critical — OTA update required. Scale: '+r.scale+'%.';
+  document.getElementById('engSign').innerHTML='<span style="color:var(--text3);font-size:11px">Click to sign</span>';
+  document.getElementById('closeoutTime').textContent=''; document.getElementById('actualMttr').textContent='';
+  renderTasks(); renderVerify(); renderProgStrip();
+  showView('jobcard');
+}
+
+/* ═══ MODAL ═══ */
+var modalActions={
+  schedule:{title:'Generate maintenance schedule',body:'A maintenance schedule will be generated for rooms with scale above 70%. Recommend scheduling within 30 days to satisfy SRS 3.3.'},
+  'ota-clear':{title:'No units require update',body:'All units are running v2.4.1. No OTA update required.'},
+};
+function showModal(type){
+  var cfg=modalActions[type]||{title:'Fault history — Room '+type.replace('fault-',''),body:'Fault log for this unit will be retrieved from cloud platform. Feature available in full deployment.'};
+  document.getElementById('modalTitle').textContent=cfg.title;
+  document.getElementById('modalBody').textContent=cfg.body;
+  document.getElementById('modalConfirm').style.display='';
+  document.getElementById('modalConfirm').textContent='OK';
+  document.getElementById('modalConfirm').onclick=function(){closeModal();};
+  document.getElementById('modalOverlay').classList.add('open');
+}
+function showProgressModal(title,body,dur,onComplete){
+  document.getElementById('modalTitle').textContent=title;
+  document.getElementById('modalBody').innerHTML=body+'<div style="margin-top:14px"><div style="height:6px;border-radius:3px;background:var(--border2);overflow:hidden"><div id="progressBarInner" style="height:100%;border-radius:3px;background:var(--teal-mid);width:0%"></div></div><div id="progressLabel" style="font-size:10px;color:var(--text3);margin-top:5px">0%</div></div>';
+  document.getElementById('modalConfirm').style.display='none';
+  document.getElementById('modalOverlay').classList.add('open');
+  var start=Date.now();
+  var tick=setInterval(function(){
+    var pct=Math.min(100,Math.round((Date.now()-start)/dur*100));
+    var bar=document.getElementById('progressBarInner'),lbl=document.getElementById('progressLabel');
+    if(bar){bar.style.width=pct+'%';bar.style.transition='width 0.3s';}
+    if(lbl) lbl.textContent=pct+'%';
+    if(pct>=100){clearInterval(tick);setTimeout(function(){
+      document.getElementById('modalConfirm').style.display='';
+      document.getElementById('modalConfirm').textContent='Done';
+      document.getElementById('modalConfirm').onclick=function(){closeModal();};
+      if(onComplete) onComplete();
+    },300);}
+  },80);
+}
+function closeModal(e){if(!e||e.target===document.getElementById('modalOverlay')){document.getElementById('modalOverlay').classList.remove('open');}}
+
+/* ═══ JOB CARD ═══ */
+function renderTasks(){
+  var html='';
+  TASKS.forEach(function(t,i){
+    var done=taskDone[i];
+    html+='<div class="task-item'+(done?' done':'')+'" onclick="toggleTask('+i+')">';
+    html+='<div class="task-num">'+(done?'<i class="ti ti-check"></i>':(i+1))+'</div>';
+    html+='<div class="task-body"><div class="task-title">'+t.title+'</div>';
+    if(!done){html+='<div class="task-detail">'+t.detail+'</div><div class="task-srs">'+t.srs+'</div>';}
+    html+='</div><div class="task-time">~'+t.time+'</div></div>';
+  });
+  document.getElementById('taskList').innerHTML=html;
+  renderProgStrip();
+}
+function renderVerify(){
+  var html='';
+  VERIFY.forEach(function(v,i){
+    var done=verifyDone[i];
+    html+='<div class="verify-item'+(done?' done':'')+'" onclick="toggleVerify('+i+')">';
+    html+='<div class="v-tick">'+(done?'<i class="ti ti-check"></i>':'')+'</div>';
+    html+='<div><div class="v-test">'+v.test+'</div><div class="v-srs">'+v.srs+'</div></div></div>';
+  });
+  document.getElementById('verifyList').innerHTML=html;
+}
+function renderProgStrip(){
+  var n=TASKS.length,done=taskDone.filter(Boolean).length,html='';
+  for(var i=0;i<n;i++){html+='<div class="ps'+(taskDone[i]?' done':i===done?' active':'')+'"></div>';}
+  document.getElementById('progStrip').innerHTML=html;
+}
+function toggleTask(i){taskDone[i]=!taskDone[i];renderTasks();}
+function toggleVerify(i){verifyDone[i]=!verifyDone[i];renderVerify();}
+function markAllDone(){TASKS.forEach(function(_,i){taskDone[i]=true;});renderTasks();}
+function resetTasks(){taskDone=[];verifyDone=[];renderTasks();renderVerify();}
+
+/* ═══ MTTR ═══ */
+function toggleTimer(){
+  if(!timerRunning){timerStart=Date.now()-timerElapsed;timerRunning=true;document.getElementById('timerLabel').textContent='Pause';document.getElementById('timerIcon').className='ti ti-player-pause';timerInterval=setInterval(tickTimer,1000);}
+  else{timerElapsed=Date.now()-timerStart;timerRunning=false;clearInterval(timerInterval);document.getElementById('timerLabel').textContent='Resume';document.getElementById('timerIcon').className='ti ti-player-play';}
+}
+function tickTimer(){
+  var e=Date.now()-timerStart,h=Math.floor(e/3600000),m=Math.floor((e%3600000)/60000),s=Math.floor((e%60000)/1000);
+  document.getElementById('mttrDisplay').textContent=(h<10?'0':'')+h+':'+(m<10?'0':'')+m+':'+(s<10?'0':'')+s;
+  var pct=Math.min(100,Math.round(e/14400000*100));
+  var col=pct<50?'var(--teal-mid)':pct<80?'var(--amber-mid)':'var(--red-mid)';
+  document.getElementById('mttrFill').style.width=pct+'%';document.getElementById('mttrFill').style.background=col;
+}
+function resetTimer(){
+  clearInterval(timerInterval);timerRunning=false;timerStart=null;timerElapsed=0;
+  document.getElementById('mttrDisplay').textContent='00:00:00';
+  document.getElementById('mttrFill').style.width='0%';document.getElementById('mttrFill').style.background='var(--teal-mid)';
+  document.getElementById('timerLabel').textContent='Start clock on arrival';document.getElementById('timerIcon').className='ti ti-player-play';
+}
+function signEng(){var el=document.getElementById('engSign');el.innerHTML='';el.textContent='CoffCo Field Eng — J. Chen  ✓';el.style.color='var(--teal)';}
+function submitCloseout(){
+  var dc=taskDone.filter(Boolean).length,vc=verifyDone.filter(Boolean).length;
+  var e=timerRunning?Date.now()-timerStart:timerElapsed;
+  var h=Math.floor(e/3600000),m=Math.floor((e%3600000)/60000);
+  document.getElementById('closeoutTime').textContent=new Date().toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'});
+  document.getElementById('actualMttr').textContent=e>0?h+'h '+m+'m':'not recorded';
+  var inc=(TASKS.length-dc)+(VERIFY.length-vc);
+  if(inc>0){
+    modalActions['inc']={title:'Incomplete items — cannot close out',body:(TASKS.length-dc)+' task(s) and '+(VERIFY.length-vc)+' verification check(s) incomplete. All items must be complete before submitting.'};
+    showModal('inc');
+  } else {
+    if(activeRoom){var r=ROOMS.find(function(x){return x.id===activeRoom.id;});if(r){r.status='ok';r.consumable=98;r.fw='2.4.1';r.events.unshift({t:'Now',cls:'ev-ok',msg:'Job card closed — machine returned to service'});}}
+    modalActions['co']={title:'Close-out submitted',body:'Job card COFFCO-JC-'+(activeRoom?activeRoom.id:'—')+' submitted. Room '+(activeRoom?activeRoom.id:'—')+' now shows OK. MTTR: '+(e>0?h+'h '+m+'m':'not recorded')+'.'};
+    showModal('co');
+    document.getElementById('modalConfirm').onclick=function(){closeModal();showView('dashboard');renderFleet();renderAlerts();renderSrs();};
+  }
+}
+function scrollAlerts(){document.getElementById('alertAnchor').scrollIntoView({behavior:'smooth'});}
+
+/* ═══ RESET ═══ */
+function resetAll(){
+  document.getElementById('siteSel').value='london';
+  loadSite('london');
+  currentTab='all';
+  taskDone=[];verifyDone=[];activeRoom=null;
+  resetTimer();
+  document.querySelectorAll('.fleet-tab').forEach(function(t,i){t.classList.toggle('active',i===0);});
+  document.getElementById('detailRoomLabel').textContent='— select a room';
+  document.getElementById('detailContent').innerHTML='<i class="ti ti-device-desktop-analytics" style="font-size:36px;display:block;margin-bottom:10px;color:var(--border2)"></i>Select a room to view telemetry';
+  showView('dashboard');
+  renderAll();
+}
+
+/* ═══ BOOT ═══ */
+loadSite('london');
+renderAll();
+</script>
+</body>
+</html>

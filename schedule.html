@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>CoffCo — Build, Integration and Verification Schedule</title>
+<link rel="stylesheet" href="assets/coffco.css">
+<style>
+:root{--bg:#f8f7f4;--surface:#fff;--surface2:#f1f0ed;--border:rgba(0,0,0,.10);--border2:rgba(0,0,0,.20);--text:#1a1a18;--text2:#6b6a66;--text3:#9b9a96;--teal:#0F6E56;--teal-light:#E1F5EE;--radius:8px;--radius-lg:12px;--mono:ui-monospace,'SF Mono','Fira Code',monospace;}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,sans-serif;background:var(--bg);color:var(--text);font-size:13px}
+.page-body{max-width:1140px;margin:0 auto;padding:28px 32px 80px}
+
+.legend-row{display:flex;flex-wrap:wrap;gap:16px;margin-bottom:20px}
+.leg{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--text2)}
+.leg-sq{width:12px;height:12px;border-radius:2px;flex-shrink:0}
+
+.gantt-wrap{overflow-x:auto;margin-bottom:32px}
+.gantt{display:grid;grid-template-columns:148px repeat(12,1fr);min-width:720px}
+
+.g-month-blank,.g-month{height:26px;display:flex;align-items:center;justify-content:center;font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:.05em;border-bottom:.5px solid var(--border2)}
+.g-month-blank{justify-content:flex-start;padding-left:2px}
+.g-month.alt{background:var(--surface2)}
+
+.g-label{font-size:11px;font-weight:500;color:var(--text2);display:flex;align-items:center;padding-right:8px;border-bottom:.5px solid var(--border);min-height:26px;font-family:var(--mono)}
+.g-cell{border-bottom:.5px solid var(--border);min-height:26px;display:flex;align-items:center}
+.g-cell.alt{background:var(--surface2)}
+.g-bar{height:14px;width:100%}
+
+.section-label{font-size:9px;font-weight:500;text-transform:uppercase;letter-spacing:.08em;color:var(--text3);padding:10px 0 4px;grid-column:1/-1;border-top:.5px solid var(--border2);margin-top:2px}
+
+table.ops{width:100%;border-collapse:collapse;font-size:12px}
+table.ops th{text-align:left;font-weight:500;color:var(--text3);padding:0 10px 8px 0;border-bottom:.5px solid var(--border2);font-size:10px;text-transform:uppercase;letter-spacing:.04em}
+table.ops th:first-child{padding-left:0}
+table.ops td{padding:9px 10px 9px 0;border-bottom:.5px solid var(--border);vertical-align:top;line-height:1.55;color:var(--text2)}
+table.ops td:first-child{padding-left:0;font-family:var(--mono);font-size:11px;color:var(--text);white-space:nowrap}
+table.ops tr:hover td{background:var(--surface2)}
+table.ops td strong{color:var(--text)}
+
+.badge{display:inline-block;font-size:10px;padding:1px 7px;border-radius:3px;font-weight:500;margin-right:4px}
+.panel{background:var(--surface);border:.5px solid var(--border);border-radius:var(--radius-lg);padding:18px 20px;margin-bottom:16px}
+</style>
+</head>
+<body>
+<nav class="sidebar"></nav>
+<main class="main">
+
+<div class="page-cover">
+  <div class="cover-eyebrow">DoD Deliverable 7 &middot; Integration Plan · Implementation Plan · 2027 Programme</div>
+  <h1 class="cover-title">Build, Integration and Verification Schedule</h1>
+  <p class="cover-sub">19 activities &middot; gate-controlled sequence &middot; Procurement through Factory Acceptance Test &middot; January–December 2027</p>
+  <div class="cover-meta">
+    <span><strong>Activities:</strong> 19</span>
+    <span><strong>Programme span:</strong> 12 months (2027)</span>
+    <span><strong>Acceptance event:</strong> FAT — Vacation Stables witness</span>
+    <span><strong>Gate criterion:</strong> All verification steps pass before next integration phase begins</span>
+  </div>
+  <div class="cover-download">
+    <a href="downloads/coffco-gantt.html" class="btn-download">&#11015; Download original (.html)</a>
+  </div>
+</div>
+
+<div class="page-body">
+
+<div class="legend-row">
+  <div class="leg"><div class="leg-sq" style="background:#2a78d6"></div>Procurement / long-lead tooling</div>
+  <div class="leg"><div class="leg-sq" style="background:#1baf7a"></div>Subsystem build</div>
+  <div class="leg"><div class="leg-sq" style="background:#eda100"></div>Software and firmware integration</div>
+  <div class="leg"><div class="leg-sq" style="background:#4a3aa7"></div>Hardware integration (gate-controlled)</div>
+  <div class="leg"><div class="leg-sq" style="background:#e34948"></div>Verification / test gate</div>
+  <div class="leg"><div class="leg-sq" style="background:#d4537e"></div>Factory acceptance milestone</div>
+</div>
+
+<div class="panel">
+<div class="gantt-wrap">
+<div class="gantt" id="gantt"></div>
+</div>
+</div>
+
+<div class="panel" style="margin-top:16px">
+<table class="ops">
+<thead>
+<tr>
+  <th style="width:50px">Ref</th>
+  <th style="width:60px">Category</th>
+  <th style="width:180px">Activity</th>
+  <th style="width:70px">Lead</th>
+  <th style="width:45px">Effort</th>
+  <th>Deliverable / scope</th>
+</tr>
+</thead>
+<tbody id="tbl-body"></tbody>
+</table>
+</div>
+
+</div>
+</main>
+<script src="assets/nav.js"></script>
+<script>
+const MONTHS=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+const COLORS={proc:'#2a78d6',build:'#1baf7a',swfw:'#eda100',integ:'#4a3aa7',verify:'#e34948',fat:'#d4537e'};
+const BADGE={
+  proc:  {bg:'#e6f1fb',color:'#0c447c',label:'Procurement'},
+  build: {bg:'#e1f5ee',color:'#085041',label:'Build'},
+  swfw:  {bg:'#faeeda',color:'#633806',label:'SW / FW'},
+  integ: {bg:'#eeedfe',color:'#26215c',label:'Integration'},
+  verify:{bg:'#fcebeb',color:'#791f1f',label:'Verification'},
+  fat:   {bg:'#fbeaf0',color:'#4b1528',label:'Acceptance'},
+};
+const ROWS=[
+  {section:'Procurement and long-lead tooling'},
+  {ref:'P-01',cat:'proc',  s:1, e:4, lead:'SS-4',     eff:'3M', name:'PSU procurement',        desc:'Identify and place order for certified universal-input PSU module (110–240 V AC). Qualify to IEC 60335. Receive, inspect, and bench-verify against EI-E-01 spec.'},
+  {ref:'P-02',cat:'proc',  s:1, e:5, lead:'SS-6',     eff:'4M', name:'Chassis tooling',         desc:'Release injection mould tooling for chassis and casing to CoffCo design. Trial shots, dimensional check, and approval before integration begins. Long lead — ordered at programme start.'},
+  {section:'Subsystem build'},
+  {ref:'B-01',cat:'build', s:2, e:4, lead:'SS-2/5',   eff:'2M', name:'Control assembly build',  desc:'PCBA manufacture, component placement, and reflow. Load firmware baseline. Bench smoke-test: power rails, MCU boot, basic I/O continuity.'},
+  {ref:'B-02',cat:'build', s:2, e:5, lead:'SS-2/3',   eff:'3M', name:'Thermal assembly build',  desc:'Assemble heating element, pump, Peltier cooler, switching valve, and dispensing nozzle into the thermal sub-assembly. Pressure-test fluid path at 0.5 bar. Food-safety material certificates on file.'},
+  {ref:'B-03',cat:'build', s:3, e:5, lead:'SS-3',     eff:'2M', name:'Fluid store build',       desc:'Assemble water reservoir, consumable cassette housing, drip tray, and level-sensing elements. Confirm tool-free access panel operation. Leak check at atmospheric pressure.'},
+  {ref:'B-04',cat:'build', s:2, e:8, lead:'SS-1',     eff:'5M', name:'HMI panel build and UX',  desc:'Build physical fascia, rotary volume dial, coffee and milk buttons, and LED status ring. Run two UX iteration rounds against SRS 2.1 (unaided first-time use). Hardware and firmware developed in parallel; panel frozen only after UX prototype passes.'},
+  {section:'Software and firmware integration'},
+  {ref:'V-01',cat:'verify',s:4, e:5, lead:'SS-4',     eff:'2W', name:'PSU electrical check',    desc:'Dual-voltage test across UK / EU / US plug modules. Load regulation under simulated peak draw. Isolation check — no accessible live surface. EMC pre-scan. Gateway to firmware integration.'},
+  {ref:'S-01',cat:'swfw',  s:4, e:6, lead:'SS-2/5',   eff:'6W', name:'Firmware integration',    desc:'Bring together MCU firmware modules: 8-state FSM, brew sequencer, I2C protocol stack for all II-D interfaces, sensor polling loops, and non-volatile fault logger. Tested against hardware stubs and simulated sensor harness — no real thermal or fluid load yet.'},
+  {ref:'S-02',cat:'swfw',  s:5, e:6, lead:'SS-5',     eff:'3W', name:'Wireless telemetry',      desc:'Integrate wireless module once technology confirmed (TD-06 closure is a prerequisite). Commission MQTT-over-TLS telemetry payload: machine ID, FSM state, consumable level, fault code.'},
+  {ref:'V-02',cat:'verify',s:6, e:7, lead:'SS-2/5',   eff:'2W', name:'Control assembly verify', desc:'Verify all II-D interfaces at stub level: I2C brew command / ACK, FSM state transitions, dry-fire interlock (SRS 1.10), low-consumable threshold, telemetry payload receipt at cloud test endpoint. All C2.x ICD steps must pass before hardware integration begins.'},
+  {section:'Hardware integration — gate controlled'},
+  {ref:'I-01',cat:'integ', s:7, e:9,lead:'SS-2/3/4', eff:'6W', name:'Thermal integration',     desc:'Bring Thermal Assembly onto Control and PSU bench stack. Close-loop brew command to temperature and pressure feedback (II-D-03, II-D-05). Validate extraction at 0.9–1.3 bar, brew cycle ≤ 180 s, hardware thermal cutoff at 105 °C, and coffee / milk flush cycle (II-F-01 cross-contamination check).'},
+  {ref:'V-03',cat:'verify',s:9,e:10,lead:'SS-2/3/4', eff:'2W', name:'Thermal stack verify',    desc:'T3.1–T3.7 ICD steps: temperature accuracy, pressure range, 180 s cycle timing, cutoff trip test, contamination rinse, dispensing clearance ≥ 105 mm (SRS 2.7), americano ≥ 60 °C and milk 60–90 °C at outlet.'},
+  {ref:'I-02',cat:'integ', s:9,e:10,lead:'SS-3/4',   eff:'4W', name:'Fluid store integration', desc:'Add Fluid Store to verified thermal and control stack. Commission water coupling (II-M-01), drip return path (II-M-02), and level sensor data to Control Assembly (II-D-04). Confirm consumable sufficiency gate (SRS 1.10) blocks brew-start correctly.'},
+  {ref:'V-04',cat:'verify',s:10,e:11,lead:'SS-3/4',   eff:'2W', name:'Fluid system verify',     desc:'F4.1–F4.5 ICD steps: 10 consecutive brews without refill, dry-fire block active at threshold, drip tray overflow alert, housekeeping restock cycle under 5 minutes with no tools, fluid pathway leak inspection after 10 brews.'},
+  {ref:'I-03',cat:'integ', s:10,e:11,lead:'SS-1/2',   eff:'4W', name:'HMI integration',         desc:'Connect built-and-iterated HMI panel to Control Assembly. Confirm I2C brew command handshake (II-D-01), status LED drive (II-D-02), parallel coffee-and-milk brew paths, and volume dial accuracy across 200–400 ml range.'},
+  {ref:'V-05',cat:'verify',s:11,e:12,lead:'SS-1/2',   eff:'2W', name:'HMI unaided user trial',  desc:'U5.1–U5.5 ICD steps: button / dial functional coverage, all four LED states confirmed, parallel brew path simultaneous activation, volume within ± 5 ml, unaided first-use trial by test subject with no prior briefing — target ≥ 4/5 usability score (SRS 2.1).'},
+  {ref:'I-04',cat:'integ', s:11,e:12,lead:'SS-6',     eff:'3W', name:'Full system assembly',    desc:'Mount Control Assembly, Thermal Assembly, Fluid Store, PSU, and HMI Panel into the Structural Chassis. Route and dress internal harnesses. Close housekeeping access panel. Fit anti-theft anchor lug. Confirm overall envelope and mass within SRS 3.2 and 4.10.'},
+  {ref:'V-06',cat:'verify',s:12,e:13,lead:'All SS',   eff:'3W', name:'System compliance verify',desc:'S6.1–S6.8 ICD steps: 300×300×300 mm envelope, ≤ 10 kg mass, anti-theft lug 500 N pull, ≥ 80% black / transparent surface, full brew cycle ≤ 180 s in-chassis, EMC to EN 55014 Class B, IEC 60335 / CE / UKCA safety compliance, 36-hour endurance run at 2 brews / hour (SRS 3.3 acceleration proxy).'},
+  {section:'Factory acceptance'},
+  {ref:'FAT', cat:'fat',   s:12,e:13,lead:'VS/CoffCo',eff:'1M', name:'Factory Acceptance Test', desc:'Formal acceptance event against full COFFCO-SRS-001 requirement set (42 requirements). Vacation Stables engineering and operations representatives as witnesses. Signed FAT report is the exit criterion for the integration programme.'},
+];
+
+function buildGantt(){
+  const g=document.getElementById('gantt');
+  // Header row
+  const blank=document.createElement('div');blank.className='g-month-blank';g.appendChild(blank);
+  MONTHS.forEach((m,i)=>{
+    const d=document.createElement('div');
+    d.className='g-month'+(i%2===1?' alt':'');
+    d.textContent=m;g.appendChild(d);
+  });
+  ROWS.forEach(row=>{
+    if(row.section){
+      const s=document.createElement('div');s.className='section-label';s.textContent=row.section;g.appendChild(s);return;
+    }
+    const lbl=document.createElement('div');lbl.className='g-label';lbl.textContent=row.ref;g.appendChild(lbl);
+    for(let m=1;m<=12;m++){
+      const cell=document.createElement('div');
+      cell.className='g-cell'+(m%2===0?' alt':'');
+      const bs=Math.max(row.s,1),be=Math.min(row.e,13);
+      if(m>=bs&&m<be){
+        const bar=document.createElement('div');bar.className='g-bar';
+        bar.style.background=COLORS[row.cat];
+        const isF=m===bs,isL=m===be-1,r='3px',z='0';
+        bar.style.borderRadius=`${isF?r:z} ${isL?r:z} ${isL?r:z} ${isF?r:z}`;
+        cell.appendChild(bar);
+      }
+      g.appendChild(cell);
+    }
+  });
+}
+
+function buildTable(){
+  const tb=document.getElementById('tbl-body');
+  ROWS.forEach(row=>{
+    if(row.section){
+      const tr=document.createElement('tr');
+      tr.innerHTML=`<td colspan="6" style="padding:10px 0 4px;font-size:9px;font-weight:500;text-transform:uppercase;letter-spacing:.08em;color:var(--text3);border-top:.5px solid var(--border2)">${row.section}</td>`;
+      tb.appendChild(tr);return;
+    }
+    const b=BADGE[row.cat];
+    const tr=document.createElement('tr');
+    tr.innerHTML=`<td>${row.ref}</td>
+      <td><span class="badge" style="background:${b.bg};color:${b.color}">${b.label}</span></td>
+      <td><strong>${row.name}</strong></td>
+      <td style="font-size:10px;font-family:var(--mono)">${row.lead}</td>
+      <td style="font-size:11px;white-space:nowrap">${row.eff}</td>
+      <td>${row.desc}</td>`;
+    tb.appendChild(tr);
+  });
+}
+
+buildGantt();buildTable();
+</script>
+</body>
+</html>

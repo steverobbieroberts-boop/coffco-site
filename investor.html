@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>CoffCo — Investor Deck</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.19.0/dist/tabler-icons.min.css">
+<link rel="stylesheet" href="assets/coffco.css">
+<style>
+:root{--bg:#f8f7f4;--surface:#fff;--surface2:#f1f0ed;--border:rgba(0,0,0,.10);--border2:rgba(0,0,0,.20);--text:#1a1a18;--text2:#6b6a66;--text3:#9b9a96;--teal:#0F6E56;--teal-light:#E1F5EE;--teal-border:#5DCAA5;--amber:#854F0B;--amber-light:#FAEEDA;--radius:8px;--radius-lg:12px;--mono:ui-monospace,'SF Mono','Fira Code',monospace;}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,sans-serif;background:var(--bg);color:var(--text);font-size:13px}
+.page-body{max-width:900px;margin:0 auto;padding:28px 32px 80px}
+.slide-nav{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:20px;padding:12px 16px;background:var(--surface);border:.5px solid var(--border);border-radius:var(--radius-lg)}
+.slide-nav a{font-size:11px;padding:4px 10px;border:.5px solid var(--border2);border-radius:20px;color:var(--text2);text-decoration:none;transition:all .12s}
+.slide-nav a:hover{background:var(--text);color:#fff;border-color:var(--text)}
+.slide-card{background:var(--surface);border:.5px solid var(--border);border-radius:var(--radius-lg);padding:20px 24px;margin-bottom:12px;scroll-margin-top:24px}
+.slide-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
+.slide-tag{font-size:10px;font-weight:600;padding:2px 8px;border-radius:4px;letter-spacing:.06em}
+.slide-num{font-size:10px;color:var(--text3);font-family:var(--mono)}
+.slide-title{font-size:17px;font-weight:600;color:var(--text);margin-bottom:14px;line-height:1.3}
+.slide-body{font-size:13px}
+</style>
+</head>
+<body>
+<nav class="sidebar"></nav>
+<main class="main">
+<div class="page-cover" style="background:linear-gradient(135deg,#1C2B4A 0%,#0F3460 100%);border-bottom-color:#0F6E56">
+  <div class="cover-eyebrow" style="color:#5DCAA5">Investor Presentation &middot; COFFCO-PITCH-001 &middot; Investor Confidential</div>
+  <h1 class="cover-title">CoffCo Investor Deck</h1>
+  <p class="cover-sub">11 slides &middot; Problem, solution, architecture, reliability, MVP scope, cloud platform, stakeholders, requirements, next steps</p>
+  <div class="cover-meta">
+    <span><strong style="color:#c0d4e8">Slides:</strong> <span style="color:#90a8c0">11</span></span>
+    <span><strong style="color:#c0d4e8">Reference:</strong> <span style="color:#90a8c0">COFFCO-PITCH-001</span></span>
+    <span><strong style="color:#c0d4e8">Audience:</strong> <span style="color:#90a8c0">Investors &middot; Vacation Stables CEO</span></span>
+  </div>
+  <div class="cover-download">
+    <a href="downloads/investor-deck.pptx" class="btn-download">&#11015; Download Deck (.pptx)</a>
+  </div>
+</div>
+<div class="page-body">
+  <div class="slide-nav">
+    <span style="font-size:10px;color:var(--text3);align-self:center;margin-right:4px">Jump to:</span>
+    <a href="#slide-1">Cover</a>
+    <a href="#slide-2">Problem</a>
+    <a href="#slide-3">Solution</a>
+    <a href="#slide-4">Partnership</a>
+    <a href="#slide-5">Architecture</a>
+    <a href="#slide-6">Reliability</a>
+    <a href="#slide-7">MVP</a>
+    <a href="#slide-8">Cloud</a>
+    <a href="#slide-9">Stakeholders</a>
+    <a href="#slide-10">Requirements</a>
+    <a href="#slide-11">Next Steps</a>
+  </div>
+<div class="slide-card" id="slide-1">
+      <div class="slide-head">
+        <div class="slide-tag" style="background:#1C2B4A22;color:#1C2B4A">COVER</div>
+        <div class="slide-num">Slide 1</div>
+      </div>
+      <h2 class="slide-title">CoffCo — Next-generation in-room coffee.</h2>
+      <div class="slide-body"><p style="font-size:13px;color:var(--text2);line-height:1.7;margin:0 0 14px">A systems-engineered platform designed for the Vacation Stables estate — and every premium hotel that follows.</p></div>
+    </div>
+<div class="slide-card" id="slide-2">
+      <div class="slide-head">
+        <div class="slide-tag" style="background:#A32D2D22;color:#A32D2D">THE PROBLEM</div>
+        <div class="slide-num">Slide 2</div>
+      </div>
+      <h2 class="slide-title">The gap nobody has closed.</h2>
+      <div class="slide-body"><div style="display:flex;gap:10px;padding:8px 0;border-bottom:.5px solid var(--border)">
+              <div style="width:6px;height:6px;border-radius:50%;background:#A32D2D;flex-shrink:0;margin-top:5px"></div>
+              <div><div style="font-size:12px;font-weight:500;color:var(--text)">Expectations unmet</div>
+              <div style="font-size:12px;color:var(--text2);margin-top:2px;line-height:1.5">Business travellers use specialty coffee daily. In-room machines — where they exist — consistently underdeliver on quality, temperature, and experience.</div></div>
+            </div><div style="display:flex;gap:10px;padding:8px 0;border-bottom:.5px solid var(--border)">
+              <div style="width:6px;height:6px;border-radius:50%;background:#A32D2D;flex-shrink:0;margin-top:5px"></div>
+              <div><div style="font-size:12px;font-weight:500;color:var(--text)">Operationally burdensome</div>
+              <div style="font-size:12px;color:var(--text2);margin-top:2px;line-height:1.5">Current solutions require staff intervention, frequent breakdowns, and complex maintenance — adding cost and friction for hotel operations.</div></div>
+            </div><div style="display:flex;gap:10px;padding:8px 0;border-bottom:.5px solid var(--border)">
+              <div style="width:6px;height:6px;border-radius:50%;background:#A32D2D;flex-shrink:0;margin-top:5px"></div>
+              <div><div style="font-size:12px;font-weight:500;color:var(--text)">No platform play</div>
+              <div style="font-size:12px;color:var(--text2);margin-top:2px;line-height:1.5">No existing product combines brew quality, IoT telemetry, and a proprietary consumable model into a scalable, data-generating service.</div></div>
+            </div></div>
+    </div>
+<div class="slide-card" id="slide-3">
+      <div class="slide-head">
+        <div class="slide-tag" style="background:#0F6E5622;color:#0F6E56">THE SOLUTION</div>
+        <div class="slide-num">Slide 3</div>
+      </div>
+      <h2 class="slide-title">One machine. A platform.</h2>
+      <div class="slide-body"><p style="font-size:13px;color:var(--text2);line-height:1.7;margin:0 0 14px">CoffCo is a next-generation in-room coffee machine engineered from first principles — purpose-built for the Vacation Stables estate and designed to scale across premium hotel markets globally.</p><div style="display:flex;gap:10px;padding:8px 0;border-bottom:.5px solid var(--border)">
+              <div style="width:6px;height:6px;border-radius:50%;background:#0F6E56;flex-shrink:0;margin-top:5px"></div>
+              <div><div style="font-size:12px;font-weight:500;color:var(--text)">Precision brew quality</div>
+              <div style="font-size:12px;color:var(--text2);margin-top:2px;line-height:1.5">Americano + hot frothed milk, 200–400 ml</div></div>
+            </div><div style="display:flex;gap:10px;padding:8px 0;border-bottom:.5px solid var(--border)">
+              <div style="width:6px;height:6px;border-radius:50%;background:#0F6E56;flex-shrink:0;margin-top:5px"></div>
+              <div><div style="font-size:12px;font-weight:500;color:var(--text)">IoT cloud telemetry</div>
+              <div style="font-size:12px;color:var(--text2);margin-top:2px;line-height:1.5">Wireless maintenance alerts, OTA firmware</div></div>
+            </div><div style="display:flex;gap:10px;padding:8px 0;border-bottom:.5px solid var(--border)">
+              <div style="width:6px;height:6px;border-radius:50%;background:#0F6E56;flex-shrink:0;margin-top:5px"></div>
+              <div><div style="font-size:12px;font-weight:500;color:var(--text)">Proprietary consumable</div>
+              <div style="font-size:12px;color:var(--text2);margin-top:2px;line-height:1.5">Sealed format — the highest-leverage design decision</div></div>
+            </div><div style="display:flex;gap:10px;padding:8px 0;border-bottom:.5px solid var(--border)">
+              <div style="width:6px;height:6px;border-radius:50%;background:#0F6E56;flex-shrink:0;margin-top:5px"></div>
+              <div><div style="font-size:12px;font-weight:500;color:var(--text)">365-day maintenance-free</div>
+              <div style="font-size:12px;color:var(--text2);margin-top:2px;line-height:1.5">MTBF 26,280 hrs · IEC 60335 · HACCP</div></div>
+            </div></div>
+    </div>
+<div class="slide-card" id="slide-4">
+      <div class="slide-head">
+        <div class="slide-tag" style="background:#854F0B22;color:#854F0B">PARTNERSHIP</div>
+        <div class="slide-num">Slide 4</div>
+      </div>
+      <h2 class="slide-title">Vacation Stables — a launch partner with reach.</h2>
+      <div class="slide-body"><p style="font-size:13px;color:var(--text2);line-height:1.7;margin:0 0 14px">Vacation Stables is an established international hotel brand targeting the premium business-travel segment — guests who expect specialty coffee and will notice when they don't get it.</p><div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:8px;margin-bottom:16px"><div style="background:var(--surface2);border-radius:var(--radius);padding:12px 14px">
+              <div style="font-size:20px;font-weight:500;color:#854F0B;line-height:1">3</div>
+              <div style="font-size:11px;font-weight:500;color:var(--text);margin-top:4px">initial markets</div>
+              <div style="font-size:10px;color:var(--text3);margin-top:2px">UK · EU · US</div>
+            </div><div style="background:var(--surface2);border-radius:var(--radius);padding:12px 14px">
+              <div style="font-size:20px;font-weight:500;color:#854F0B;line-height:1">2/day</div>
+              <div style="font-size:11px;font-weight:500;color:var(--text);margin-top:4px">brews per room</div>
+              <div style="font-size:10px;color:var(--text3);margin-top:2px">operational tempo</div>
+            </div><div style="background:var(--surface2);border-radius:var(--radius);padding:12px 14px">
+              <div style="font-size:20px;font-weight:500;color:#854F0B;line-height:1">5,840</div>
+              <div style="font-size:11px;font-weight:500;color:var(--text);margin-top:4px">total brews</div>
+              <div style="font-size:10px;color:var(--text3);margin-top:2px">per machine lifecycle</div>
+            </div><div style="background:var(--surface2);border-radius:var(--radius);padding:12px 14px">
+              <div style="font-size:20px;font-weight:500;color:#854F0B;line-height:1">£0</div>
+              <div style="font-size:11px;font-weight:500;color:var(--text);margin-top:4px">room modification</div>
+              <div style="font-size:10px;color:var(--text3);margin-top:2px">existing power + desk</div>
+            </div></div></div>
+    </div>
+<div class="slide-card" id="slide-5">
+      <div class="slide-head">
+        <div class="slide-tag" style="background:#185FA522;color:#185FA5">ARCHITECTURE</div>
+        <div class="slide-num">Slide 5</div>
+      </div>
+      <h2 class="slide-title">Six subsystems. One modular platform.</h2>
+      <div class="slide-body"><div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:8px"><div style="background:var(--surface2);border:.5px solid var(--border);border-radius:var(--radius);padding:12px 14px;border-left:3px solid #185FA5">
+              <div style="font-family:var(--mono);font-size:10px;color:var(--text3);margin-bottom:4px">SS-1</div>
+              <div style="font-size:13px;font-weight:500;color:var(--text)">User interface</div>
+              <div style="font-size:11px;color:var(--text2);margin-top:3px">3 controls only — SRS 2.1</div>
+            </div><div style="background:var(--surface2);border:.5px solid var(--border);border-radius:var(--radius);padding:12px 14px;border-left:3px solid #185FA5">
+              <div style="font-family:var(--mono);font-size:10px;color:var(--text3);margin-bottom:4px">SS-2</div>
+              <div style="font-size:13px;font-weight:500;color:var(--text)">Brew control</div>
+              <div style="font-size:11px;color:var(--text2);margin-top:3px">Temperature, pressure, volume</div>
+            </div><div style="background:var(--surface2);border:.5px solid var(--border);border-radius:var(--radius);padding:12px 14px;border-left:3px solid #185FA5">
+              <div style="font-family:var(--mono);font-size:10px;color:var(--text3);margin-bottom:4px">SS-3</div>
+              <div style="font-size:13px;font-weight:500;color:var(--text)">Fluid management</div>
+              <div style="font-size:11px;color:var(--text2);margin-top:3px">Water store, consumable, drip</div>
+            </div><div style="background:var(--surface2);border:.5px solid var(--border);border-radius:var(--radius);padding:12px 14px;border-left:3px solid #185FA5">
+              <div style="font-family:var(--mono);font-size:10px;color:var(--text3);margin-bottom:4px">SS-4</div>
+              <div style="font-size:13px;font-weight:500;color:var(--text)">Power management</div>
+              <div style="font-size:11px;color:var(--text2);margin-top:3px">110–240V · regional connectors</div>
+            </div><div style="background:var(--surface2);border:.5px solid var(--border);border-radius:var(--radius);padding:12px 14px;border-left:3px solid #185FA5">
+              <div style="font-family:var(--mono);font-size:10px;color:var(--text3);margin-bottom:4px">SS-5</div>
+              <div style="font-size:13px;font-weight:500;color:var(--text)">Monitoring &amp; comms</div>
+              <div style="font-size:11px;color:var(--text2);margin-top:3px">IoT telemetry · wireless alerts</div>
+            </div><div style="background:var(--surface2);border:.5px solid var(--border);border-radius:var(--radius);padding:12px 14px;border-left:3px solid #185FA5">
+              <div style="font-family:var(--mono);font-size:10px;color:var(--text3);margin-bottom:4px">SS-6</div>
+              <div style="font-size:13px;font-weight:500;color:var(--text)">Structure &amp; safety</div>
+              <div style="font-size:11px;color:var(--text2);margin-top:3px">Chassis · IEC 60335 · recycled</div>
+            </div></div></div>
+    </div>
+<div class="slide-card" id="slide-6">
+      <div class="slide-head">
+        <div class="slide-tag" style="background:#0F6E5622;color:#0F6E56">DESIGN FOR RELIABILITY</div>
+        <div class="slide-num">Slide 6</div>
+      </div>
+      <h2 class="slide-title">Built to stay in service.</h2>
+      <div class="slide-body"><div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:8px;margin-bottom:16px"><div style="background:var(--surface2);border-radius:var(--radius);padding:12px 14px">
+              <div style="font-size:20px;font-weight:500;color:#0F6E56;line-height:1">26,280 hrs</div>
+              <div style="font-size:11px;font-weight:500;color:var(--text);margin-top:4px">MTBF target</div>
+              <div style="font-size:10px;color:var(--text3);margin-top:2px">3× annual powered hours · SRS 3.9</div>
+            </div><div style="background:var(--surface2);border-radius:var(--radius);padding:12px 14px">
+              <div style="font-size:20px;font-weight:500;color:#0F6E56;line-height:1">365 days</div>
+              <div style="font-size:11px;font-weight:500;color:var(--text);margin-top:4px">Maintenance-free</div>
+              <div style="font-size:10px;color:var(--text3);margin-top:2px">2 brews/day · SRS 3.3</div>
+            </div><div style="background:var(--surface2);border-radius:var(--radius);padding:12px 14px">
+              <div style="font-size:20px;font-weight:500;color:#0F6E56;line-height:1">≤4 hrs</div>
+              <div style="font-size:11px;font-weight:500;color:var(--text);margin-top:4px">MTTR on fault</div>
+              <div style="font-size:10px;color:var(--text3);margin-top:2px">Assembly-swap model · ILS plan</div>
+            </div></div><div style="display:flex;gap:10px;padding:8px 0;border-bottom:.5px solid var(--border)">
+              <div style="width:6px;height:6px;border-radius:50%;background:#0F6E56;flex-shrink:0;margin-top:5px"></div>
+              <div><div style="font-size:12px;font-weight:500;color:var(--text)">Component level</div>
+              <div style="font-size:12px;color:var(--text2);margin-top:2px;line-height:1.5">COTS parts with proven reliability data exceeding MTBF target</div></div>
+            </div><div style="display:flex;gap:10px;padding:8px 0;border-bottom:.5px solid var(--border)">
+              <div style="width:6px;height:6px;border-radius:50%;background:#0F6E56;flex-shrink:0;margin-top:5px"></div>
+              <div><div style="font-size:12px;font-weight:500;color:var(--text)">Assembly level</div>
+              <div style="font-size:12px;color:var(--text2);margin-top:2px;line-height:1.5">Modular swap — field engineer restores service without disturbing adjacent elements</div></div>
+            </div><div style="display:flex;gap:10px;padding:8px 0;border-bottom:.5px solid var(--border)">
+              <div style="width:6px;height:6px;border-radius:50%;background:#0F6E56;flex-shrink:0;margin-top:5px"></div>
+              <div><div style="font-size:12px;font-weight:500;color:var(--text)">System level</div>
+              <div style="font-size:12px;color:var(--text2);margin-top:2px;line-height:1.5">Wireless telemetry converts reactive maintenance to proactive — faults known before guests notice</div></div>
+            </div></div>
+    </div>
+<div class="slide-card" id="slide-7">
+      <div class="slide-head">
+        <div class="slide-tag" style="background:#534AB722;color:#534AB7">MVP SCOPE</div>
+        <div class="slide-num">Slide 7</div>
+      </div>
+      <h2 class="slide-title">What we are demonstrating today.</h2>
+      <div class="slide-body"><div style="font-size:11px;font-weight:500;color:var(--text3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px">MoSCoW Must</div><div style="display:flex;flex-direction:column;gap:4px;margin-bottom:16px"><div style="display:flex;gap:8px;align-items:flex-start;font-size:12px;color:var(--text2)">
+              <span style="color:#534AB7;font-weight:700;flex-shrink:0">✓</span>Americano brewing — full cycle, 200–400 ml variable</div><div style="display:flex;gap:8px;align-items:flex-start;font-size:12px;color:var(--text2)">
+              <span style="color:#534AB7;font-weight:700;flex-shrink:0">✓</span>Hot frothed milk — 60–90°C at dispensation</div><div style="display:flex;gap:8px;align-items:flex-start;font-size:12px;color:var(--text2)">
+              <span style="color:#534AB7;font-weight:700;flex-shrink:0">✓</span>Volume selection — 3-control panel, unaided operation</div><div style="display:flex;gap:8px;align-items:flex-start;font-size:12px;color:var(--text2)">
+              <span style="color:#534AB7;font-weight:700;flex-shrink:0">✓</span>Status indication — icon/colour only, no text dependency</div><div style="display:flex;gap:8px;align-items:flex-start;font-size:12px;color:var(--text2)">
+              <span style="color:#534AB7;font-weight:700;flex-shrink:0">✓</span>Wireless maintenance transmission — live alert to cloud ops</div><div style="display:flex;gap:8px;align-items:flex-start;font-size:12px;color:var(--text2)">
+              <span style="color:#534AB7;font-weight:700;flex-shrink:0">✓</span>Cycle time ≤3 minutes from initiation to beverage ready</div></div><div style="font-size:11px;font-weight:500;color:var(--text3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px">How the MVP is built</div><div style="display:grid;grid-template-columns:1fr 1fr;gap:6px"><div style="background:var(--surface2);border-radius:6px;padding:8px 10px">
+                  <div style="font-size:10px;font-weight:500;color:var(--text3)">Chassis</div>
+                  <div style="font-size:11px;color:var(--text2);margin-top:2px">3D printed / CNC machined — acceptable for MVP</div>
+                </div><div style="background:var(--surface2);border-radius:6px;padding:8px 10px">
+                  <div style="font-size:10px;font-weight:500;color:var(--text3)">Control PCBA</div>
+                  <div style="font-size:11px;color:var(--text2);margin-top:2px">Certified contract manufacture to CoffCo spec</div>
+                </div><div style="background:var(--surface2);border-radius:6px;padding:8px 10px">
+                  <div style="font-size:10px;font-weight:500;color:var(--text3)">PSU</div>
+                  <div style="font-size:11px;color:var(--text2);margin-top:2px">Certified COTS universal module</div>
+                </div><div style="background:var(--surface2);border-radius:6px;padding:8px 10px">
+                  <div style="font-size:10px;font-weight:500;color:var(--text3)">Wireless</div>
+                  <div style="font-size:11px;color:var(--text2);margin-top:2px">COTS module — technology TBD (TD-06)</div>
+                </div><div style="background:var(--surface2);border-radius:6px;padding:8px 10px">
+                  <div style="font-size:10px;font-weight:500;color:var(--text3)">Software</div>
+                  <div style="font-size:11px;color:var(--text2);margin-top:2px">Bespoke firmware — CoffCo IP</div>
+                </div><div style="background:var(--surface2);border-radius:6px;padding:8px 10px">
+                  <div style="font-size:10px;font-weight:500;color:var(--text3)">Consumable</div>
+                  <div style="font-size:11px;color:var(--text2);margin-top:2px">Commercial arrangement — proprietary sealed format</div>
+                </div></div></div>
+    </div>
+<div class="slide-card" id="slide-8">
+      <div class="slide-head">
+        <div class="slide-tag" style="background:#185FA522;color:#185FA5">CLOUD PLATFORM</div>
+        <div class="slide-num">Slide 8</div>
+      </div>
+      <h2 class="slide-title">The machine is the product. The data is the business.</h2>
+      <div class="slide-body"><div style="display:flex;gap:10px;padding:8px 0;border-bottom:.5px solid var(--border)">
+              <div style="width:6px;height:6px;border-radius:50%;background:#185FA5;flex-shrink:0;margin-top:5px"></div>
+              <div><div style="font-size:12px;font-weight:500;color:var(--text)">Wireless maintenance alerts</div>
+              <div style="font-size:12px;color:var(--text2);margin-top:2px;line-height:1.5">Real-time fault detection transmitted to CoffCo cloud ops. Corrective maintenance dispatched before the guest notices.</div></div>
+            </div><div style="display:flex;gap:10px;padding:8px 0;border-bottom:.5px solid var(--border)">
+              <div style="width:6px;height:6px;border-radius:50%;background:#185FA5;flex-shrink:0;margin-top:5px"></div>
+              <div><div style="font-size:12px;font-weight:500;color:var(--text)">Predictive maintenance</div>
+              <div style="font-size:12px;color:var(--text2);margin-top:2px;line-height:1.5">Scale accumulation modelled from brew-cycle telemetry. Service scheduled before threshold breach — not after failure.</div></div>
+            </div><div style="display:flex;gap:10px;padding:8px 0;border-bottom:.5px solid var(--border)">
+              <div style="width:6px;height:6px;border-radius:50%;background:#185FA5;flex-shrink:0;margin-top:5px"></div>
+              <div><div style="font-size:12px;font-weight:500;color:var(--text)">OTA firmware updates</div>
+              <div style="font-size:12px;color:var(--text2);margin-top:2px;line-height:1.5">Firmware delivered over-the-air. No engineer visit required for software fixes or feature additions.</div></div>
+            </div><div style="display:flex;gap:10px;padding:8px 0;border-bottom:.5px solid var(--border)">
+              <div style="width:6px;height:6px;border-radius:50%;background:#185FA5;flex-shrink:0;margin-top:5px"></div>
+              <div><div style="font-size:12px;font-weight:500;color:var(--text)">Fleet analytics</div>
+              <div style="font-size:12px;color:var(--text2);margin-top:2px;line-height:1.5">Usage data, brew patterns, and consumable demand rates aggregated across the Vacation Stables estate in real time.</div></div>
+            </div></div>
+    </div>
+<div class="slide-card" id="slide-9">
+      <div class="slide-head">
+        <div class="slide-tag" style="background:#0D5C5C22;color:#0D5C5C">STAKEHOLDERS</div>
+        <div class="slide-num">Slide 9</div>
+      </div>
+      <h2 class="slide-title">Designed for every person who touches it.</h2>
+      <div class="slide-body"><div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:8px"><div style="background:var(--surface2);border:.5px solid var(--border);border-radius:var(--radius);padding:12px 14px">
+              <div style="font-size:13px;font-weight:500;color:var(--text)">Hotel guests</div>
+              <div style="font-size:10px;color:#0D5C5C;font-weight:500;margin:3px 0 6px;text-transform:uppercase;letter-spacing:.06em">Primary user</div>
+              <div style="font-size:11px;color:var(--text2);line-height:1.5">Café-quality coffee on demand, unaided, in under 3 minutes. No manual needed.</div>
+            </div><div style="background:var(--surface2);border:.5px solid var(--border);border-radius:var(--radius);padding:12px 14px">
+              <div style="font-size:13px;font-weight:500;color:var(--text)">Housekeeping</div>
+              <div style="font-size:10px;color:#0D5C5C;font-weight:500;margin:3px 0 6px;text-transform:uppercase;letter-spacing:.06em">Maintainer</div>
+              <div style="font-size:11px;color:var(--text2);line-height:1.5">Tool-free consumable restocking. 15-min onboarding. Status LEDs show exactly what needs doing.</div>
+            </div><div style="background:var(--surface2);border:.5px solid var(--border);border-radius:var(--radius);padding:12px 14px">
+              <div style="font-size:13px;font-weight:500;color:var(--text)">Vacation Stables mgmt</div>
+              <div style="font-size:10px;color:#0D5C5C;font-weight:500;margin:3px 0 6px;text-transform:uppercase;letter-spacing:.06em">Strategic partner</div>
+              <div style="font-size:11px;color:var(--text2);line-height:1.5">Brand uplift, sustainability compliance, zero maintenance burden, fleet visibility in real time.</div>
+            </div><div style="background:var(--surface2);border:.5px solid var(--border);border-radius:var(--radius);padding:12px 14px">
+              <div style="font-size:13px;font-weight:500;color:var(--text)">CoffCo / Investors</div>
+              <div style="font-size:10px;color:#0D5C5C;font-weight:500;margin:3px 0 6px;text-transform:uppercase;letter-spacing:.06em">System owner</div>
+              <div style="font-size:11px;color:var(--text2);line-height:1.5">Proprietary consumable recurring revenue, platform data asset, and 8-year per-unit lifecycle.</div>
+            </div></div></div>
+    </div>
+<div class="slide-card" id="slide-10">
+      <div class="slide-head">
+        <div class="slide-tag" style="background:#185FA522;color:#185FA5">REQUIREMENTS</div>
+        <div class="slide-num">Slide 10</div>
+      </div>
+      <h2 class="slide-title">Verified, traceable, testable.</h2>
+      <div class="slide-body"><div style="display:flex;flex-direction:column;gap:0"><div style="display:flex;align-items:center;gap:10px;padding:7px 0;border-bottom:.5px solid var(--border);font-size:12px">
+              <span style="font-family:var(--mono);font-size:10px;color:#185FA5;min-width:52px;font-weight:500">SRS 1.1</span>
+              <span style="color:var(--text2)">Dispense an americano coffee</span>
+              <a href="srs.html" style="margin-left:auto;font-size:10px;color:#185FA5;text-decoration:none;white-space:nowrap">→ SRS</a>
+            </div><div style="display:flex;align-items:center;gap:10px;padding:7px 0;border-bottom:.5px solid var(--border);font-size:12px">
+              <span style="font-family:var(--mono);font-size:10px;color:#185FA5;min-width:52px;font-weight:500">SRS 1.2</span>
+              <span style="color:var(--text2)">Produce hot frothed milk 60–90°C</span>
+              <a href="srs.html" style="margin-left:auto;font-size:10px;color:#185FA5;text-decoration:none;white-space:nowrap">→ SRS</a>
+            </div><div style="display:flex;align-items:center;gap:10px;padding:7px 0;border-bottom:.5px solid var(--border);font-size:12px">
+              <span style="font-family:var(--mono);font-size:10px;color:#185FA5;min-width:52px;font-weight:500">SRS 1.3</span>
+              <span style="color:var(--text2)">Volume selection 200–400 ml</span>
+              <a href="srs.html" style="margin-left:auto;font-size:10px;color:#185FA5;text-decoration:none;white-space:nowrap">→ SRS</a>
+            </div><div style="display:flex;align-items:center;gap:10px;padding:7px 0;border-bottom:.5px solid var(--border);font-size:12px">
+              <span style="font-family:var(--mono);font-size:10px;color:#185FA5;min-width:52px;font-weight:500">SRS 1.7</span>
+              <span style="color:var(--text2)">Status indication — icon/colour only</span>
+              <a href="srs.html" style="margin-left:auto;font-size:10px;color:#185FA5;text-decoration:none;white-space:nowrap">→ SRS</a>
+            </div><div style="display:flex;align-items:center;gap:10px;padding:7px 0;border-bottom:.5px solid var(--border);font-size:12px">
+              <span style="font-family:var(--mono);font-size:10px;color:#185FA5;min-width:52px;font-weight:500">SRS 1.10</span>
+              <span style="color:var(--text2)">Dry-fire prevention — consumable check before brew</span>
+              <a href="srs.html" style="margin-left:auto;font-size:10px;color:#185FA5;text-decoration:none;white-space:nowrap">→ SRS</a>
+            </div><div style="display:flex;align-items:center;gap:10px;padding:7px 0;border-bottom:.5px solid var(--border);font-size:12px">
+              <span style="font-family:var(--mono);font-size:10px;color:#185FA5;min-width:52px;font-weight:500">SRS 2.1</span>
+              <span style="color:var(--text2)">Operable by first-time user without instruction</span>
+              <a href="srs.html" style="margin-left:auto;font-size:10px;color:#185FA5;text-decoration:none;white-space:nowrap">→ SRS</a>
+            </div><div style="display:flex;align-items:center;gap:10px;padding:7px 0;border-bottom:.5px solid var(--border);font-size:12px">
+              <span style="font-family:var(--mono);font-size:10px;color:#185FA5;min-width:52px;font-weight:500">SRS 3.1</span>
+              <span style="color:var(--text2)">Complete cycle within 3 minutes</span>
+              <a href="srs.html" style="margin-left:auto;font-size:10px;color:#185FA5;text-decoration:none;white-space:nowrap">→ SRS</a>
+            </div><div style="display:flex;align-items:center;gap:10px;padding:7px 0;border-bottom:.5px solid var(--border);font-size:12px">
+              <span style="font-family:var(--mono);font-size:10px;color:#185FA5;min-width:52px;font-weight:500">SRS 3.3</span>
+              <span style="color:var(--text2)">Maintenance-free interval ≥365 days</span>
+              <a href="srs.html" style="margin-left:auto;font-size:10px;color:#185FA5;text-decoration:none;white-space:nowrap">→ SRS</a>
+            </div><div style="display:flex;align-items:center;gap:10px;padding:7px 0;border-bottom:.5px solid var(--border);font-size:12px">
+              <span style="font-family:var(--mono);font-size:10px;color:#185FA5;min-width:52px;font-weight:500">SRS 3.9</span>
+              <span style="color:var(--text2)">MTBF ≥26,280 hours</span>
+              <a href="srs.html" style="margin-left:auto;font-size:10px;color:#185FA5;text-decoration:none;white-space:nowrap">→ SRS</a>
+            </div><div style="display:flex;align-items:center;gap:10px;padding:7px 0;border-bottom:.5px solid var(--border);font-size:12px">
+              <span style="font-family:var(--mono);font-size:10px;color:#185FA5;min-width:52px;font-weight:500">SRS 1.9</span>
+              <span style="color:var(--text2)">Wireless maintenance status transmission</span>
+              <a href="srs.html" style="margin-left:auto;font-size:10px;color:#185FA5;text-decoration:none;white-space:nowrap">→ SRS</a>
+            </div><div style="display:flex;align-items:center;gap:10px;padding:7px 0;border-bottom:.5px solid var(--border);font-size:12px">
+              <span style="font-family:var(--mono);font-size:10px;color:#185FA5;min-width:52px;font-weight:500">SRS 3.4</span>
+              <span style="color:var(--text2)">≥50% recycled material content by mass</span>
+              <a href="srs.html" style="margin-left:auto;font-size:10px;color:#185FA5;text-decoration:none;white-space:nowrap">→ SRS</a>
+            </div><div style="display:flex;align-items:center;gap:10px;padding:7px 0;border-bottom:.5px solid var(--border);font-size:12px">
+              <span style="font-family:var(--mono);font-size:10px;color:#185FA5;min-width:52px;font-weight:500">SRS 3.5</span>
+              <span style="color:var(--text2)">EU energy efficiency rating A</span>
+              <a href="srs.html" style="margin-left:auto;font-size:10px;color:#185FA5;text-decoration:none;white-space:nowrap">→ SRS</a>
+            </div></div><p style="font-size:11px;color:var(--text3);margin-top:10px">Full SRS: COFFCO-SRS-001 · 42 requirements · all fully traceable to stakeholder needs. <a href="srs.html" style="color:#185FA5">View interactive SRS →</a></p></div>
+    </div>
+<div class="slide-card" id="slide-11">
+      <div class="slide-head">
+        <div class="slide-tag" style="background:#0F6E5622;color:#0F6E56">NEXT STEPS</div>
+        <div class="slide-num">Slide 11</div>
+      </div>
+      <h2 class="slide-title">From prototype to pilot.</h2>
+      <div class="slide-body"><div style="display:flex;flex-direction:column;gap:8px"><div style="display:flex;gap:14px;align-items:flex-start;padding:12px 14px;background:var(--surface2);border-radius:var(--radius);border-left:3px solid #0F6E56">
+              <div style="width:26px;height:26px;border-radius:50%;background:#0F6E56;color:#fff;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:600;flex-shrink:0">1</div>
+              <div><div style="font-size:13px;font-weight:500;color:var(--text)">MVP acceptance testing</div>
+              <div style="font-size:12px;color:var(--text2);margin-top:3px;line-height:1.5">Run structured test matrix against SRS — brew quality, cycle time, wireless, unaided operation.</div></div>
+            </div><div style="display:flex;gap:14px;align-items:flex-start;padding:12px 14px;background:var(--surface2);border-radius:var(--radius);border-left:3px solid #0F6E56">
+              <div style="width:26px;height:26px;border-radius:50%;background:#0F6E56;color:#fff;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:600;flex-shrink:0">2</div>
+              <div><div style="font-size:13px;font-weight:500;color:var(--text)">Vacation Stables pilot</div>
+              <div style="font-size:12px;color:var(--text2);margin-top:3px;line-height:1.5">Deploy to agreed pilot rooms. Commission PMS integration and cloud ops monitoring.</div></div>
+            </div><div style="display:flex;gap:14px;align-items:flex-start;padding:12px 14px;background:var(--surface2);border-radius:var(--radius);border-left:3px solid #0F6E56">
+              <div style="width:26px;height:26px;border-radius:50%;background:#0F6E56;color:#fff;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:600;flex-shrink:0">3</div>
+              <div><div style="font-size:13px;font-weight:500;color:var(--text)">Consumable format decision</div>
+              <div style="font-size:12px;color:var(--text2);margin-top:3px;line-height:1.5">Close the proprietary consumable trade study — the highest-leverage and longest-lead design decision.</div></div>
+            </div><div style="display:flex;gap:14px;align-items:flex-start;padding:12px 14px;background:var(--surface2);border-radius:var(--radius);border-left:3px solid #0F6E56">
+              <div style="width:26px;height:26px;border-radius:50%;background:#0F6E56;color:#fff;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:600;flex-shrink:0">4</div>
+              <div><div style="font-size:13px;font-weight:500;color:var(--text)">Wireless protocol lock</div>
+              <div style="font-size:12px;color:var(--text2);margin-top:3px;line-height:1.5">Resolve TD-06 — Wi-Fi, BLE, or Zigbee — against Vacation Stables IT infrastructure confirmation.</div></div>
+            </div></div></div>
+    </div>
+</div>
+</main>
+<script src="assets/nav.js"></script>
+</body>
+</html>

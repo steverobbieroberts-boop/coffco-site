@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CoffCo — Safety Analysis</title>
+<link rel="stylesheet" href="assets/coffco.css">
+<style>
+.risk-matrix {
+  display: grid;
+  grid-template-columns: 80px repeat(5, 1fr);
+  grid-template-rows: auto repeat(5, 1fr);
+  gap: 3px;
+  max-width: 560px;
+  margin: 20px 0;
+}
+.rm-header {
+  background: var(--navy);
+  color: #fff;
+  padding: 8px 6px;
+  font-size: 11px;
+  font-weight: 700;
+  text-align: center;
+  border-radius: 4px;
+}
+.rm-row-label {
+  background: var(--navy);
+  color: #fff;
+  padding: 8px 6px;
+  font-size: 10px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  text-align: right;
+  border-radius: 4px;
+}
+.rm-cell {
+  padding: 8px 4px;
+  border-radius: 4px;
+  text-align: center;
+  font-size: 10px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: transform 0.1s, box-shadow 0.1s;
+  min-height: 52px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+}
+.rm-cell:hover { transform: scale(1.05); box-shadow: 0 2px 8px rgba(0,0,0,0.2); z-index: 2; position: relative; }
+.risk-L  { background: #C8E6C9; color: #1B5E20; }
+.risk-M  { background: #FFF9C4; color: #5D4037; }
+.risk-H  { background: #FFCCBC; color: #8B2000; }
+.risk-VH { background: #EF9A9A; color: #7B0000; }
+.rm-cell .hazards { font-size: 9px; opacity: 0.8; font-weight: 400; margin-top: 2px; }
+
+.hazard-tag {
+  display: inline-block;
+  padding: 1px 5px;
+  border-radius: 3px;
+  font-size: 10px;
+  font-weight: 700;
+  background: var(--navy);
+  color: #fff;
+  margin: 1px;
+  cursor: pointer;
+}
+
+.fida-panel {
+  background: #0a0f1a;
+  border-radius: 12px;
+  padding: 24px;
+  margin: 20px 0;
+}
+.fida-title {
+  font-size: 14px;
+  font-weight: 700;
+  color: #c0d8f0;
+  margin-bottom: 16px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid #1a2a3a;
+}
+.fida-steps {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+  margin-bottom: 20px;
+}
+.fida-step {
+  background: #111827;
+  border: 1px solid #1a2a3a;
+  border-radius: 8px;
+  padding: 14px;
+}
+.fida-step-letter {
+  font-size: 22px;
+  font-weight: 800;
+  color: var(--teal-md);
+  line-height: 1;
+  margin-bottom: 4px;
+}
+.fida-step-name { font-size: 12px; font-weight: 700; color: #d0e4f4; margin-bottom: 8px; }
+.fida-step-content { font-size: 12px; color: #c0d4e8; line-height: 1.55; }
+
+.fault-selector {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-bottom: 16px;
+}
+.fault-btn {
+  padding: 7px 14px;
+  background: #111827;
+  border: 1px solid #1a2a3a;
+  border-radius: 6px;
+  color: #9ab8cc;
+  font-size: 12px;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.fault-btn.active, .fault-btn:hover {
+  background: #0D5C5C;
+  border-color: var(--teal);
+  color: var(--teal-md);
+}
+</style>
+</head>
+<body>
+<nav class="sidebar"></nav>
+<main class="main">
+
+<div class="page-cover" style="border-bottom-color: #7a2a1a">
+  <div class="cover-eyebrow">DoD Deliverable 9 · COFFCO-HAZID-001 V2.0 · Safety Case V2.0</div>
+  <h1 class="cover-title">Safety Analysis</h1>
+  <p class="cover-sub">19 hazards · 9 FMECA failure modes · ALARP argument · Defence in Depth (SP-10) · Interactive risk matrix and FIDA fault simulator</p>
+  <div class="cover-meta">
+    <span><strong>HAZID hazards:</strong> 19 (H-01 to H-19)</span>
+    <span><strong>FMECA modes:</strong> 9 (FM-01 to FM-09)</span>
+    <span><strong>All residual risks:</strong> LOW</span>
+    <span><strong>Safety requirements:</strong> SRS 3.10, 3.11, 3.12, 3.13</span>
+  </div>
+  <div class="cover-download">
+    <a href="downloads/9-safety.docx" class="btn-download">⬇ Safety Analysis V2.0</a>
+    <a href="downloads/hazid.xlsx" class="btn-download">⬇ HAZID Register V2.0</a>
+  </div>
+</div>
+
+<div class="body-wrap">
+
+  <div class="section-header">
+    <div class="section-num">◈</div>
+    <div>
+      <div class="section-title">MIL-STD-882E Risk Matrix — Initial Risk Ratings</div>
+      <div class="section-sub">Click a cell to see which hazards fall there. All residual risks reduced to LOW.</div>
+    </div>
+  </div>
+
+  <p>Initial risk ratings before mitigation controls are applied. The matrix uses MIL-STD-882E scoring: Probability (1=Improbable → 5=Frequent) × Severity (1=Negligible → 5=Catastrophic). After design controls (TCO, PRV, Class II, IPX2, watchdog, ALARP measures), all 19 hazards reach LOW residual risk.</p>
+
+  <div id="riskMatrix" class="risk-matrix"></div>
+
+  <div id="hazardDetail" style="display:none;margin:16px 0" class="callout">
+    <strong id="hdTitle">H-XX</strong>: <span id="hdDesc"></span><br>
+    <strong>Initial:</strong> <span id="hdInitial"></span> → <strong>Residual:</strong> <span id="hdResidual" style="color:var(--green);font-weight:700"></span><br>
+    <strong>Controls:</strong> <span id="hdControls"></span>
+  </div>
+
+  <div class="section-header" style="margin-top:40px" id="fida">
+    <div class="section-num">⚡</div>
+    <div>
+      <div class="section-title">FIDA Fault Simulator</div>
+      <div class="section-sub">Fault Identification — Diagnosis — Action · select a fault scenario to walk through the maintenance procedure</div>
+    </div>
+  </div>
+
+  <div class="fida-panel">
+    <div class="fida-title">FIDA Maintenance Manual — Interactive Walkthrough</div>
+    <div class="fault-selector">
+      <button class="fault-btn active" onclick="loadFida('maintenance', this)">⚠ MAINTENANCE REQUIRED</button>
+      <button class="fault-btn" onclick="loadFida('shutdown', this)">🛑 SAFE-SHUTDOWN</button>
+      <button class="fault-btn" onclick="loadFida('empty', this)">💧 FLUID-EMPTY</button>
+    </div>
+    <div class="fida-steps">
+      <div class="fida-step">
+        <div class="fida-step-letter">F</div>
+        <div class="fida-step-name">Fault Identification</div>
+        <div class="fida-step-content" id="fidaF">Select a fault scenario above to begin.</div>
+      </div>
+      <div class="fida-step">
+        <div class="fida-step-letter">I</div>
+        <div class="fida-step-name">Diagnosis</div>
+        <div class="fida-step-content" id="fidaI">—</div>
+      </div>
+      <div class="fida-step">
+        <div class="fida-step-letter">D</div>
+        <div class="fida-step-name">Action</div>
+        <div class="fida-step-content" id="fidaD">—</div>
+      </div>
+    </div>
+    <div id="fidaTier" style="font-size:11px;color:#8ab0cc;border-top:1px solid #1a2a3a;padding-top:12px;margin-top:4px"></div>
+  </div>
+
+  <div class="section-header" style="margin-top:40px">
+    <div class="section-num">!</div>
+    <div>
+      <div class="section-title">FMECA — 9 Failure Modes</div>
+      <div class="section-sub">Initial and residual RPN. All residual RPNs ≤4.</div>
+    </div>
+  </div>
+
+  <table class="data-table">
+    <thead><tr><th>ID</th><th>Failure Mode</th><th>Assembly</th><th>Effect</th><th>Initial RPN</th><th>Controls</th><th>Residual RPN</th></tr></thead>
+    <tbody>
+      <tr><td><strong>FM-01</strong></td><td>Heating element runaway</td><td>Thermal</td><td>Fluid >90°C; burn risk</td><td style="color:#8B2000;font-weight:700">12</td><td>TCO (SRS 3.10); FW-SF-01 dual-sensor; SAFE-SHUTDOWN</td><td style="color:var(--green);font-weight:700">4</td></tr>
+      <tr><td><strong>FM-02</strong></td><td>Fluid path leak</td><td>Thermal</td><td>Hot fluid on live components; shock/fire</td><td style="color:#8B2000;font-weight:700">15</td><td>≥6mm isolation (SRS 3.11); IPX2; annual seals</td><td style="color:var(--green);font-weight:700">4</td></tr>
+      <tr><td><strong>FM-03</strong></td><td>Mains voltage exposure</td><td>PSU</td><td>Electric shock; potential fatality</td><td style="color:#8B2000;font-weight:700">16</td><td>IEC 60335-1 Class II; mains fuse; no live surfaces</td><td style="color:var(--green);font-weight:700">2</td></tr>
+      <tr><td><strong>FM-04</strong></td><td>Cross-contamination</td><td>Thermal</td><td>Coffee/milk mix; food safety breach</td><td style="color:var(--amber);font-weight:700">10</td><td>Auto flush; food-grade elastomers; HACCP</td><td style="color:var(--green);font-weight:700">2</td></tr>
+      <tr><td><strong>FM-05</strong></td><td>Dry-fire / empty store</td><td>Control + Fluid</td><td>Heating element burnout; fire</td><td style="color:#8B2000;font-weight:700">14</td><td>Fluid interlock (SRS 1.10); FLUID-EMPTY within 5 s</td><td style="color:var(--green);font-weight:700">4</td></tr>
+      <tr><td><strong>FM-06</strong></td><td>Hardware watchdog failure</td><td>Control</td><td>Firmware runaway; uncontrolled actuators</td><td style="color:var(--soft);font-weight:700">6</td><td>Dual-source WDT IC + firmware loop (SRS 3.12)</td><td style="color:var(--green);font-weight:700">2</td></tr>
+      <tr><td><strong>FM-07</strong></td><td>Enclosure thermistor failure</td><td>Chassis</td><td>Surface temp guard inoperative</td><td style="color:var(--soft);font-weight:700">4</td><td>Build inspection; surface temp test at Phase 4</td><td style="color:var(--green);font-weight:700">3</td></tr>
+      <tr><td><strong>FM-08</strong></td><td>Fluid overpressure</td><td>Thermal + Fluid</td><td>Pressure vessel failure; scald</td><td style="color:var(--amber);font-weight:700">9</td><td>PRV ≤2.5 bar (SRS 3.13); FW-SF-08 at 1.5 bar; descale</td><td style="color:var(--green);font-weight:700">2</td></tr>
+      <tr><td><strong>FM-09</strong></td><td>Mains overcurrent — no fuse</td><td>PSU</td><td>Wiring ignition; fire</td><td style="color:var(--amber);font-weight:700">8</td><td>T-type mains fuse (SRS 3.11); IEC 60335 Cl.25</td><td style="color:var(--green);font-weight:700">2</td></tr>
+    </tbody>
+  </table>
+
+</div>
+</main>
+<script src="assets/nav.js"></script>
+<script>
+// Risk matrix data: [prob, sev, label, hazards_str]
+const HAZARDS = {
+  'H-01': {desc:'Heating element overheats — burn to user',p:2,s:4,controls:'TCO (SRS 3.10); FW-SF-01; SAFE-SHUTDOWN state',residual:'LOW (score 2)'},
+  'H-02': {desc:'Hot fluid contact with user skin during dispensing',p:3,s:3,controls:'Shrouded outlet (SRS 3.10); surface temp limit 48°C; two-step confirm',residual:'LOW (score 3)'},
+  'H-03': {desc:'Fluid path leak — hot liquid on live conductors',p:2,s:4,controls:'≥6mm isolation; IPX2 (SRS 3.11); annual seal replacement',residual:'LOW (score 2)'},
+  'H-04': {desc:'Mains voltage exposure — electric shock',p:1,s:5,controls:'IEC 60335-1 Class II; mains fuse; no accessible live parts',residual:'LOW (score 1)'},
+  'H-05': {desc:'Consumable cross-contamination (milk/coffee)',p:2,s:3,controls:'Auto flush; food-grade elastomers; HACCP plan',residual:'LOW (score 2)'},
+  'H-06': {desc:'Machine tips over — fall injury',p:2,s:3,controls:'Anti-tip bracket (SRS 4.10); stability test 50N lateral',residual:'LOW (score 2)'},
+  'H-13': {desc:'Fluid overpressure — pipe rupture',p:2,s:4,controls:'PRV ≤2.5 bar hardware (SRS 3.13); FW-SF-08 firmware guard at 1.5 bar; descale cycle (SRS 1.6)',residual:'LOW (score 2)'},
+  'H-14': {desc:'Mains overcurrent — no fuse protection',p:1,s:5,controls:'T-type mains fuse at inlet (SRS 3.11); IEC 60335-1 Cl.25',residual:'LOW (score 1)'},
+  'H-15': {desc:'Water ingress during cleaning — electrical fault',p:2,s:3,controls:'IPX2 enclosure (SRS 3.11); housekeeping SOP — damp cloth only',residual:'LOW (score 2)'},
+  'H-16': {desc:'Drip tray overflow — fluid on surfaces',p:3,s:2,controls:'Drip tray sensor; DRIP-TRAY-FULL alert before overflow (SRS 1.7)',residual:'LOW (score 2)'},
+  'H-17': {desc:'Scale accumulation — pump clog / PRV failure',p:3,s:3,controls:'Firmware descale scheduling (SRS 1.6); DESCALE-REQUIRED alert ≥10 brews prior',residual:'LOW (score 3)'},
+  'H-18': {desc:'Consumable misuse — wrong format forced',p:2,s:2,controls:'Keyed extraction chamber (SRS 1.4); interlock prevents closure on wrong format',residual:'LOW (score 1)'},
+  'H-19': {desc:'Child accidental brew initiation — scald',p:2,s:3,controls:'Two-step brew confirmation (SRS 1.7); shrouded outlet',residual:'LOW (score 2)'},
+};
+
+// Build risk matrix
+const PROB_LABELS = ['','Improbable\n(1)','Remote\n(2)','Occasional\n(3)','Probable\n(4)','Frequent\n(5)'];
+const SEV_LABELS  = ['','Negligible\n(1)','Marginal\n(2)','Critical\n(3)','Severe\n(4)','Catastrophic\n(5)'];
+const RISK_CLASS  = (p,s) => {
+  const score = p*s;
+  if(score <= 4) return 'risk-L';
+  if(score <= 9) return 'risk-M';
+  if(score <= 16) return 'risk-H';
+  return 'risk-VH';
+};
+const RISK_LABEL = (p,s) => {
+  const score = p*s;
+  if(score <= 4) return 'LOW';
+  if(score <= 9) return 'MED';
+  if(score <= 16) return 'HIGH';
+  return 'V.HIGH';
+};
+
+function buildMatrix() {
+  const el = document.getElementById('riskMatrix');
+  // Map hazards to cells
+  const cellHazards = {};
+  Object.entries(HAZARDS).forEach(([id, h]) => {
+    const key = `${h.p},${h.s}`;
+    if(!cellHazards[key]) cellHazards[key] = [];
+    cellHazards[key].push(id);
+  });
+
+  // Header row
+  el.innerHTML += '<div class="rm-row-label" style="background:transparent;color:transparent">.</div>';
+  for(let s=1;s<=5;s++) {
+    el.innerHTML += `<div class="rm-header">Sev ${s}<br><small>${['','Negl','Marg','Crit','Sev','Catas'][s]}</small></div>`;
+  }
+  // Data rows (prob 5 to 1, top to bottom)
+  for(let p=5;p>=1;p--) {
+    el.innerHTML += `<div class="rm-row-label">Prob ${p}<br><small>${['','Improb','Remote','Occas','Prob','Freq'][p]}</small></div>`;
+    for(let s=1;s<=5;s++) {
+      const cls = RISK_CLASS(p,s);
+      const lbl = RISK_LABEL(p,s);
+      const score = p*s;
+      const hIds = cellHazards[`${p},${s}`] || [];
+      const tagsHtml = hIds.map(id => `<span class="hazard-tag" onclick="showHazard('${id}',event)">${id}</span>`).join('');
+      el.innerHTML += `<div class="rm-cell ${cls}" onclick="void(0)">
+        <div>${lbl} (${score})</div>
+        <div class="hazards">${tagsHtml||'—'}</div>
+      </div>`;
+    }
+  }
+}
+
+function showHazard(id, e) {
+  e.stopPropagation();
+  const h = HAZARDS[id];
+  if(!h) return;
+  const d = document.getElementById('hazardDetail');
+  document.getElementById('hdTitle').textContent = id;
+  document.getElementById('hdDesc').textContent = h.desc;
+  document.getElementById('hdInitial').textContent = `${RISK_LABEL(h.p,h.s)} (P=${h.p}, S=${h.s}, Score=${h.p*h.s})`;
+  document.getElementById('hdResidual').textContent = h.residual;
+  document.getElementById('hdControls').textContent = h.controls;
+  d.style.display = 'block';
+}
+
+const FIDA = {
+  maintenance: {
+    F: 'Machine status indicator shows MAINTENANCE REQUIRED (amber). Cloud ops dashboard alert received. Guest reports machine will not start.',
+    I: 'D1: Is drip tray full? → Empty and refit → check if clears.\nD2: Is water reservoir empty? → Refill to MAX → check if clears.\nD3: Are consumables low/empty? → Restock → check if clears.\nD4: COMMS-FAULT also shown? → Check Wi-Fi, power cycle machine.\nD5: None of above resolved → Escalate to CoffCo field engineer.',
+    D: 'A1 (drip tray): Empty, clean, refit. Confirm status clears. [VS maintenance]\nA2 (water): Fill reservoir to MAX. Confirm auto-recovery. [VS maintenance]\nA3 (consumables): Restock from floor store. [Housekeeping]\nA4 (comms): Power cycle machine. If persistent >60 min, log with CoffCo cloud ops.\nA5 (unresolved): Escalate. Do not open machine casing.',
+    tier: '⚠ Tier boundary: VS maintenance team stops at A5. DO NOT open machine casing. Escalate to CoffCo field engineer if unresolved.'
+  },
+  shutdown: {
+    F: 'Machine is unresponsive. Status indicator shows FAULT (red, steady). Cloud ops SAFE-SHUTDOWN alert received. No brew possible.',
+    I: 'D1: Any smell of burning or visible smoke? → Evacuate room, hotel emergency procedure immediately.\nD2: Water or liquid visible around base? → Isolate mains at socket. DO NOT TOUCH machine. Call CoffCo field engineer immediately.\nD3: None of above → Isolate mains for 60 s, restore. Does SAFE-SHUTDOWN clear to STANDBY?\n   → Yes: Monitor 30 min. If re-enters SAFE-SHUTDOWN → D4.\n   → No: Go to Action A1.',
+    D: 'A1 (persists after power cycle): Isolate machine at mains. Mark out of service. Call CoffCo field engineer — SLA: 4 hours. Log: time, serial number, symptom.\nA2 (fire/smoke): Hotel emergency procedure. Mains isolation. Do not attempt recovery.\nA3 (fluid around base): Mains isolation. Do not restore power. CoffCo field engineer must verify electrical safety before return to service.',
+    tier: '🛑 SAFETY-CRITICAL: SAFE-SHUTDOWN recovery always requires field engineer investigation. VS maintenance MUST NOT attempt internal access. P1 priority — 4-hour response SLA.'
+  },
+  empty: {
+    F: 'Machine shows FLUID-EMPTY or LOW status. Guest or housekeeping reports: machine accepts drink selection but does not start brew cycle.',
+    I: 'D1: Is water reservoir empty or below MIN line? → Action A1.\nD2: Is consumable correctly seated? → Open chamber, check seating. If misloaded → A2.\nD3: Is consumable the correct CoffCo format? → If wrong format → A3.\nD4: Reservoir full and consumable correct, but still FLUID-EMPTY → A4 (potential sensor fault).',
+    D: 'A1 (empty reservoir): Fill to MAX. FLUID-EMPTY clears automatically on refill. [Housekeeping / VS maintenance]\nA2 (misloaded): Remove and reseat consumable until click confirmed. Close chamber. Retry. [VS maintenance]\nA3 (wrong format): Remove. Insert correct CoffCo consumable. Inspect chamber for damage if wrong format was forced. [VS maintenance]\nA4 (sensor suspected): Power cycle. If FLUID-EMPTY persists with full reservoir: escalate to CoffCo field engineer. DO NOT continue operation — heating element inhibit is a safety function.',
+    tier: '⚠ Tier boundary: A4 (sensor fault) requires field engineer. Heating element dry-fire inhibit (SRS 1.10, FM-05) must not be bypassed.'
+  }
+};
+
+function loadFida(key, btn) {
+  document.querySelectorAll('.fault-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  const f = FIDA[key];
+  document.getElementById('fidaF').textContent = f.F;
+  document.getElementById('fidaI').innerHTML = f.I.replace(/\n/g,'<br>');
+  document.getElementById('fidaD').innerHTML = f.D.replace(/\n/g,'<br>');
+  document.getElementById('fidaTier').textContent = f.tier;
+}
+
+buildMatrix();
+// Load default FIDA
+loadFida('maintenance', document.querySelector('.fault-btn'));
+</script>
+</body>
+</html>

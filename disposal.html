@@ -1,0 +1,578 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>CoffCo — Disposal Plan</title>
+<link rel="stylesheet" href="assets/coffco.css">
+<style>
+/* ── Page-level overrides ─────────────────────────────────────── */
+.prose-body {
+  max-width: 860px;
+  margin: 0 auto;
+  padding: 40px 44px 80px;
+}
+.prose-body p {
+  font-size: 14px;
+  line-height: 1.8;
+  color: #3A3F47;
+  margin: 0 0 16px;
+}
+/* Section headers */
+.sec-head {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin: 52px 0 20px;
+  padding-bottom: 12px;
+  border-bottom: 2px solid #D8DDE6;
+}
+.sec-num {
+  width: 36px; height: 36px;
+  background: var(--navy);
+  color: #fff;
+  font-size: 15px; font-weight: 700;
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+}
+.sec-title {
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--navy);
+  line-height: 1.2;
+}
+.sec-sub {
+  font-size: 12px;
+  color: #7A7A7A;
+  margin-top: 2px;
+}
+/* Sub-section headers */
+.sub-head {
+  font-size: 15px;
+  font-weight: 600;
+  color: #1A4B8C;
+  margin: 32px 0 10px;
+}
+/* Item cards — replaces the single-item bullet lists */
+.item-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin: 0 0 20px;
+}
+.item-card {
+  display: grid;
+  grid-template-columns: 200px 1fr;
+  gap: 0;
+  background: #fff;
+  border: 1px solid #E2E6ED;
+  border-radius: 8px;
+  overflow: hidden;
+}
+.item-label {
+  background: #F7F8FA;
+  border-right: 1px solid #E2E6ED;
+  padding: 11px 14px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--navy);
+  display: flex;
+  align-items: flex-start;
+}
+.item-body {
+  padding: 11px 14px;
+  font-size: 13px;
+  line-height: 1.65;
+  color: #3A3F47;
+}
+/* Timeline table */
+.timeline {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+  margin: 16px 0 24px;
+}
+.timeline thead th {
+  background: var(--navy);
+  color: #fff;
+  text-align: left;
+  padding: 10px 14px;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+.timeline tbody td {
+  padding: 10px 14px;
+  border-bottom: 1px solid #E2E6ED;
+  vertical-align: top;
+  line-height: 1.6;
+  color: #3A3F47;
+}
+.timeline tbody tr:last-child td { border-bottom: none; }
+.timeline tbody tr:hover td { background: #F0F4FA; }
+.timeline tbody tr td:first-child {
+  font-weight: 600;
+  color: var(--navy);
+  white-space: nowrap;
+  font-size: 12px;
+  width: 180px;
+}
+.timeline tbody tr td:nth-child(2) {
+  font-weight: 500;
+  width: 200px;
+}
+/* Traceability table */
+.trace-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+  margin: 16px 0 24px;
+}
+.trace-table thead th {
+  background: #0D5C5C;
+  color: #fff;
+  text-align: left;
+  padding: 10px 14px;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+.trace-table tbody td {
+  padding: 10px 14px;
+  border-bottom: 1px solid #E2E6ED;
+  vertical-align: top;
+  line-height: 1.6;
+  color: #3A3F47;
+}
+.trace-table tbody tr:last-child td { border-bottom: none; }
+.trace-table tbody tr:hover td { background: #E6F4F4; }
+.trace-table td:first-child {
+  font-family: ui-monospace, 'SF Mono', monospace;
+  font-size: 11px;
+  font-weight: 600;
+  color: #0D5C5C;
+  white-space: nowrap;
+  width: 90px;
+}
+/* Callout box */
+.callout {
+  border-left: 4px solid #0D5C5C;
+  background: #E6F4F4;
+  padding: 14px 18px;
+  border-radius: 0 8px 8px 0;
+  margin: 20px 0;
+  font-size: 13px;
+  line-height: 1.7;
+  color: #1A3A3A;
+}
+.callout strong { color: #0D5C5C; }
+/* Hierarchy list (material recovery) */
+.hierarchy {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin: 12px 0 20px;
+}
+.h-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 9px 14px;
+  background: #fff;
+  border: 1px solid #E2E6ED;
+  border-radius: 6px;
+  font-size: 13px;
+}
+.h-rank {
+  width: 26px; height: 26px;
+  border-radius: 50%;
+  font-size: 11px; font-weight: 700;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+}
+.h-rank.best  { background: #0D5C5C; color: #fff; }
+.h-rank.good  { background: #1A4B8C; color: #fff; }
+.h-rank.ok    { background: #7A4E0D; color: #fff; }
+.h-rank.last  { background: #E2E6ED; color: #7A7A7A; }
+.h-rank.never { background: #7A2A1A; color: #fff; }
+.h-label { font-weight: 600; color: var(--navy); width: 160px; flex-shrink: 0; }
+.h-desc  { color: #5A5A5A; }
+</style>
+</head>
+<body>
+<nav class="sidebar"></nav>
+<main class="main">
+
+<div class="page-cover">
+  <div class="cover-eyebrow">DoD Deliverable 11 &middot; COFFCO-DISP-001 V1.0 &middot; Circular Economy</div>
+  <h1 class="cover-title">Disposal Plan</h1>
+  <p class="cover-sub">LRU lifecycle strategy &middot; WEEE / RoHS / REACH compliance &middot; zero-landfill target &middot; material recovery hierarchy &middot; Year 7+ timeline</p>
+  <div class="cover-meta">
+    <span><strong>Issue:</strong> V1.0</span>
+    <span><strong>Sections:</strong> 8</span>
+    <span><strong>Zero-landfill target:</strong> SRS 3.7</span>
+    <span><strong>Recycled content:</strong> ≥50% (SRS 3.4)</span>
+    <span><strong>Service life:</strong> 5–7 years</span>
+  </div>
+  <div class="cover-download">
+    <a href="downloads/disposal.docx" class="btn-download">&#11015; Download V1.0 (.docx)</a>
+  </div>
+</div>
+
+<div class="prose-body">
+
+<div class="callout">
+  <strong>Design for Disposal.</strong> The zero-landfill target (SRS 3.7) and minimum 50% recycled content requirement (SRS 3.4) are embedded in the requirements — not added at the end. The modular architecture designed for maintainability directly enables selective component recovery. Disposal dividends were designed in from the start.
+</div>
+
+<!-- ── Section 1: LRU and Mid-Life Upgrades ──────────────────── -->
+<div class="sec-head" id="sec1">
+  <div class="sec-num">1</div>
+  <div>
+    <div class="sec-title">LRU and Mid-Life Upgrades</div>
+    <div class="sec-sub">Modular replacement and technology refresh across the 5–7 year service life</div>
+  </div>
+</div>
+
+<div class="sub-head">1.1 Line Replaceable Units</div>
+<p>The assembly-swap maintenance model means all three primary assemblies are already LRUs. Each is removed and replaced by a field engineer in under 4 hours. At end of assembly life the unit returns to depot — refurbished if viable, disposed of if beyond economical repair (BER).</p>
+
+<div class="item-grid">
+  <div class="item-card">
+    <div class="item-label">Control Assembly</div>
+    <div class="item-body">PCB, firmware, wireless module, NTC sensor. Target life: 5–7 years. Refurbishment: component replacement at depot. BER trigger: corrosion, physical damage, or obsolete firmware platform with no upgrade path.</div>
+  </div>
+  <div class="item-card">
+    <div class="item-label">Thermal Assembly</div>
+    <div class="item-body">Heating element, pump, PRV, seals, check valve, frother. Target life: 5–7 years (seals replaced annually at PM-03). BER trigger: heater tube wall failure, pump casing craze, or irreparable scale damage.</div>
+  </div>
+  <div class="item-card">
+    <div class="item-label">Power Supply Unit</div>
+    <div class="item-body">Universal switch-mode module, plug modules. Target life: 5–7 years (electrical integrity check at PM-07 Year 5). BER trigger: insulation resistance below 1 MΩ or failed IEC 60335 retest.</div>
+  </div>
+  <div class="item-card">
+    <div class="item-label">Plug modules</div>
+    <div class="item-body">Regional variants (UK/EU/US). Treated as consumables — replaced on damage or regulatory change. No refurbishment; direct to recycling.</div>
+  </div>
+  <div class="item-card">
+    <div class="item-label">Fluid path seals</div>
+    <div class="item-body">FKM O-rings and gaskets. Consumable. Annual scheduled replacement at PM-03. No recovery value — waste stream.</div>
+  </div>
+</div>
+
+<div class="sub-head">1.2 Mid-Life Upgrades</div>
+<p>The 5–7 year service life spans multiple technology generations. Mid-life upgrades address technology obsolescence without full machine replacement — consistent with Design for Longevity.</p>
+
+<div class="item-grid">
+  <div class="item-card">
+    <div class="item-label">Wireless module</div>
+    <div class="item-body">TD-06 deferred. Module is a discrete COTS component — replacement at mid-life (Year 3–4) allows technology refresh without Control Assembly swap. Old module to certified e-waste recycler.</div>
+  </div>
+  <div class="item-card">
+    <div class="item-label">Firmware platform</div>
+    <div class="item-body">Delivered via OTA update (SRS 1.11) wherever possible — no hardware change. If RTOS becomes unsupported, Control Assembly swap carries the upgraded platform.</div>
+  </div>
+  <div class="item-card">
+    <div class="item-label">NTC holder (OA-IPS-01)</div>
+    <div class="item-body">PP to PPS plastic upgrade. Rolled into next Control Assembly refurbishment batch — no machine downtime. PPS is more recyclable and more stable for recycler processing.</div>
+  </div>
+  <div class="item-card">
+    <div class="item-label">Regional plug adapter</div>
+    <div class="item-body">Plug standard changes (e.g. BS 1363 revision) isolated to a single low-cost component by the interchangeable plug module design (TD-03). PSU unaffected.</div>
+  </div>
+  <div class="item-card">
+    <div class="item-label">Peltier cooler</div>
+    <div class="item-body">Thermoelectric cooler technology improving rapidly. Mid-life swap to higher-efficiency module reduces energy consumption and supports Vacation Stables 2030 sustainability target.</div>
+  </div>
+</div>
+
+<!-- ── Section 2: Environmental Considerations ───────────────── -->
+<div class="sec-head" id="sec2">
+  <div class="sec-num">2</div>
+  <div>
+    <div class="sec-title">Environmental Considerations</div>
+    <div class="sec-sub">Minimising environmental impact across the disposal process</div>
+  </div>
+</div>
+
+<div class="item-grid">
+  <div class="item-card">
+    <div class="item-label">Zero-landfill</div>
+    <div class="item-body">SRS 3.7 mandates confirmed recycling, reuse, or recovery routes for all waste streams. No CoffCo waste goes to landfill — machine assemblies, consumable packaging, fluid path residues, descale waste.</div>
+  </div>
+  <div class="item-card">
+    <div class="item-label">Circular economy</div>
+    <div class="item-body">SRS 3.4 (≥50% recycled content) means the casing is already partly recycled polymer. End-of-life recycling closes the loop — shredded polymer re-enters the recycled polymer supply chain as secondary raw material.</div>
+  </div>
+  <div class="item-card">
+    <div class="item-label">Electronic waste</div>
+    <div class="item-body">PCBAs contain precious metals (gold, silver, palladium on contacts and PCB pads). All PCBAs to certified WEEE-compliant e-waste recycler for precious metal recovery — positive residual value, partially offsetting disposal cost.</div>
+  </div>
+  <div class="item-card">
+    <div class="item-label">Peltier cooler</div>
+    <div class="item-body">No F-gases or refrigerant fluid — solid-state thermoelectric device. No refrigerant disposal obligations. A direct advantage of Peltier over compressor-based milk refrigeration.</div>
+  </div>
+  <div class="item-card">
+    <div class="item-label">Fluid residues</div>
+    <div class="item-body">Thermal Assembly fluid path: water residues and scale deposits. HACCP clean performed before dispatch. Citric acid-based descale fluid is non-hazardous but flushed to drain, not landfill.</div>
+  </div>
+  <div class="item-card">
+    <div class="item-label">Packaging</div>
+    <div class="item-body">All packaging either recyclable or returnable. No single-use plastic film. EPP foam inserts: recyclable. Corrugated cardboard carton: recyclable. Return carton scheme in place.</div>
+  </div>
+</div>
+
+<!-- ── Section 3: Resource Management ───────────────────────── -->
+<div class="sec-head" id="sec3">
+  <div class="sec-num">3</div>
+  <div>
+    <div class="sec-title">Resource Management</div>
+    <div class="sec-sub">Maximising material recovery and resource efficiency at end of life</div>
+  </div>
+</div>
+
+<p>The modular architecture enables refurbishment-first as a governing principle — BER declaration is a last resort, not a default. SRS 3.7 mandates that all waste streams have a confirmed recycling, reuse, or recovery route, making landfill prohibited by requirement. The target recovery rate across all material streams is <strong>≥99%</strong>. The material recovery hierarchy governs decision-making:</p>
+
+<div class="hierarchy">
+  <div class="h-item"><div class="h-rank best">1</div><div class="h-label">Reuse</div><div class="h-desc">Whole assembly refurbishment and redeployment — highest value, preferred outcome</div></div>
+  <div class="h-item"><div class="h-rank good">2</div><div class="h-label">Remanufacture</div><div class="h-desc">Component-level repair at depot</div></div>
+  <div class="h-item"><div class="h-rank ok">3</div><div class="h-label">Recycle</div><div class="h-desc">Material recovery from BER assemblies — PCBA precious metals, PPS polymer, metals</div></div>
+  <div class="h-item"><div class="h-rank last">4</div><div class="h-label">Energy recovery</div><div class="h-desc">Where material recycling is not viable</div></div>
+  <div class="h-item"><div class="h-rank never">✕</div><div class="h-label">Landfill</div><div class="h-desc">Prohibited — zero-landfill target (SRS 3.7)</div></div>
+</div>
+
+<div class="item-grid">
+  <div class="item-card">
+    <div class="item-label">Precious metal recovery</div>
+    <div class="item-body">Control Assembly PCBAs yield approximately 0.1–0.3 g of gold per board. At scale, PCBA recycling generates positive recovery value. All PCBAs to London Metal Exchange-registered recycler with documented recovery rates.</div>
+  </div>
+  <div class="item-card">
+    <div class="item-label">PPS polymer recovery</div>
+    <div class="item-body">PPS casing and recycled polymer body: material-separated before processing. PPS has high intrinsic value as a recycled polymer — routed to specialist PPS recycler rather than general plastics stream.</div>
+  </div>
+  <div class="item-card">
+    <div class="item-label">Metal recovery</div>
+    <div class="item-body">Stainless steel (thermal pathway), copper (wiring), aluminium (heater tube, chassis reinforcement): separated by material type at disassembly. All to certified metal recycler.</div>
+  </div>
+  <div class="item-card">
+    <div class="item-label">Data sanitisation</div>
+    <div class="item-body">Control Assembly flash memory holds machine config and fault log — no guest personal data (GDPR). Cloud platform deregisters machine on collection; local flash overwritten to zero. No physical PCBA destruction required.</div>
+  </div>
+</div>
+
+<!-- ── Section 4: Health and Safety ─────────────────────────── -->
+<div class="sec-head" id="sec4">
+  <div class="sec-num">4</div>
+  <div>
+    <div class="sec-title">Health and Safety</div>
+    <div class="sec-sub">Worker and community protection throughout disposal activities</div>
+  </div>
+</div>
+
+<div class="item-grid">
+  <div class="item-card">
+    <div class="item-label">COSHH compliance</div>
+    <div class="item-body">Descale fluid (citric acid — irritant, GHS07), solder flux residues (low hazard but ventilation required), cleaning agents. COSHH assessment completed before disposal activities commence. Appropriate PPE specified.</div>
+  </div>
+  <div class="item-card">
+    <div class="item-label">Electrical safety</div>
+    <div class="item-body">All machines fully de-energised before collection. Field engineer confirms mains cable removed. Class II construction means no accessible live voltage in de-energised state.</div>
+  </div>
+  <div class="item-card">
+    <div class="item-label">Thermal hazard</div>
+    <div class="item-body">Thermal Assembly may retain heat if recently operated. Minimum 30-minute cool-down required. Field engineer uses calibrated thermocouple to confirm surface temperature below 40°C before packaging.</div>
+  </div>
+  <div class="item-card">
+    <div class="item-label">Manual handling</div>
+    <div class="item-body">Machine maximum 10 kg (SRS 4.10) — within single-person lift guidelines for a trained operative. Thermal Assembly maximum 4 kg. No mechanical handling aids required for routine collection.</div>
+  </div>
+  <div class="item-card">
+    <div class="item-label">Food safety (HACCP)</div>
+    <div class="item-body">Thermal Assembly contains food-contact surfaces. HACCP clean before dispatch. Disposable food-grade gloves worn during fluid path handling. Assembly sealed in food-grade bag for transit.</div>
+  </div>
+  <div class="item-card">
+    <div class="item-label">Worker training</div>
+    <div class="item-body">All depot staff and field engineers: COSHH awareness; manual handling; electrical safety (IEC 60335); HACCP food safety certificate; CoffCo disposal SOP familiarisation. Training records maintained by CoffCo HR.</div>
+  </div>
+</div>
+
+<!-- ── Section 5: Regulatory Compliance ─────────────────────── -->
+<div class="sec-head" id="sec5">
+  <div class="sec-num">5</div>
+  <div>
+    <div class="sec-title">Regulatory Compliance</div>
+    <div class="sec-sub">Legislative requirements governing disposal in UK, EU, and US markets</div>
+  </div>
+</div>
+
+<div class="item-grid">
+  <div class="item-card">
+    <div class="item-label">WEEE (UK/EU)</div>
+    <div class="item-body">CoffCo is the producer and holds the WEEE take-back obligation. Registered with approved Producer Compliance Scheme (PCS). WEEE registration number displayed on product and recorded in cloud platform.</div>
+  </div>
+  <div class="item-card">
+    <div class="item-label">RoHS 3</div>
+    <div class="item-body">All restricted hazardous substances (lead, mercury, cadmium, hexavalent chromium, PBB, PBDE, DEHP, BBP, DBP, DIBP) confirmed absent from design. RoHS compliance declaration held and supplied to recycler.</div>
+  </div>
+  <div class="item-card">
+    <div class="item-label">REACH</div>
+    <div class="item-body">SVHCs identified and disclosed per REACH Article 33. Recycler notified of SVHC content. No SVHC above 0.1% w/w threshold permitted in product (design constraint).</div>
+  </div>
+  <div class="item-card">
+    <div class="item-label">Basel Convention</div>
+    <div class="item-body">If assemblies exported internationally for recycling, Basel prior informed consent (PIC) procedure applies for hazardous waste. CoffCo compliance team confirms classification before cross-border shipment.</div>
+  </div>
+  <div class="item-card">
+    <div class="item-label">IEC 60335-1</div>
+    <div class="item-body">Type-test certificate and CE/UKCA/UL Declaration of Conformity archived for minimum 10 years from end of production. Required for WEEE compliance and product liability. Machine-level certificate mapping in cloud platform.</div>
+  </div>
+  <div class="item-card">
+    <div class="item-label">US market</div>
+    <div class="item-body">State-level e-waste legislation varies (California SB 20, New York E-Waste law). US-deployed machines returned to US-based certified recycler or shipped back under Basel notification. UL/ETL documentation retained 10 years.</div>
+  </div>
+  <div class="item-card">
+    <div class="item-label">Documentation retention</div>
+    <div class="item-body">All disposal records retained minimum 10 years: WEEE transfer notes, hazardous waste consignment notes, recycler certificates of destruction, cloud platform disposal events. Accessible to regulators on request.</div>
+  </div>
+</div>
+
+<!-- ── Section 6: Stakeholder Engagement ─────────────────────── -->
+<div class="sec-head" id="sec6">
+  <div class="sec-num">6</div>
+  <div>
+    <div class="sec-title">Stakeholder and Supplier Engagement</div>
+    <div class="sec-sub">Roles and responsibilities across the disposal supply chain</div>
+  </div>
+</div>
+
+<div class="item-grid">
+  <div class="item-card">
+    <div class="item-label">CoffCo</div>
+    <div class="item-body">Primary disposal authority. Owns all WEEE take-back obligations. Operates machine collection logistics. Manages regional depot disassembly and assessment. Contracts certified recyclers. Archives all compliance documentation.</div>
+  </div>
+  <div class="item-card">
+    <div class="item-label">Vacation Stables</div>
+    <div class="item-body">Notifies CoffCo of machines reaching end of contract. Ensures machine is de-energised and accessible for collection. Routes consumable waste through CoffCo recycling scheme via housekeeping SOP.</div>
+  </div>
+  <div class="item-card">
+    <div class="item-label">CoffCo field engineer</div>
+    <div class="item-body">Collects machine from hotel. Completes disposal collection record in cloud platform (serial number, condition, date). Performs de-energisation and cool-down verification. Packages in return carton for depot transport.</div>
+  </div>
+  <div class="item-card">
+    <div class="item-label">CoffCo regional depot</div>
+    <div class="item-body">Receives returned machines. Performs condition assessment: refurbish or BER. Disassembles BER machines to component level. Segregates material streams. Manages COSHH and HACCP during disassembly.</div>
+  </div>
+  <div class="item-card">
+    <div class="item-label">E-waste recycler</div>
+    <div class="item-body">Handles PCBAs, Control Assembly, PSU electronics. Must hold: EA waste carrier licence; ISO 14001 certification; BS 8887-2 or equivalent. Provides certificates of destruction and recovery rate documentation. Annual audit by CoffCo procurement.</div>
+  </div>
+  <div class="item-card">
+    <div class="item-label">Consumable supply partner</div>
+    <div class="item-body">Contractually required to operate a take-back scheme (SRS 3.7 condition of supply). Operates collection logistics and demonstrates recycling route for coffee grounds and packaging. Annual sustainability report to CoffCo.</div>
+  </div>
+</div>
+
+<!-- ── Section 7: Long-Term Considerations ───────────────────── -->
+<div class="sec-head" id="sec7">
+  <div class="sec-num">7</div>
+  <div>
+    <div class="sec-title">Long-Term Considerations</div>
+    <div class="sec-sub">Post-disposal obligations and future-proofing the disposal strategy</div>
+  </div>
+</div>
+
+<div class="item-grid">
+  <div class="item-card">
+    <div class="item-label">Regulatory evolution</div>
+    <div class="item-body">WEEE, RoHS, REACH, and EPR regulations evolve continuously. Disposal plan reviewed annually against current regulatory baseline. If regulations change mid-product-life, plan updated and communicated to depot and recyclers within 90 days.</div>
+  </div>
+  <div class="item-card">
+    <div class="item-label">Obsolescence management</div>
+    <div class="item-body">When COTS components (pump, PRV, NTC holder, WDT IC) become obsolete, last-time-buy (LTB) triggered. LTB quantity = remaining fleet size × annual failure rate × remaining service life. Held at depot until fleet decommissioned.</div>
+  </div>
+  <div class="item-card">
+    <div class="item-label">Cloud platform exit</div>
+    <div class="item-body">If CoffCo cloud platform is retired, all machine records exported to PDF/A archive before shutdown. Contractual data retention clause with cloud provider. Records must survive corporate events (merger, acquisition).</div>
+  </div>
+  <div class="item-card">
+    <div class="item-label">Gen 2 transition</div>
+    <div class="item-body">When CoffCo Gen 2 launches, Gen 1 machines enter accelerated disposal/upgrade programme. Compatible Gen 1 machines may receive Control Assembly upgrade to Gen 2 platform. Disposal programme planned 12 months before Gen 2 commercial launch.</div>
+  </div>
+  <div class="item-card">
+    <div class="item-label">CSR reporting</div>
+    <div class="item-body">Annual disposal sustainability metrics in CoffCo ESG report: machines collected, recovery rate (target ≥99% of material by mass), materials recovered by weight, consumable waste diverted from landfill, disposal logistics carbon emissions. Feeds into Vacation Stables ESG score.</div>
+  </div>
+</div>
+
+<!-- ── Section 8: Disposal Timeline ─────────────────────────── -->
+<div class="sec-head" id="sec8">
+  <div class="sec-num">8</div>
+  <div>
+    <div class="sec-title">Disposal Timeline</div>
+    <div class="sec-sub">Key milestones from pre-deployment preparation to final documentation archive</div>
+  </div>
+</div>
+
+<table class="timeline">
+  <thead>
+    <tr>
+      <th>Timing</th>
+      <th>Activity</th>
+      <th>Detail</th>
+      <th>Responsible</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr><td>T−6 months</td><td>Disposal planning baseline</td><td>Certified recyclers contracted. Depot disposal SOP written and trained. WEEE PCS registration confirmed. Consumable take-back scheme verified. Disposal budget confirmed.</td><td>CoffCo disposal manager</td></tr>
+    <tr><td>T−3 months</td><td>Regulatory confirmation</td><td>RoHS, REACH, WEEE declarations completed and filed. Hazardous waste carrier licence confirmed. US state e-waste registration completed. COSHH assessment signed off.</td><td>CoffCo compliance</td></tr>
+    <tr><td>Year 1</td><td>Consumable waste audit</td><td>Confirm consumable take-back scheme operating at all Vacation Stables properties. Waste transfer notes being generated. Adjust collection frequency if demand differs from 2 brews/day assumption.</td><td>CoffCo account manager</td></tr>
+    <tr><td>Years 1–4</td><td>In-service LRU disposal</td><td>BER assemblies from corrective maintenance routed through disposal process. Each: depot assessment, BER declaration, material segregation, transfer to recycler with waste transfer note. Cloud platform updated per serial number.</td><td>CoffCo depot</td></tr>
+    <tr><td>Year 3</td><td>Mid-life upgrade review</td><td>Fleet telemetry reviewed: assess wireless module upgrade need (TD-06 evolution), NTC holder PPS upgrade progress (OA-IPS-01), energy efficiency against EU regulation updates.</td><td>CoffCo engineering</td></tr>
+    <tr><td>Year 4</td><td>Mid-life upgrade execution</td><td>Wireless module and other upgrades rolled out via scheduled PM-03 visits or dedicated upgrade visits. Old modules to e-waste recycler. Asset register updated per machine.</td><td>CoffCo field engineers</td></tr>
+    <tr><td>Year 5</td><td>End-of-life assessment (PM-07)</td><td>Each machine assessed: extraction pressure, seal condition, chassis integrity, firmware supportability, PSU insulation resistance. Decision: extend, refurbish, or dispose.</td><td>CoffCo field engineer</td></tr>
+    <tr><td>Years 5–6</td><td>Fleet disposal planning</td><td>Disposal programme planned for machines reaching end of service life. Collection wave sequenced by property to minimise logistics cost. Replacement machines ordered and staged.</td><td>CoffCo logistics</td></tr>
+    <tr><td>Years 6–7</td><td>Machine collection</td><td>Field engineer removes machine. De-energisation and cool-down check. Cloud platform disposal event created. Machine packaged and transferred to regional depot.</td><td>CoffCo field engineer</td></tr>
+    <tr><td>Years 6–7</td><td>Depot assessment</td><td>Machines assessed: refurbishment-first principle or BER (last resort). BER machines disassembled. Material streams segregated: PCBA → e-waste, PPS → polymer recycler, metals → metal recycler, seals → waste.</td><td>CoffCo depot</td></tr>
+    <tr><td>Years 6–7</td><td>Cloud platform disposal</td><td>Machine serial numbers deregistered. Telemetry history archived. Data sanitisation record created. WEEE transfer note issued.</td><td>CoffCo cloud ops</td></tr>
+    <tr><td>Year 7</td><td>Disposal close-out</td><td>All machines disposed of or refurbished. Final disposal sustainability report produced. WEEE annual compliance submission includes disposal batch. Records archived for 10 years.</td><td>CoffCo compliance</td></tr>
+    <tr><td>Year 7+</td><td>Documentation retention</td><td>Compliance certificates, waste transfer notes, cloud platform archive, recycler certificates retained minimum 10 years from final disposal event.</td><td>CoffCo legal / compliance</td></tr>
+  </tbody>
+</table>
+
+<!-- ── Design for Disposal — Requirements Traceability ────────── -->
+<div class="sec-head" id="sec-trace">
+  <div class="sec-num">✓</div>
+  <div>
+    <div class="sec-title">Requirements Traceability</div>
+    <div class="sec-sub">SRS requirements written with disposal in mind — disposal outcomes are the result of design decisions, not late-stage planning</div>
+  </div>
+</div>
+
+<table class="trace-table">
+  <thead>
+    <tr>
+      <th>SRS Ref</th>
+      <th>Requirement</th>
+      <th>Disposal benefit</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr><td>SRS 3.4</td><td>Minimum 50% recycled content in machine casing</td><td>Recycled polymer casing re-enters the recycled polymer supply chain at end of life — circular loop closed. Reduces virgin material demand.</td></tr>
+    <tr><td>SRS 3.7</td><td>All waste products from operation shall have a recycling or reuse route</td><td>Zero-landfill target embedded in requirements before design began. Forces confirmed recycling routes before deployment.</td></tr>
+    <tr><td>SRS 4.8</td><td>IEC 60335-1 compliance</td><td>Type-test certificate required for WEEE compliance. Ensures machine is correctly classified and registered.</td></tr>
+    <tr><td>SRS 4.9</td><td>Food safety — HACCP compliance</td><td>Food-grade materials documented. Simplifies disposal — no unknown food-contact contaminants to declare.</td></tr>
+    <tr><td>SP-02</td><td>Modular physical architecture</td><td>Enables selective assembly recovery. BER Control Assembly does not require disposal of a serviceable Thermal Assembly. Maximises refurbishment rate.</td></tr>
+    <tr><td>TD-05</td><td>Anti-theft cable lug — tool-free removal</td><td>Designed for tool-free removal at end of life. Removes a disassembly complexity that would otherwise slow collection.</td></tr>
+    <tr><td>TD-03</td><td>Interchangeable plug module</td><td>Regional regulatory change requires only plug module disposal/replacement — PSU is retained. Isolates regional risk to a single low-cost component.</td></tr>
+    <tr><td>OA-IPS-01</td><td>NTC holder upgrade PP → PPS</td><td>PPS is more recyclable and more stable than PP. Upgrade removes a lower-grade polymer from the waste stream.</td></tr>
+  </tbody>
+</table>
+
+</div>
+</main>
+<script src="assets/nav.js"></script>
+</body>
+</html>

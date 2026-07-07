@@ -1,0 +1,589 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CoffCo — HMI Prototype</title>
+<link rel="stylesheet" href="assets/coffco.css">
+<style>
+.hmi-stage {
+  background: #1a1a1a;
+  padding: 48px 20px;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  gap: 40px;
+  flex-wrap: wrap;
+  min-height: 500px;
+}
+/* The Machine */
+.machine {
+  width: 220px;
+  background: #111;
+  border-radius: 18px;
+  padding: 0;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.6), inset 0 1px 0 rgba(255,255,255,0.05);
+  position: relative;
+  overflow: hidden;
+  border: 1px solid #2a2a2a;
+  flex-shrink: 0;
+}
+.machine-top {
+  background: #0d0d0d;
+  padding: 16px 16px 12px;
+  border-bottom: 1px solid #222;
+}
+.machine-logo {
+  font-size: 13px;
+  font-weight: 800;
+  color: #8aa0b8;
+  letter-spacing: 0.15em;
+  text-align: center;
+  text-transform: uppercase;
+}
+
+/* Status LED ring */
+.status-ring {
+  width: 60px; height: 60px;
+  border-radius: 50%;
+  margin: 14px auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  font-weight: 700;
+  text-align: center;
+  transition: all 0.4s;
+  box-shadow: 0 0 20px var(--ring-glow, transparent);
+}
+.status-ring.ready    { background: #1a5c2a; color: #a0e0b0; --ring-glow: rgba(26,92,42,0.5); }
+.status-ring.brewing  { background: #1a4b8c; color: #a0c4ff; --ring-glow: rgba(26,75,140,0.5); animation: pulse 1.2s infinite; }
+.status-ring.hot      { background: #7a2a1a; color: #ffb0a0; --ring-glow: rgba(122,42,26,0.5); }
+.status-ring.low      { background: #7a4e0d; color: #ffd080; --ring-glow: rgba(122,78,13,0.5); }
+.status-ring.empty    { background: #3d2d7a; color: #c0b0ff; --ring-glow: rgba(61,45,122,0.4); }
+.status-ring.fault    { background: #7a0000; color: #ff8080; --ring-glow: rgba(122,0,0,0.6); animation: pulse-fast 0.6s infinite; }
+.status-ring.maintain { background: #7a4e0d; color: #ffd080; --ring-glow: rgba(122,78,13,0.5); animation: pulse 2s infinite; }
+.status-ring.shutdown { background: #222; color: #666; --ring-glow: transparent; }
+
+@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.6} }
+@keyframes pulse-fast { 0%,100%{opacity:1} 50%{opacity:0.3} }
+
+.status-text {
+  font-size: 11px;
+  color: #6a8a9a;
+  text-align: center;
+  margin-bottom: 12px;
+  letter-spacing: 0.05em;
+}
+
+/* Controls panel */
+.controls-panel {
+  background: #0a0a0a;
+  padding: 14px 16px;
+  border-top: 1px solid #222;
+  border-bottom: 1px solid #222;
+}
+.control-group { margin-bottom: 12px; }
+.control-label {
+  font-size: 9px;
+  color: #4a6a7a;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  margin-bottom: 7px;
+}
+.toggle-row {
+  display: flex;
+  gap: 6px;
+}
+.toggle-btn {
+  flex: 1;
+  padding: 8px 0;
+  background: #1a1a1a;
+  border: 1px solid #333;
+  border-radius: 6px;
+  color: #6a8a9a;
+  font-size: 11px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+}
+.toggle-btn .icon { font-size: 16px; }
+.toggle-btn.selected {
+  background: #1C2B4A;
+  border-color: #4a7ab8;
+  color: #c0d8f0;
+  box-shadow: 0 0 10px rgba(74,122,184,0.3);
+}
+
+.volume-slider-wrap { padding: 4px 0; }
+.volume-slider {
+  width: 100%;
+  -webkit-appearance: none;
+  height: 4px;
+  border-radius: 2px;
+  background: linear-gradient(to right, #1A4B8C var(--pct,50%), #333 var(--pct,50%));
+  outline: none;
+  cursor: pointer;
+}
+.volume-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 14px; height: 14px;
+  border-radius: 50%;
+  background: #4a7ab8;
+  box-shadow: 0 0 6px rgba(74,122,184,0.6);
+}
+.volume-val {
+  text-align: center;
+  font-size: 12px;
+  color: #4a7ab8;
+  font-weight: 700;
+  margin-top: 6px;
+}
+
+/* Brew button */
+.brew-section {
+  padding: 14px 16px;
+}
+.brew-btn {
+  width: 100%;
+  padding: 13px;
+  background: linear-gradient(135deg, #0D5C5C, #1a7a7a);
+  border: none;
+  border-radius: 10px;
+  color: #e0f8f8;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s;
+  letter-spacing: 0.05em;
+  box-shadow: 0 4px 14px rgba(13,92,92,0.4);
+}
+.brew-btn:hover:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 20px rgba(13,92,92,0.6);
+}
+.brew-btn:disabled {
+  background: #222;
+  color: #444;
+  box-shadow: none;
+  cursor: not-allowed;
+}
+.confirm-btn {
+  width: 100%;
+  padding: 13px;
+  background: linear-gradient(135deg, #1a5c2a, #2a8a3a);
+  border: none;
+  border-radius: 10px;
+  color: #e0f8e8;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s;
+  box-shadow: 0 4px 14px rgba(26,92,42,0.4);
+  display: none;
+  animation: fadeIn 0.2s;
+}
+@keyframes fadeIn { from{opacity:0;transform:translateY(4px)} to{opacity:1;transform:none} }
+.cancel-btn {
+  width: 100%;
+  margin-top: 6px;
+  padding: 8px;
+  background: transparent;
+  border: 1px solid #333;
+  border-radius: 8px;
+  color: #6a8a9a;
+  font-size: 11px;
+  cursor: pointer;
+  display: none;
+}
+
+/* Outlet */
+.outlet-section {
+  background: #080808;
+  padding: 10px 16px 14px;
+  text-align: center;
+}
+.outlet {
+  width: 44px; height: 44px;
+  border-radius: 50%;
+  background: #0a0a0a;
+  border: 2px solid #222;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  transition: all 0.3s;
+  position: relative;
+}
+.outlet.dispensing {
+  border-color: var(--teal);
+  box-shadow: 0 0 16px rgba(13,92,92,0.5);
+}
+.outlet.dispensing::after {
+  content: '';
+  position: absolute;
+  bottom: -12px;
+  width: 8px;
+  height: 14px;
+  background: linear-gradient(to bottom, #7a4e0d, transparent);
+  border-radius: 0 0 4px 4px;
+  animation: drip 0.6s infinite;
+}
+@keyframes drip { 0%{height:8px;opacity:1} 100%{height:18px;opacity:0;bottom:-20px} }
+
+.outlet-label { font-size: 9px; color: #3a5a6a; margin-top: 6px; letter-spacing: 0.1em; text-transform: uppercase; }
+
+/* Panel / Log */
+.log-panel {
+  width: 320px;
+  flex-shrink: 0;
+}
+.log-title {
+  font-size: 11px;
+  color: #4a6a7a;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  margin-bottom: 12px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid #333;
+}
+.log-entries {
+  background: #0a0a0a;
+  border: 1px solid #222;
+  border-radius: 8px;
+  padding: 12px;
+  height: 280px;
+  overflow-y: auto;
+  font-family: 'Consolas', monospace;
+  font-size: 11px;
+}
+.log-entry {
+  padding: 3px 0;
+  border-bottom: 1px solid #111;
+  animation: slideIn 0.2s;
+}
+@keyframes slideIn { from{opacity:0;transform:translateX(-6px)} to{opacity:1;transform:none} }
+.log-entry .ts { color: #3a5a6a; margin-right: 8px; }
+.log-entry .msg-info { color: #6a9ab8; }
+.log-entry .msg-ok   { color: #4ab870; }
+.log-entry .msg-warn { color: #c8a040; }
+.log-entry .msg-err  { color: #c85050; }
+.log-entry .msg-telem { color: #9a70c8; }
+
+.telemetry-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin-top: 14px;
+}
+.telem-card {
+  background: #0a0a0a;
+  border: 1px solid #222;
+  border-radius: 6px;
+  padding: 10px 12px;
+}
+.telem-label { font-size: 9px; color: #3a5a6a; letter-spacing: 0.1em; text-transform: uppercase; }
+.telem-val { font-size: 18px; font-weight: 700; color: #8aa0b8; margin-top: 2px; }
+.telem-unit { font-size: 10px; color: #3a5a6a; }
+
+.scenario-bar {
+  margin-top: 14px;
+}
+.scenario-title { font-size: 11px; color: #4a6a7a; letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 8px; }
+.scenario-btns { display: flex; gap: 6px; flex-wrap: wrap; }
+.scenario-btn {
+  padding: 6px 12px;
+  background: #111;
+  border: 1px solid #333;
+  border-radius: 5px;
+  color: #6a8a9a;
+  font-size: 11px;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.scenario-btn:hover { background: #1a1a1a; color: #a0c0d8; border-color: #555; }
+</style>
+</head>
+<body>
+<nav class="sidebar"></nav>
+<main class="main">
+
+<div class="page-cover">
+  <div class="cover-eyebrow">Interactive Prototype · SRS 2.1 — Unaided First-Time Operation</div>
+  <h1 class="cover-title">CoffCo Machine — HMI Prototype</h1>
+  <p class="cover-sub">Interactive simulation of the guest-facing user interface. All 7 machine states represented. Two-step brew confirmation (H-19 child safety). Real-time telemetry log.</p>
+  <div class="cover-meta">
+    <span><strong>States:</strong> STANDBY · BREWING · LOW · EMPTY · MAINTENANCE · FAULT · SAFE-SHUTDOWN</span>
+    <span><strong>SRS:</strong> 1.3 · 1.7 · 1.10 · 2.1 · 3.10 · 3.12</span>
+  </div>
+</div>
+
+<div class="body-wrap" style="padding-top:0">
+  <div class="callout" style="margin-top:24px">
+    This prototype demonstrates SRS 2.1 (unaided operation), SRS 1.7 (7-state status indication), and the two-step brew confirmation required by H-19 (child misuse prevention). Use the scenario buttons to simulate fault states.
+  </div>
+</div>
+
+<div class="hmi-stage" id="hmiStage">
+  <!-- Machine -->
+  <div class="machine" id="machine">
+    <div class="machine-top">
+      <div class="machine-logo">CoffCo</div>
+      <div class="status-ring ready" id="statusRing">READY</div>
+      <div class="status-text" id="statusText">Select your drink</div>
+    </div>
+
+    <div class="controls-panel">
+      <div class="control-group">
+        <div class="control-label">Drink Type</div>
+        <div class="toggle-row">
+          <button class="toggle-btn selected" id="btnAmericano" onclick="selectDrink('americano')">
+            <span class="icon">☕</span><span>Americano</span>
+          </button>
+          <button class="toggle-btn" id="btnMilk" onclick="selectDrink('milk')">
+            <span class="icon">🥛</span><span>Hot Milk</span>
+          </button>
+        </div>
+      </div>
+      <div class="control-group">
+        <div class="control-label">Volume — <span id="volDisplay">200 ml</span></div>
+        <div class="volume-slider-wrap">
+          <input type="range" class="volume-slider" id="volSlider" min="200" max="400" step="50" value="200" oninput="updateVol(this)">
+        </div>
+      </div>
+    </div>
+
+    <div class="brew-section">
+      <button class="brew-btn" id="brewBtn" onclick="firstPress()">BREW</button>
+      <button class="confirm-btn" id="confirmBtn" onclick="confirmBrew()">CONFIRM BREW ✓</button>
+      <button class="cancel-btn" id="cancelBtn" onclick="cancelBrew()">Cancel</button>
+    </div>
+
+    <div class="outlet-section">
+      <div class="outlet" id="outlet">☕</div>
+      <div class="outlet-label">Dispensing Outlet</div>
+    </div>
+  </div>
+
+  <!-- Telemetry Panel -->
+  <div class="log-panel">
+    <div class="log-title">Cloud Ops Telemetry Log</div>
+    <div class="log-entries" id="logEntries"></div>
+
+    <div class="telemetry-grid">
+      <div class="telem-card">
+        <div class="telem-label">Temp</div>
+        <div class="telem-val" id="tvTemp">22</div>
+        <div class="telem-unit">°C (idle)</div>
+      </div>
+      <div class="telem-card">
+        <div class="telem-label">Pressure</div>
+        <div class="telem-val" id="tvPres">0.0</div>
+        <div class="telem-unit">bar</div>
+      </div>
+      <div class="telem-card">
+        <div class="telem-label">Consumables</div>
+        <div class="telem-val" id="tvCons">10</div>
+        <div class="telem-unit">remaining</div>
+      </div>
+      <div class="telem-card">
+        <div class="telem-label">Drip Tray</div>
+        <div class="telem-val" id="tvDrip">12</div>
+        <div class="telem-unit">% full</div>
+      </div>
+    </div>
+
+    <div class="scenario-bar">
+      <div class="scenario-title">Simulate Fault Scenarios</div>
+      <div class="scenario-btns">
+        <button class="scenario-btn" onclick="simState('ready')">✓ Ready</button>
+        <button class="scenario-btn" onclick="simState('low')">⚠ Low Consumable</button>
+        <button class="scenario-btn" onclick="simState('empty')">⛔ Fluid Empty</button>
+        <button class="scenario-btn" onclick="simState('maintenance')">🔧 Maintenance Req.</button>
+        <button class="scenario-btn" onclick="simState('fault')">⚡ FAULT</button>
+        <button class="scenario-btn" onclick="simState('shutdown')">🛑 SAFE-SHUTDOWN</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="body-wrap">
+  <div class="section-header">
+    <div class="section-num">i</div>
+    <div><div class="section-title">Design Rationale — HMI Decisions</div></div>
+  </div>
+  <table class="data-table">
+    <thead><tr><th>Design Decision</th><th>SRS / Hazard</th><th>Rationale</th></tr></thead>
+    <tbody>
+      <tr><td><strong>Exactly 3 controls</strong> — drink type, volume, brew confirm</td><td>SRS 2.1</td><td>Minimises state space and error surface. No configuration menus. First-time unaided use validated at VE-B1.</td></tr>
+      <tr><td><strong>Two-step brew confirmation</strong> — BREW then CONFIRM BREW</td><td>H-19 child misuse, SRS 1.7</td><td>Child pressing a single button cannot initiate a brew cycle with a hot fluid path. Deliberate second confirmation required.</td></tr>
+      <tr><td><strong>Icon-based status ring</strong> — no text labels</td><td>SRS 1.7, SRS 2.1</td><td>Multi-language hotel deployment. Text labels would require localisation for each market. Icon-only works across all languages.</td></tr>
+      <tr><td><strong>7 distinct states</strong> — colour and text differentiated</td><td>SRS 1.7</td><td>All 7 states are identifiable without documentation. Colour alone is not used as the sole differentiator (accessibility).</td></tr>
+      <tr><td><strong>Volume slider 200–400 ml</strong></td><td>SRS 1.3, 4.6, 4.7</td><td>Covers short americano to large travel mug format. Stepped at 50 ml for tactile precision without over-complicating the interface.</td></tr>
+      <tr><td><strong>Real-time telemetry log</strong> — cloud ops side</td><td>SRS 1.9</td><td>Guest never sees this. Cloud ops receives all events within 60 s. Proactive maintenance model depends on timely telemetry.</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<script src="assets/nav.js"></script>
+<script>
+let state = 'ready';
+let drinkType = 'americano';
+let volume = 200;
+let awaitingConfirm = false;
+let brewTimer = null;
+let logCount = 0;
+
+function log(msg, type='info') {
+  const el = document.getElementById('logEntries');
+  const now = new Date();
+  const ts = now.toTimeString().slice(0,8);
+  const div = document.createElement('div');
+  div.className = 'log-entry';
+  div.innerHTML = `<span class="ts">${ts}</span><span class="msg-${type}">${msg}</span>`;
+  el.prepend(div);
+  logCount++;
+  if(logCount > 50) el.lastChild?.remove();
+}
+
+function updateStatus(ringClass, ringText, statusText) {
+  const ring = document.getElementById('statusRing');
+  const st = document.getElementById('statusText');
+  ring.className = 'status-ring ' + ringClass;
+  ring.textContent = ringText;
+  st.textContent = statusText;
+}
+
+function setBrewControls(enabled) {
+  document.getElementById('brewBtn').disabled = !enabled;
+  document.getElementById('btnAmericano').disabled = !enabled;
+  document.getElementById('btnMilk').disabled = !enabled;
+  document.getElementById('volSlider').disabled = !enabled;
+}
+
+function selectDrink(type) {
+  drinkType = type;
+  document.getElementById('btnAmericano').classList.toggle('selected', type==='americano');
+  document.getElementById('btnMilk').classList.toggle('selected', type==='milk');
+  log(`Drink selection: ${type}`, 'info');
+}
+
+function updateVol(el) {
+  volume = parseInt(el.value);
+  document.getElementById('volDisplay').textContent = volume + ' ml';
+  const pct = ((volume-200)/200*100) + '%';
+  el.style.setProperty('--pct', pct);
+}
+
+function firstPress() {
+  if(state !== 'ready') return;
+  awaitingConfirm = true;
+  document.getElementById('brewBtn').style.display = 'none';
+  document.getElementById('confirmBtn').style.display = 'block';
+  document.getElementById('cancelBtn').style.display = 'block';
+  updateStatus('brewing', 'CONFIRM?', 'Press CONFIRM BREW to start');
+  log(`Brew requested: ${drinkType}, ${volume}ml — awaiting confirmation`, 'warn');
+  log('FW-SF: two-step confirmation gate active (H-19)', 'telem');
+}
+
+function cancelBrew() {
+  awaitingConfirm = false;
+  document.getElementById('brewBtn').style.display = 'block';
+  document.getElementById('confirmBtn').style.display = 'none';
+  document.getElementById('cancelBtn').style.display = 'none';
+  updateStatus('ready', 'READY', 'Select your drink');
+  state = 'ready';
+  log('Brew cancelled by user', 'info');
+}
+
+function confirmBrew() {
+  if(!awaitingConfirm) return;
+  awaitingConfirm = false;
+  document.getElementById('confirmBtn').style.display = 'none';
+  document.getElementById('cancelBtn').style.display = 'none';
+  state = 'brewing';
+  setBrewControls(false);
+  updateStatus('brewing', 'BREWING', 'Brewing your ' + drinkType + '…');
+  document.getElementById('outlet').classList.add('dispensing');
+  document.getElementById('outlet').textContent = drinkType === 'milk' ? '🥛' : '☕';
+  log(`BREW CYCLE START — ${drinkType} ${volume}ml`, 'ok');
+  log('FW-SF-01: temp target 75°C — heating', 'telem');
+
+  let t = 0;
+  const interval = setInterval(() => {
+    t++;
+    const temp = Math.min(75, 22 + t*8);
+    const pres = t > 4 ? Math.min(1.1, (t-4)*0.15).toFixed(2) : '0.00';
+    document.getElementById('tvTemp').textContent = temp;
+    document.getElementById('tvPres').textContent = pres;
+    if(t===3) log('FW-SF-01: temp 50°C — pre-heat phase', 'telem');
+    if(t===6) { log('FW-SF-01: temp 75°C — target reached', 'ok'); log('Pump energised — extraction start', 'telem'); }
+    if(t===9) {
+      clearInterval(interval);
+      completeBrew();
+    }
+  }, 400);
+}
+
+function completeBrew() {
+  const cons = parseInt(document.getElementById('tvCons').textContent) - 1;
+  document.getElementById('tvCons').textContent = cons;
+  document.getElementById('tvDrip').textContent = Math.min(100, parseInt(document.getElementById('tvDrip').textContent)+8);
+  document.getElementById('tvTemp').textContent = 22;
+  document.getElementById('tvPres').textContent = '0.0';
+  document.getElementById('outlet').classList.remove('dispensing');
+  document.getElementById('outlet').textContent = '☕';
+  log(`BREW CYCLE COMPLETE — ${volume}ml dispensed`, 'ok');
+  log('Telemetry → UPDATE: brew_count +1', 'telem');
+
+  if(cons <= 3) {
+    log('TELEMETRY EVENT → LOW_CONSUMABLE', 'warn');
+    simState('low');
+  } else {
+    simState('ready');
+  }
+  document.getElementById('brewBtn').style.display = 'block';
+  setBrewControls(true);
+}
+
+function simState(s) {
+  state = s;
+  const configs = {
+    ready:       ['ready',    'READY',       'Select your drink',           true],
+    low:         ['low',      'LOW',         'Consumables low — restock',   true],
+    empty:       ['empty',    'EMPTY',       'No fluid — refill required',  false],
+    maintenance: ['maintain', 'MAINTAIN',    'Maintenance required',        false],
+    fault:       ['fault',    'FAULT',       'Fault detected — see cloud ops', false],
+    shutdown:    ['shutdown', 'SAFE-SHD',    'SAFE-SHUTDOWN — call engineer', false],
+  };
+  const [ringCls, ringTxt, statusTxt, canBrew] = configs[s] || configs.ready;
+  updateStatus(ringCls, ringTxt, statusTxt);
+  setBrewControls(canBrew);
+  document.getElementById('brewBtn').style.display = 'block';
+  document.getElementById('confirmBtn').style.display = 'none';
+  document.getElementById('cancelBtn').style.display = 'none';
+  awaitingConfirm = false;
+
+  const logMap = {
+    ready:       ['Machine returned to STANDBY', 'ok'],
+    low:         ['TELEMETRY EVENT → LOW_CONSUMABLE — restock required', 'warn'],
+    empty:       ['FW-SF-02: fluid below minimum — FLUID-EMPTY state', 'err'],
+    maintenance: ['TELEMETRY EVENT → MAINTENANCE_REQUIRED', 'warn'],
+    fault:       ['TELEMETRY EVENT → FAULT — diagnostic required', 'err'],
+    shutdown:    ['TELEMETRY EVENT → SAFE_SHUTDOWN — field engineer required', 'err'],
+  };
+  if(logMap[s]) log(...logMap[s]);
+}
+
+// Initial log
+log('Machine initialised — firmware v2.2.0', 'ok');
+log('Cloud registration confirmed — serial CFC-UK-0001', 'telem');
+log('State: STANDBY', 'ok');
+</script>
+</body>
+</html>

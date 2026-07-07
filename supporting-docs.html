@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>CoffCo — Supporting Documents</title>
+<link rel="stylesheet" href="assets/coffco.css">
+<style>
+.prose-body{max-width:900px;margin:0 auto;padding:40px 44px 80px}
+.prose-body>p{font-size:14px;line-height:1.8;color:#3A3F47;margin:0 0 16px}
+.sec-head{display:flex;align-items:center;gap:14px;margin:48px 0 18px;padding-bottom:10px;border-bottom:2px solid #D8DDE6}
+.sec-head:first-of-type{margin-top:0}
+.sec-num{width:36px;height:36px;background:var(--navy);color:#fff;font-size:15px;font-weight:700;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.sec-title{font-size:20px;font-weight:700;color:var(--navy);line-height:1.2}
+.sec-sub{font-size:12px;color:#7A7A7A;margin-top:2px}
+.callout{border-left:4px solid #0D5C5C;background:#E6F4F4;padding:14px 18px;border-radius:0 8px 8px 0;margin:16px 0;font-size:13px;line-height:1.7;color:#1A3A3A}
+.callout strong{color:#0D5C5C}
+table.def{width:100%;border-collapse:collapse;font-size:13px;margin:16px 0 24px}
+table.def thead th{background:var(--navy);color:#fff;text-align:left;padding:10px 14px;font-size:11px;font-weight:600;letter-spacing:.05em;text-transform:uppercase}
+table.def tbody td{padding:9px 14px;border-bottom:1px solid #E2E6ED;vertical-align:top;line-height:1.6;color:#3A3F47}
+table.def tbody tr:nth-child(even) td{background:#F7F8FA}
+table.def tbody tr:last-child td{border-bottom:none}
+table.def tbody tr:hover td{background:#F0F4FA}
+table.def td:first-child{font-weight:600;color:var(--navy);white-space:nowrap;width:180px}
+.pill{display:inline-flex;font-size:10px;padding:2px 8px;border-radius:20px;font-weight:500;white-space:nowrap}
+.pill-a{background:#E1F5EE;color:#0F6E56;border:.5px solid #5DCAA5}
+.pill-d{background:#E6F1FB;color:#185FA5;border:.5px solid #85B7EB}
+.env-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:10px;margin:16px 0 24px}
+.env-card{background:#fff;border:1px solid #E2E6ED;border-radius:8px;overflow:hidden}
+.env-cat{background:#F7F8FA;border-bottom:1px solid #E2E6ED;padding:8px 12px;font-size:10px;font-weight:600;color:#7A7A7A;text-transform:uppercase;letter-spacing:.06em}
+.env-rows{display:flex;flex-direction:column}
+.env-row{padding:9px 12px;border-bottom:1px solid #F0F0F0;font-size:12px;line-height:1.5}
+.env-row:last-child{border:none}
+.env-factor{font-weight:600;color:var(--navy);margin-bottom:3px}
+.env-desc{color:#3A3F47}
+</style>
+</head>
+<body>
+<nav class="sidebar"></nav>
+<main class="main">
+<div class="page-cover">
+  <div class="cover-eyebrow">CoffCo Systems Engineering Portfolio</div>
+  <h1 class="cover-title">Supporting Documents</h1>
+  <p class="cover-sub">Engineering design specifications, RCM studies, and reference documents beyond the 11 DoD deliverables</p>
+</div>
+<div class="prose-body">
+<div class="sec-head">
+  <div class="sec-num">📄</div>
+  <div><div class="sec-title">Engineering Specifications</div>
+  <div class="sec-sub">Design decisions documented as standalone engineering records</div></div>
+</div>
+<div style="display:flex;flex-direction:column;gap:10px;margin-bottom:32px">
+  <div style="background:#fff;border:1px solid #E2E6ED;border-radius:8px;padding:16px 20px;display:flex;align-items:center;gap:16px;flex-wrap:wrap">
+    <div style="font-size:28px;flex-shrink:0">📡</div>
+    <div style="flex:1;min-width:200px">
+      <div style="font-size:15px;font-weight:700;color:var(--navy);margin-bottom:4px">Scheduled OTA Firmware Update — Engineering Design Specification V1.0</div>
+      <div style="font-size:12px;color:#5A5A5A;line-height:1.6;margin-bottom:6px">Night-window deployment strategy · A/B partition management · SRS 1.11 derivation · safety rationale · TC-OTA-01 test criteria · 5 design objectives · FW-SF-09 firmware safety function</div>
+      <div style="font-size:11px;color:#0F6E56;font-weight:500">COFFCO-OTA-001 · June 2026 · Prepared by: CoffCo Systems Team / School of Systems Engineering Secondment</div>
+    </div>
+    <a href="downloads/ota-firmware.docx" style="background:var(--teal);color:#fff;padding:9px 18px;border-radius:8px;font-size:13px;font-weight:600;text-decoration:none;white-space:nowrap;flex-shrink:0">&#11015; Download (.docx)</a>
+  </div>
+  <div style="background:#fff;border:1px solid #E2E6ED;border-radius:8px;padding:16px 20px;display:flex;align-items:center;gap:16px;flex-wrap:wrap">
+    <div style="font-size:28px;flex-shrink:0">🔧</div>
+    <div style="flex:1;min-width:200px">
+      <div style="font-size:15px;font-weight:700;color:var(--navy);margin-bottom:4px">RCM2 Failure Modes and Effects Analysis — COFFCO-RCM-001 V1.0</div>
+      <div style="font-size:12px;color:#5A5A5A;line-height:1.6;margin-bottom:6px">Reliability-Centred Maintenance study · RCM2 methodology (Moubray 1997) · SAE JA1011/JA1012 compliant · all 6 subsystems · failure consequence categorisation · maintenance task selection · justified run-to-failure decisions</div>
+      <div style="font-size:11px;color:#0F6E56;font-weight:500">COFFCO-RCM-001 · June 2026 · Approved by: Steve — Systems Design Authority</div>
+    </div>
+    <a href="downloads/rcm2-fmeca.docx" style="background:var(--teal);color:#fff;padding:9px 18px;border-radius:8px;font-size:13px;font-weight:600;text-decoration:none;white-space:nowrap;flex-shrink:0">&#11015; Download (.docx)</a>
+  </div>
+</div>
+
+<div class="sec-head">
+  <div class="sec-num">📚</div>
+  <div><div class="sec-title">Reference Pages</div>
+  <div class="sec-sub">Extracted and structured from the SRS baseline for easy reference</div></div>
+</div>
+<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:10px">
+  <a href="definitions.html" style="background:#fff;border:1px solid #E2E6ED;border-radius:8px;padding:14px 16px;text-decoration:none;display:block;transition:border-color .15s">
+    <div style="font-size:20px;margin-bottom:8px">📖</div>
+    <div style="font-size:14px;font-weight:600;color:var(--navy);margin-bottom:4px">Definitions and Acronyms</div>
+    <div style="font-size:12px;color:#5A5A5A;line-height:1.5">38 terms and acronyms used across all portfolio documents. Source: SRS Introduction sheet.</div>
+  </a>
+  <a href="assumptions.html" style="background:#fff;border:1px solid #E2E6ED;border-radius:8px;padding:14px 16px;text-decoration:none;display:block;transition:border-color .15s">
+    <div style="font-size:20px;margin-bottom:8px">⚠️</div>
+    <div style="font-size:14px;font-weight:600;color:var(--navy);margin-bottom:4px">Assumptions and Dependencies</div>
+    <div style="font-size:12px;color:#5A5A5A;line-height:1.5">9 assumptions and 5 dependencies underpinning the requirements baseline. Source: SRS sheet.</div>
+  </a>
+  <a href="operating-environment.html" style="background:#fff;border:1px solid #E2E6ED;border-radius:8px;padding:14px 16px;text-decoration:none;display:block;transition:border-color .15s">
+    <div style="font-size:20px;margin-bottom:8px">🏨</div>
+    <div style="font-size:14px;font-weight:600;color:var(--navy);margin-bottom:4px">Operating Environment</div>
+    <div style="font-size:12px;color:#5A5A5A;line-height:1.5">22 physical, usage, regulatory, and commercial factors the system must operate within. Source: SRS sheet.</div>
+  </a>
+</div>
+</div>
+</main>
+<script src="assets/nav.js"></script>
+</body>
+</html>

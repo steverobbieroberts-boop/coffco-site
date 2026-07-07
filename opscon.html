@@ -1,0 +1,545 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CoffCo — Operational Concept (OPSCON)</title>
+<style>
+  :root {
+    --navy:      #1C2B4A;
+    --teal:      #0D5C5C;
+    --teal-lt:   #E6F4F4;
+    --teal-md:   #BDE0E0;
+    --blue:      #1A4B8C;
+    --blue-lt:   #E8F0FA;
+    --purple:    #3D2D7A;
+    --purple-lt: #EDE9F7;
+    --amber:     #7A4E0D;
+    --amber-lt:  #FDF3E0;
+    --coral:     #7A2A1A;
+    --coral-lt:  #FDECEA;
+    --green:     #1A5C2A;
+    --green-lt:  #E8F5EC;
+    --mid:       #4A4A4A;
+    --soft:      #7A7A7A;
+    --rule:      #D8DDE6;
+    --bg:        #F7F8FA;
+    --white:     #FFFFFF;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'Calibri', 'Segoe UI', Arial, sans-serif;
+    background: var(--bg);
+    color: var(--mid);
+    font-size: 14px;
+    line-height: 1.6;
+  }
+
+  /* COVER */
+  .cover {
+    background: var(--navy);
+    color: #fff;
+    padding: 38px 48px 34px;
+    border-bottom: 4px solid var(--teal);
+  }
+  .cover-eyebrow { font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--teal-md); margin-bottom: 8px; }
+  .cover-title   { font-size: 30px; font-weight: 700; line-height: 1.15; margin-bottom: 6px; }
+  .cover-sub     { font-size: 15px; color: #b0bfcf; margin-bottom: 22px; }
+  .cover-meta    { display: flex; gap: 32px; flex-wrap: wrap; }
+  .cover-meta span { font-size: 12px; color: #8aa0b8; }
+  .cover-meta strong { color: #c8d8e8; }
+
+  /* BODY */
+  .body-wrap { margin-left: 0; max-width: 1020px; margin: 0 auto; padding: 40px 40px 60px; }
+
+  /* SECTION */
+  .section-header {
+    display: flex; align-items: center; gap: 14px;
+    margin: 44px 0 18px;
+    padding-bottom: 10px;
+    border-bottom: 2px solid var(--rule);
+  }
+  .section-num {
+    width: 34px; height: 34px; background: var(--navy); color: #fff;
+    font-size: 14px; font-weight: 700; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+  }
+  .section-title { font-size: 17px; font-weight: 700; color: var(--navy); }
+  .section-sub   { font-size: 13px; color: var(--soft); margin-top: 2px; }
+
+  /* PROSE BLOCKS */
+  p { margin-bottom: 12px; font-size: 14px; line-height: 1.65; }
+  p:last-child { margin-bottom: 0; }
+
+  /* CALLOUT BOX */
+  .callout {
+    background: var(--teal-lt); border-left: 4px solid var(--teal);
+    border-radius: 0 8px 8px 0; padding: 14px 18px; margin: 18px 0;
+  }
+  .callout-label { font-size: 10px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--teal); margin-bottom: 5px; }
+  .callout p { font-size: 14px; color: var(--navy); font-style: italic; line-height: 1.6; margin: 0; }
+
+  /* ENVIRONMENT TABLE */
+  .env-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-top: 6px; }
+  .env-card {
+    background: var(--white); border: 1px solid var(--rule); border-radius: 8px; padding: 14px 16px;
+    border-top: 3px solid;
+  }
+  .env-card.physical  { border-top-color: var(--blue); }
+  .env-card.usage     { border-top-color: var(--teal); }
+  .env-card.regulatory{ border-top-color: var(--amber); }
+  .env-card.commercial{ border-top-color: var(--purple); }
+  .env-card-title { font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 8px; }
+  .env-card.physical   .env-card-title { color: var(--blue); }
+  .env-card.usage      .env-card-title { color: var(--teal); }
+  .env-card.regulatory .env-card-title { color: var(--amber); }
+  .env-card.commercial .env-card-title { color: var(--purple); }
+  .env-card ul { list-style: none; padding: 0; }
+  .env-card ul li { font-size: 13px; color: var(--mid); padding: 4px 0; border-bottom: 1px solid var(--rule); line-height: 1.45; }
+  .env-card ul li:last-child { border-bottom: none; }
+
+  /* DESIGN FOR X */
+  .dfx-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-top: 6px; }
+  .dfx-card {
+    background: var(--white); border: 1px solid var(--rule); border-radius: 8px;
+    padding: 14px 16px;
+  }
+  .dfx-badge {
+    display: inline-block; font-size: 10px; font-weight: 700; letter-spacing: 0.1em;
+    text-transform: uppercase; padding: 3px 9px; border-radius: 10px; margin-bottom: 8px;
+  }
+  .dfx-badge.safety       { background: #FDECEA; color: var(--coral); }
+  .dfx-badge.reliability  { background: var(--blue-lt); color: var(--blue); }
+  .dfx-badge.manufacture  { background: var(--teal-lt); color: var(--teal); }
+  .dfx-badge.environment  { background: var(--green-lt); color: var(--green); }
+  .dfx-badge.maintenance  { background: var(--amber-lt); color: var(--amber); }
+  .dfx-badge.usability    { background: var(--purple-lt); color: var(--purple); }
+  .dfx-title { font-size: 13px; font-weight: 700; color: var(--navy); margin-bottom: 5px; }
+  .dfx-desc  { font-size: 12px; color: var(--mid); line-height: 1.5; }
+
+  /* BEHAVIOURS / FUNCTIONS TABLE */
+  .table-wrap { overflow-x: auto; margin-top: 8px; }
+  table.styled { width: 100%; border-collapse: collapse; font-size: 13px; }
+  table.styled th {
+    background: var(--navy); color: #fff; padding: 10px 14px;
+    text-align: left; font-size: 11px; letter-spacing: 0.06em; font-weight: 600;
+  }
+  table.styled td { padding: 9px 14px; border-bottom: 1px solid var(--rule); vertical-align: top; line-height: 1.5; }
+  table.styled tr:nth-child(even) td { background: var(--blue-lt); }
+  table.styled tr:nth-child(odd)  td { background: var(--white); }
+  .id-cell { font-weight: 700; color: var(--navy); white-space: nowrap; }
+  .why-cell { font-size: 12px; color: var(--soft); font-style: italic; }
+
+  /* SCENARIO STEPS */
+  .scenario-steps { display: flex; flex-direction: column; gap: 0; margin-top: 8px; }
+  .step {
+    display: flex; gap: 16px; align-items: flex-start;
+    padding: 12px 0;
+    border-bottom: 1px solid var(--rule);
+  }
+  .step:last-child { border-bottom: none; }
+  .step-num {
+    width: 28px; height: 28px; background: var(--teal); color: #fff;
+    border-radius: 50%; font-size: 12px; font-weight: 700;
+    display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+    margin-top: 1px;
+  }
+  .step-content { flex: 1; }
+  .step-title { font-size: 13px; font-weight: 700; color: var(--navy); margin-bottom: 3px; }
+  .step-desc  { font-size: 13px; color: var(--mid); line-height: 1.5; }
+
+  /* SUMMARY BOX */
+  .summary-box {
+    background: var(--navy); color: #fff; border-radius: 10px;
+    padding: 22px 26px; margin-top: 16px;
+  }
+  .summary-box .label { font-size: 10px; text-transform: uppercase; letter-spacing: 0.12em; color: var(--teal-md); margin-bottom: 8px; font-weight: 700; }
+  .summary-box p { font-size: 14px; color: #dce8f4; line-height: 1.7; margin: 0; }
+
+  /* FOOTER */
+  .footer {
+    border-top: 1px solid var(--rule); padding: 16px 40px;
+    display: flex; justify-content: space-between; align-items: center;
+    font-size: 11px; color: var(--soft); max-width: 1020px; margin: 0 auto;
+  }
+
+  @media (max-width: 700px) {
+    .env-grid { grid-template-columns: 1fr; }
+    .dfx-row  { grid-template-columns: 1fr; }
+    .body-wrap { margin-left: 0; padding: 24px 20px 48px; }
+    .cover    { padding: 28px 24px; }
+  }
+</style>
+<link rel="stylesheet" href="assets/coffco.css">
+</head>
+<body>
+<nav class="sidebar"></nav>
+<main class="main">
+
+<div class="cover">
+  <div class="cover-eyebrow">CoffCo · Investor MVP Deck · Deliverable 2 of 10</div>
+  <div class="cover-title">Operational Concept (OPSCON)</div>
+  <div class="cover-sub">CoffCo next-generation in-room hotel coffee machine — Vacation Stables partnership</div>
+  <div class="cover-meta">
+    <span><strong>Prepared by:</strong> School of Systems Engineering (secondment)</span>
+    <span><strong>Reference:</strong> COFFCO-OC-001</span>
+    <span><strong>Customer source:</strong> CONOPS &amp; User Requirements Document v1.0</span>
+    <span><strong>Classification:</strong> Investor Confidential</span>
+  </div>
+</div>
+
+<div class="body-wrap">
+
+  <!-- ══ PURPOSE ══ -->
+  <div class="section-header">
+    <div class="section-num">1</div>
+    <div>
+      <div class="section-title">Purpose and background</div>
+      <div class="section-sub">Why this system is needed and who it is for</div>
+    </div>
+  </div>
+
+  <p>Vacation Stables is an established international hotel brand serving both premium and mid-range accommodation markets. Its primary target customer is the business executive requiring short overnight stays. A clearly identified gap exists between the quality of coffee experience available to guests within their rooms and the expectations of that target market — guests who regularly use specialty coffee establishments and expect equivalent quality wherever they stay.</p>
+
+  <p>CoffCo has been engaged to address this gap through the design and delivery of a next-generation in-room coffee machine. This OPSCON defines the operational concept for that system: the environment it will operate within, the behaviours it is desired to produce, the key functions it must perform, and the rationale underpinning each. It does not define how those functions will be implemented.</p>
+
+  <div class="callout">
+    <div class="callout-label">Operational intent statement</div>
+    <p>"When a Vacation Stables guest wakes in their hotel room and desires coffee, the system shall enable that guest to produce a high-quality, correctly sized, correctly temperatured coffee with the minimum possible effort — without reading an instruction manual, waiting an unreasonable time, or interacting with hotel staff."</p>
+  </div>
+
+
+  <!-- ══ OPERATING ENVIRONMENT ══ -->
+  <div class="section-header">
+    <div class="section-num">2</div>
+    <div>
+      <div class="section-title">Operating environment</div>
+      <div class="section-sub">The conditions, spaces, and context within which the system will operate</div>
+    </div>
+  </div>
+
+  <p>The system will be deployed inside hotel guest rooms across the Vacation Stables estate. These rooms are used for short-stay business accommodation, primarily by single occupants. The operating environment presents specific conditions that the system must be designed to tolerate and function within.</p>
+
+  <div class="env-grid">
+    <div class="env-card physical">
+      <div class="env-card-title">Physical environment</div>
+      <ul>
+        <li>Deployed on an in-room desk or bedside surface — standard hotel furniture</li>
+        <li>Maximum footprint of 300mm × 300mm × 300mm</li>
+        <li>Operated within existing hotel room power supply — no new utilities permissible</li>
+        <li>Must operate on both EU (230V/50Hz) and US (110V/60Hz) supplies without modification</li>
+        <li>Subject to variable water hardness depending on geographic location of hotel</li>
+        <li>Shared EMC environment with other in-room electronic devices (TV, phone, laptop)</li>
+      </ul>
+    </div>
+    <div class="env-card usage">
+      <div class="env-card-title">Usage environment</div>
+      <ul>
+        <li>Primary use: early morning — guest has just woken, may be tired or time-pressured</li>
+        <li>Secondary use: afternoon — occasional, lower urgency</li>
+        <li>Operated by members of the public with no specialist training and no prior exposure to this specific machine</li>
+        <li>Used daily during occupied stays; idle during unoccupied periods</li>
+        <li>Consumable restocking and cleaning performed by hotel housekeeping staff, not guests</li>
+        <li>Must not require guest to read an operating manual</li>
+      </ul>
+    </div>
+    <div class="env-card regulatory">
+      <div class="env-card-title">Regulatory and standards environment</div>
+      <ul>
+        <li>IEC 60335 — household and similar electrical appliance safety</li>
+        <li>HACCP — food safety and hygiene in commercial contexts</li>
+        <li>EU Energy Efficiency Regulations — A-rated device required</li>
+        <li>GDPR and equivalent data protection legislation (if guest data is processed)</li>
+        <li>Electrical equipment CE marking (EU) and UL/ETL listing (US)</li>
+        <li>RoHS / WEEE compliance for materials and end-of-life</li>
+      </ul>
+    </div>
+    <div class="env-card commercial">
+      <div class="env-card-title">Commercial and brand environment</div>
+      <ul>
+        <li>Must conform to Vacation Stables interior design standards — predominately black or transparent</li>
+        <li>Compatible with existing Vacation Stables coffee mug dimensions (100mm H × 100mm D)</li>
+        <li>Vacation Stables has a published 50% carbon footprint reduction target by 2030</li>
+        <li>Minimum 50% recycled materials content required by Vacation Stables</li>
+        <li>All waste products generated during operation must have a feasible recycling or reuse route</li>
+        <li>Machine is a marketed guest amenity — aesthetic and quality presentation matters</li>
+      </ul>
+    </div>
+  </div>
+
+
+  <!-- ══ DESIGN FOR X ══ -->
+  <div class="section-header">
+    <div class="section-num">3</div>
+    <div>
+      <div class="section-title">Design for X principles</div>
+      <div class="section-sub">Environmental constraints that must be designed into the system from the outset</div>
+    </div>
+  </div>
+
+  <p>The operating environment analysis above identifies several conditions that must be actively designed into the system — not addressed retrospectively. The following Design for X (DfX) principles are mandated by the customer's CONOPS and user requirements and shall be treated as system-level design constraints.</p>
+
+  <div class="dfx-row">
+    <div class="dfx-card">
+      <div class="dfx-badge safety">Design for Safety</div>
+      <div class="dfx-title">Thermal and electrical safety</div>
+      <div class="dfx-desc">The system processes water at temperatures up to 90°C and operates at mains voltage. It shall be designed to prevent burns, scalding, and electrical hazard to an untrained member of the public operating it in a domestic-equivalent setting. Compliance with IEC 60335 is a minimum baseline.</div>
+    </div>
+    <div class="dfx-card">
+      <div class="dfx-badge reliability">Design for Reliability</div>
+      <div class="dfx-title">365-day maintenance-free operation</div>
+      <div class="dfx-desc">The system must operate for a minimum of 365 days before any maintenance intervention is required. Hotel environments provide limited technical support capacity. Unreliable machines generate guest complaints, housekeeping burden, and reputational risk for Vacation Stables.</div>
+    </div>
+    <div class="dfx-card">
+      <div class="dfx-badge manufacture">Design for Manufacture</div>
+      <div class="dfx-title">Minimum 50% recycled material content</div>
+      <div class="dfx-desc">Vacation Stables requires that at least 50% of materials used in the machine are recycled content. Material selection and supply chain sourcing must be constrained accordingly from the outset — not retrofitted at the design-for-manufacture stage.</div>
+    </div>
+    <div class="dfx-card">
+      <div class="dfx-badge environment">Design for Environment</div>
+      <div class="dfx-title">Recyclable waste and energy efficiency</div>
+      <div class="dfx-desc">The system shall achieve EU energy efficiency rating A. All waste products generated during operation shall have a feasible recycling or reuse route. This supports Vacation Stables' 2030 carbon reduction commitment and its marketing position.</div>
+    </div>
+    <div class="dfx-card">
+      <div class="dfx-badge maintenance">Design for Maintainability</div>
+      <div class="dfx-title">Minimal housekeeping burden</div>
+      <div class="dfx-desc">Restocking and routine cleaning shall be achievable by general hotel housekeeping staff with no specialist training. The system shall have clearly indicated consumable states. Consumable replenishment shall require no tools and minimal time. Faults shall be clearly communicated to enable appropriate response.</div>
+    </div>
+    <div class="dfx-card">
+      <div class="dfx-badge usability">Design for Usability</div>
+      <div class="dfx-title">Zero-training guest operation</div>
+      <div class="dfx-desc">The system shall be operable by a first-time user with no instruction material. This is a hotel room amenity, not a specialist appliance. Guests who are tired, time-pressured, and unfamiliar with the brand must be able to produce coffee intuitively. Complexity shall be hidden, not presented.</div>
+    </div>
+  </div>
+
+
+  <!-- ══ DESIRED EMERGENT BEHAVIOURS ══ -->
+  <div class="section-header">
+    <div class="section-num">4</div>
+    <div>
+      <div class="section-title">Desired emergent behaviours</div>
+      <div class="section-sub">Outcomes that arise from all system components working together — not from any single component alone</div>
+    </div>
+  </div>
+
+  <p>Emergent behaviours are the higher-order outcomes that the system produces when all its components operate correctly together. They are distinct from individual functions — they represent what the guest and Vacation Stables actually experience. These behaviours are the ultimate measure of system success.</p>
+
+  <div class="table-wrap">
+    <table class="styled">
+      <thead>
+        <tr>
+          <th style="width:60px;">ID</th>
+          <th style="width:220px;">Emergent behaviour</th>
+          <th>Description — what the customer experiences</th>
+          <th style="width:140px;">Emerges from</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="id-cell">EB-01</td>
+          <td><strong>Effortless quality coffee</strong></td>
+          <td>A guest with no prior knowledge of the machine is able to produce a correctly brewed, correctly temperatured americano or hot milk drink within minutes of first encountering the system — without consulting any documentation.</td>
+          <td class="why-cell">Brewing function + intuitive user interface + automatic sizing</td>
+        </tr>
+        <tr>
+          <td class="id-cell">EB-02</td>
+          <td><strong>Consistent experience across stays</strong></td>
+          <td>A returning Vacation Stables guest finds the same quality and behaviour from the machine whether they are in London, New York, or Singapore — regardless of local water hardness or power supply variation.</td>
+          <td class="why-cell">Water hardness compensation + multi-voltage operation + calibration</td>
+        </tr>
+        <tr>
+          <td class="id-cell">EB-03</td>
+          <td><strong>No guest awareness of the machine's state</strong></td>
+          <td>The system is always ready when a guest wants coffee. Consumables are replenished before they run out. Faults are resolved before they are encountered. The guest never sees a "maintenance required" or empty state.</td>
+          <td class="why-cell">Sufficient consumable capacity + fault indication to housekeeping + reliability design</td>
+        </tr>
+        <tr>
+          <td class="id-cell">EB-04</td>
+          <td><strong>Room environment unaffected</strong></td>
+          <td>The machine operates without interfering with the guest's Wi-Fi, phone, television, or other devices. It does not cause tripped circuit breakers, abnormal heat output, or electromagnetic noise that degrades the room experience.</td>
+          <td class="why-cell">EMC compliance + power efficiency + thermal management</td>
+        </tr>
+        <tr>
+          <td class="id-cell">EB-05</td>
+          <td><strong>Sustainability delivered without guest effort</strong></td>
+          <td>A guest using the machine is automatically contributing to Vacation Stables' sustainability commitments — through the machine's energy rating, recycled material content, and recyclable consumable waste route — without any action or awareness required from them.</td>
+          <td class="why-cell">A-rated efficiency + recycled materials + recyclable waste route</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+
+  <!-- ══ KEY FUNCTIONS ══ -->
+  <div class="section-header">
+    <div class="section-num">5</div>
+    <div>
+      <div class="section-title">Key system functions</div>
+      <div class="section-sub">What the system shall do — not how it shall do it</div>
+    </div>
+  </div>
+
+  <p>The following functions represent the minimum set of capabilities the system must provide to deliver the desired emergent behaviours. Each function is stated as what the system shall accomplish, without reference to implementation method. The rationale for each function is drawn directly from the Vacation Stables CONOPS and user requirements.</p>
+
+  <div class="table-wrap">
+    <table class="styled">
+      <thead>
+        <tr>
+          <th style="width:60px;">ID</th>
+          <th style="width:200px;">Function</th>
+          <th>The system shall…</th>
+          <th style="width:220px;">Why — rationale</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="id-cell">F-01</td>
+          <td><strong>Brew americano coffee</strong></td>
+          <td>Enable a guest to produce an americano coffee at a minimum temperature of 60°C, at a water-to-coffee extraction pressure between 0.9 and 1.3 bar.</td>
+          <td class="why-cell">Core product requirement. Americano is the identified beverage. Barista extraction standard is 1.1 bar. Minimum 60°C ensures food safety and drinkability.</td>
+        </tr>
+        <tr>
+          <td class="id-cell">F-02</td>
+          <td><strong>Produce hot frothed milk</strong></td>
+          <td>Enable a guest to produce hot frothed milk at a temperature between 60°C and 90°C.</td>
+          <td class="why-cell">Mandatory customer requirement. Enables white coffee drinks. Temperature band is set to avoid scalding (max) and ensure drinkability (min).</td>
+        </tr>
+        <tr>
+          <td class="id-cell">F-03</td>
+          <td><strong>Allow size selection</strong></td>
+          <td>Allow the guest to select a dispensed americano volume between a minimum of 200ml and a maximum of 400ml.</td>
+          <td class="why-cell">Guest preference varies. A fixed volume does not meet the 'home away from home' intent. Range reflects standard coffee drink sizes.</td>
+        </tr>
+        <tr>
+          <td class="id-cell">F-04</td>
+          <td><strong>Maintain sufficient consumable capacity</strong></td>
+          <td>Hold sufficient coffee and water to enable at least 10 consecutive americano dispensations without requiring refill or replenishment.</td>
+          <td class="why-cell">Market analysis identified a minimum of 10 brews per refill cycle. Ensures the machine does not require mid-stay restocking for typical business travel stays.</td>
+        </tr>
+        <tr>
+          <td class="id-cell">F-05</td>
+          <td><strong>Dispense within time target</strong></td>
+          <td>Complete a dispensation cycle — from guest-initiated start to coffee ready — within 3 minutes.</td>
+          <td class="why-cell">User studies and barista benchmark data identify 3 minutes as the maximum acceptable wait. Longer times are associated with guest dissatisfaction and reduce perceived convenience.</td>
+        </tr>
+        <tr>
+          <td class="id-cell">F-06</td>
+          <td><strong>Accommodate variable water conditions</strong></td>
+          <td>Operate correctly across the range of hard and soft water supplies encountered across the Vacation Stables estate without requiring manual intervention or configuration change.</td>
+          <td class="why-cell">Hotel water supply hardness varies significantly by region. Inconsistent performance or machine damage due to scale build-up is a reliability and quality risk.</td>
+        </tr>
+        <tr>
+          <td class="id-cell">F-07</td>
+          <td><strong>Operate on EU and US power supplies</strong></td>
+          <td>Function correctly on both EU (230V/50Hz) and US (110V/60Hz) standard mains power supplies without requiring modification, adapters, or in-service updates.</td>
+          <td class="why-cell">Vacation Stables operates in both EU and US markets. Separate product variants would increase cost and supply chain complexity. International deployment requires native dual-voltage operation.</td>
+        </tr>
+        <tr>
+          <td class="id-cell">F-08</td>
+          <td><strong>Indicate consumable and fault status</strong></td>
+          <td>Clearly communicate to the user and to housekeeping staff when consumables are low, when the machine requires maintenance, or when a fault condition exists.</td>
+          <td class="why-cell">Ensures guests are never presented with an inoperable machine without prior warning. Enables housekeeping to replenish proactively. Supports the 365-day maintenance-free target.</td>
+        </tr>
+        <tr>
+          <td class="id-cell">F-09</td>
+          <td><strong>Resist opportunistic theft</strong></td>
+          <td>Incorporate a mechanism that prevents opportunistic grab-and-go removal from the hotel room.</td>
+          <td class="why-cell">Determined theft cannot be fully prevented, but casual removal should be impeded. Machine represents a capital investment per room. Loss rate must be managed commercially.</td>
+        </tr>
+        <tr>
+          <td class="id-cell">F-10</td>
+          <td><strong>Operate without interfering with room systems</strong></td>
+          <td>Produce electromagnetic emissions that do not degrade the performance of other electronic devices within the hotel room environment.</td>
+          <td class="why-cell">Hotel rooms are high-density EMC environments. Guest dissatisfaction caused by Wi-Fi, TV, or phone degradation attributable to the machine is a reputational risk for both CoffCo and Vacation Stables.</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+
+  <!-- ══ TYPICAL OPERATING SCENARIO ══ -->
+  <div class="section-header">
+    <div class="section-num">6</div>
+    <div>
+      <div class="section-title">Typical operating scenario</div>
+      <div class="section-sub">Walk-through of the primary use case — business guest, morning coffee</div>
+    </div>
+  </div>
+
+  <p>The following scenario describes the primary operational use case from which most functional and non-functional requirements are derived. It represents the system performing as intended, and is used to validate that requirements are necessary and sufficient.</p>
+
+  <div class="scenario-steps">
+    <div class="step">
+      <div class="step-num">1</div>
+      <div class="step-content">
+        <div class="step-title">Guest wakes in their hotel room</div>
+        <div class="step-desc">A business traveller wakes at 06:30. They have not used this machine before and have not read any documentation. The machine is on the in-room desk within their normal field of view.</div>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">2</div>
+      <div class="step-content">
+        <div class="step-title">Guest initiates coffee production</div>
+        <div class="step-desc">Without instruction, the guest is able to identify how to start the machine and select a drink. They choose an americano at a size of their preference. The interaction requires no specialist knowledge.</div>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">3</div>
+      <div class="step-content">
+        <div class="step-title">Machine completes the brew cycle</div>
+        <div class="step-desc">The machine dispenses a correctly extracted americano at the selected volume, within 3 minutes of the guest initiating the process. The coffee is delivered at a minimum temperature of 60°C directly into the guest's existing Vacation Stables mug.</div>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">4</div>
+      <div class="step-content">
+        <div class="step-title">Guest consumes coffee and leaves</div>
+        <div class="step-desc">The guest starts their day. The machine returns to a ready state. The interaction has required no specialist knowledge, no manual consultation, and no engagement with hotel staff.</div>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">5</div>
+      <div class="step-content">
+        <div class="step-title">Housekeeping services the machine</div>
+        <div class="step-desc">During the room service cycle, housekeeping checks the machine status indication. If consumables or water are low, they replenish. No tools are required. The machine is ready for the next guest use.</div>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- ══ OPSCON SUMMARY ══ -->
+  <div class="section-header" style="margin-top:44px;">
+    <div class="section-num">7</div>
+    <div>
+      <div class="section-title">OPSCON summary statement</div>
+      <div class="section-sub">The complete operational concept in a single structured statement</div>
+    </div>
+  </div>
+
+  <div class="summary-box">
+    <div class="label">Operational concept — CoffCo in-room hotel coffee machine</div>
+    <p>
+      The CoffCo in-room coffee machine shall be deployed within Vacation Stables hotel guest rooms across EU and US markets, operating on existing room power supplies and desk surfaces without modification to the room environment. It shall be designed for zero-training operation by any hotel guest — primarily business travellers waking in the morning — enabling them to produce an americano or hot frothed milk drink within 3 minutes, at the correct temperature and extraction quality, at their chosen volume, without consulting any documentation or seeking staff assistance.
+    </p>
+    <br>
+    <p>
+      The machine shall maintain sufficient consumable capacity for a minimum of 10 brews between housekeeping restocking cycles, indicate its status clearly, and operate for a minimum of 365 days without maintenance intervention. It shall conform to EU and US electrical safety standards, achieve EU energy efficiency rating A, incorporate a minimum of 50% recycled materials, produce only recyclable waste, and conform to Vacation Stables interior design and mug compatibility standards. Its electromagnetic output shall not degrade other in-room devices, and it shall incorporate a mechanism to resist opportunistic theft.
+    </p>
+    <br>
+    <p>
+      These operational requirements, together with the emergent behaviours identified above, form the basis from which the System Requirements Specification is derived.
+    </p>
+  </div>
+
+</div><!-- /body-wrap -->
+
+<div class="footer">
+  <span>CoffCo — Operational Concept · COFFCO-OC-001</span>
+  <span>Derived from: Vacation Stables CONOPS &amp; User Requirements Document v1.0</span>
+  <span>Investor Confidential</span>
+</div>
+
+</main>
+<script src="assets/nav.js"></script>
+</body>
+</html>

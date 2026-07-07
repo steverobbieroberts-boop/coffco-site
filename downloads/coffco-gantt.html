@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>CoffCo Hotel Coffee Machine · Build, Integration & Verification Schedule · 2027</title>
+
+<style>
+  body {
+    font-family: Arial, sans-serif;
+    margin: 40px;
+    line-height: 1.45;
+    color: #222;
+  }
+
+  h1 {
+    margin-bottom: 0.2em;
+    font-size: 1.8em;
+  }
+
+  h2 {
+    margin-top: 0;
+    font-weight: normal;
+    color: #555;
+  }
+
+  /* TABLE */
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 30px;
+    font-size: 0.85em;
+  }
+
+  th, td {
+    border: 1px solid #ccc;
+    padding: 6px 8px;
+    vertical-align: top;
+  }
+
+  th {
+    background: #f2f2f2;
+    text-align: left;
+  }
+
+  /* Row tints */
+  .row-procurement { background:#f5f7ff; }
+  .row-build       { background:#f4fbf4; }
+  .row-swfw        { background:#fff7e6; }
+  .row-hwinteg     { background:#ffecec; }
+  .row-verify      { background:#ffe5e5; }
+  .row-fat         { background:#fff7d9; }
+
+  /* Gantt colours */
+  .procurement { background:#c9d6ff; }
+  .build       { background:#d4f4dd; }
+  .swfw        { background:#ffe7c4; }
+  .hwinteg     { background:#ffd4d4; }
+  .verify      { background:#ff7a7a; }
+  .fat         { background:#ffdf80; }
+
+  /* Gantt layout */
+  .gantt-container {
+    margin-top: 50px;
+  }
+
+  .months {
+    display: grid;
+    grid-template-columns: 200px repeat(12, 1fr);
+    text-align: center;
+    margin-bottom: 10px;
+    font-size: 0.8em;
+  }
+
+  .gantt-grid {
+    display: grid;
+    grid-template-columns: 200px repeat(12, 1fr);
+    row-gap: 14px;
+    align-items: center;
+    font-size: 0.8em;
+  }
+
+  .gantt-label {
+    padding-right: 10px;
+  }
+
+  .gantt-row {
+    display: contents;
+  }
+
+  .bar {
+    height: 18px;
+    border-radius: 4px;
+    opacity: 0.9;
+  }
+
+  /* Legend */
+  .legend {
+    margin-top: 40px;
+    font-size: 0.85em;
+  }
+
+  .legend-item {
+    margin-bottom: 6px;
+  }
+
+  .legend-box {
+    display: inline-block;
+    width: 18px;
+    height: 18px;
+    margin-right: 8px;
+    vertical-align: middle;
+  }
+</style>
+</head>
+<body>
+
+<h1>CoffCo Hotel Coffee Machine</h1>
+<h2>Build, Integration & Verification Schedule · 2027</h2>
+
+<table>
+<thead>
+<tr>
+  <th>Ref</th>
+  <th>Activity</th>
+  <th>Deliverable / Scope</th>
+  <th>Lead Subsystem</th>
+  <th>Effort</th>
+  <th>Category</th>
+</tr>
+</thead>
+<tbody>
+
+<tr class="row-procurement">
+  <td>P-01</td>
+  <td>Power Supply Unit — COTS procurement</td>
+  <td>Identify and place order for certified universal-input PSU module (110–240V AC). Qualify to IEC 60335. Receive, inspect, and bench-verify against EI-E-01 spec.</td>
+  <td>SS-4 (Power)</td>
+  <td>3M</td>
+  <td>Procurement</td>
+</tr>
+
+<tr class="row-procurement">
+  <td>P-02</td>
+  <td>Structural chassis — tooling and moulding</td>
+  <td>Release injection mould tooling for chassis and casing to CoffCo design. Trial shots, dimensional check, and approval before integration begins. Long lead — ordered at programme start.</td>
+  <td>SS-6 (Chassis)</td>
+  <td>4M</td>
+  <td>Procurement</td>
+</tr>
+
+<tr class="row-build">
+  <td>B-01</td>
+  <td>Control & Monitoring Assembly — build</td>
+  <td>PCBA manufacture, component placement, and reflow. Load firmware baseline. Bench smoke-test: power rails, MCU boot, basic I/O continuity.</td>
+  <td>SS-2 / SS-5</td>
+  <td>2M</td>
+  <td>Subsystem Build</td>
+</tr>
+
+<tr class="row-build">
+  <td>B-02</td>
+  <td>Thermal Assembly — build and bench-leak</td>
+  <td>Assemble heating element, pump, Peltier cooler, switching valve, and dispensing nozzle into the thermal sub-assembly. Pressure-test fluid path at 0.5 bar. Food-safety material certificates on file.</td>
+  <td>SS-2/3 (Thermal)</td>
+  <td>3M</td>
+  <td>Subsystem Build</td>
+</tr>
+
+<tr class="row-build">
+  <td>B-03</td>
+  <td>Fluid Store — reservoir, cassette, sensors</td>
+  <td>Assemble water reservoir, consumable cassette housing, drip tray, and level-sensing elements. Confirm tool-free access panel operation. Leak check at atmospheric pressure.</td>
+  <td>SS-3 (Fluid)</td>
+  <td>2M</td>
+  <td>Subsystem Build</td>
+</tr>
+
+<tr class="row-build">
+  <td>B-04</td>
+  <td>HMI / User Interface Panel — build & UX iteration</td>
+  <td>Build physical fascia, rotary volume dial, coffee and milk buttons, and LED status ring. Run two UX iteration rounds against SRS 2.1 (unaided first-time use). Longer build cycle than other subsystems — hardware and firmware developed in parallel; UX prototype must pass before panel is frozen.</td>
+  <td>SS-1 (HMI)</td>
+  <td>5M</td>
+  <td>Subsystem Build</td>
+</tr>
+
+<tr class="row-verify">
+  <td>V-01</td>
+  <td>PSU stand-alone electrical check</td>
+  <td>Dual-voltage test across UK / EU / US plug modules. Load regulation under simulated peak draw. Isolation check — no accessible live surface. EMC pre-scan. Gateway to firmware integration.</td>
+  <td>SS-4 (Power)</td>
+  <td>2W</td>
+  <td>Verification</td>
+</tr>
+
+<tr class="row-swfw">
+  <td>S-01</td>
+  <td>Firmware integration — state machine & protocol stack</td>
+  <td>Bring together MCU firmware modules: 8-state FSM, brew sequencer, I2C protocol stack for all II-D interfaces, sensor polling loops, and non-volatile fault logger. Tested against hardware stubs and simulated sensor harness — no real thermal or fluid load yet.</td>
+  <td>SS-2 / SS-5</td>
+  <td>6W</td>
+  <td>SW / FW Integration</td>
+</tr>
+
+<tr class="row-swfw">
+  <td>S-02</td>
+  <td>Wireless telemetry integration (TD-06 — OA-01)</td>
+  <td>Integrate wireless module once technology confirmed (TD-06 closure is a prerequisite). Commission MQTT-over-TLS telemetry payload: machine ID, FSM state, consumable level, fault code. Requires hotel IT infrastructure confirmation from Vacation Stables.</td>
+  <td>SS-5 (Comms)</td>
+  <td>3W</td>
+  <td>SW / FW Integration</td>
+</tr>
+
+<tr class="row-verify">
+  <td>V-02</td>
+  <td>Control Assembly bench verification</td>
+  <td>Verify all II-D interfaces at stub level: I2C brew command / ACK, FSM state transitions, dry-fire interlock (SRS 1.10), low-consumable threshold, telemetry payload receipt at cloud test endpoint. All C2.x ICD test steps must pass before hardware integration begins.</td>
+  <td>SS-2 / SS-5</td>
+  <td>2W</td>
+  <td>Verification</td>
+</tr>
+
+<tr class="row-hwinteg">
+  <td>I-01</td>
+  <td>Thermal integration — Control + PSU + Thermal stack</td>
+  <td>Bring Thermal Assembly onto Control + PSU bench stack. Close-loop brew command → temperature and pressure feedback (II-D-03, II-D-05). Validate extraction at 0.9–1.3 bar, brew cycle ≤180s, hardware thermal cutoff at 105°C, and coffee/milk flush cycle (II-F-01 cross-contamination check).</td>
+  <td>SS-2/3/4</td>
+  <td>6W</td>
+  <td>HW Integration</td>
+</tr>
+
+<tr class="row-verify">
+  <td>V-03</td>
+  <td>Thermal stack verification</td>
+  <td>T3.1–T3.7 ICD steps: temperature accuracy, pressure range, 180s cycle timing, cutoff trip test, contamination rinse, dispensing clearance ≥105mm (SRS 2.7), americano ≥60°C and milk 60–90°C at outlet.</td>
+  <td>SS-2/3/4</td>
+  <td>2W</td>
+  <td>Verification</td>
+</tr>
+
+<tr class="row-hwinteg">
+  <td>I-02</td>
+  <td>Fluid Store integration — level sensing and safety interlock</td>
+  <td>Add Fluid Store to verified thermal + control stack. Commission water coupling (II-M-01), drip return path (II-M-02), and level sensor data to Control Assembly (II-D-04). Confirm consumable sufficiency gate (SRS 1.10 / C-12) blocks brew-start correctly.</td>
+  <td>SS-3/4</td>
+  <td>4W</td>
+  <td>HW Integration</td>
+</tr>
+
+<tr class="row-verify">
+  <td>V-04</td>
+  <td>Fluid system verification</td>
+  <td>F4.1–F4.5 ICD steps: 10 consecutive brews without refill, dry-fire block active at threshold, drip tray overflow alert, housekeeping restock cycle under 5 minutes with no tools, fluid pathway leak inspection after 10 brews.</td>
+  <td>SS-3/4</td>
+  <td>2W</td>
+  <td>Verification</td>
+</tr>
+
+<tr class="row-hwinteg">
+  <td>I-03</td>
+  <td>HMI integration — UI panel onto full stack</td>
+  <td>Connect built-and-iterated HMI panel to Control Assembly. Confirm I2C brew command handshake (II-D-01), status LED drive (II-D-02), parallel coffee-and-milk brew paths, and volume dial accuracy across 200–400ml range.</td>
+  <td>SS-1/2</td>
+  <td>4W</td>
+  <td>HW Integration</td>
+</tr>
+
+<tr class="row-verify">
+  <td>V-05</td>
+  <td>HMI and unaided user trial</td>
+  <td>U5.1–U5.5 ICD steps: button / dial functional coverage, all four LED states confirmed, parallel brew path simultaneous activation, volume within ±5ml, unaided first-use trial by test subject with no prior briefing — target ≥4/5 usability score (SRS 2.1).</td>
+  <td>SS-1/2</td>
+  <td>2W</td>
+  <td>Verification</td>
+</tr>
+
+<tr class="row-hwinteg">
+  <td>I-04</td>
+  <td>Full system assembly — all subsystems into chassis</td>
+  <td>Mount Control Assembly, Thermal Assembly, Fluid Store, PSU, and HMI Panel into the Structural Chassis. Route and dress internal harnesses. Close housekeeping access panel. Fit anti-theft anchor lug. Confirm overall envelope and mass within SRS 3.2 and 4.10.</td>
+  <td>SS-6 (all)</td>
+  <td>3W</td>
+  <td>HW Integration</td>
+</tr>
+
+<tr class="row-verify">
+  <td>V-06</td>
+  <td>System-level and compliance verification</td>
+  <td>S6.1–S6.8 ICD steps: 300×300×300mm envelope, ≤10kg mass, anti-theft lug 500N pull, ≥80% black/transparent surface, full brew cycle ≤180s in-chassis, EMC to EN 55014 Class B, IEC 60335 / CE / UKCA safety compliance, 36-hour endurance run at 2 brews/hour (SRS 3.3 acceleration proxy).</td>
+  <td>All SS</td>
+  <td>3W</td>
+  <td>Verification</td>
+</tr>
+
+<tr class="row-fat">
+  <td>FAT</td>
+  <td>Factory Acceptance Test — Vacation Stables witness</td>
+  <td>Formal acceptance event against full COFFCO-SRS-001 requirement set (all 38 requirements). Vacation Stables engineering and operations representatives as witnesses. Signed FAT report is the exit criterion for the integration programme.</td>
+  <td>CoffCo / VS</td>
+  <td>1M</td>
+  <td>Acceptance</td>
+</tr>
+
+</tbody>
+</table>
+
+<div class="gantt-container">
+
+  <div class="months">
+    <div></div>
+    <div>Jan</div><div>Feb</div><div>Mar</div><div>Apr</div>
+    <div>May</div><div>Jun</div><div>Jul</div><div>Aug</div>
+    <div>Sep</div><div>Oct</div><div>Nov</div><div>Dec</div>
+  </div>
+
+  <div class="gantt-grid">
+
+    <div class="gantt-label">P-01</div>
+    <div class="bar procurement" style="grid-column:2 / 5;"></div>
+
+    <div class="gantt-label">P-02</div>
+    <div class="bar procurement" style="grid-column:2 / 6;"></div>
+
+    <div class="gantt-label">B-01</div>
+    <div class="bar build" style="grid-column:3 / 5;"></div>
+
+    <div class="gantt-label">B-02</div>
+    <div class="bar build" style="grid-column:3 / 6;"></div>
+
+    <div class="gantt-label">B-03</div>
+    <div class="bar build" style="grid-column:4 / 6;"></div>
+
+    <div class="gantt-label">B-04</div>
+    <div class="bar build" style="grid-column:3 / 8;"></div>
+
+    <div class="gantt-label">V-01</div>
+    <div class="bar verify" style="grid-column:5 / 6;"></div>
+
+    <div class="gantt-label">S-01</div>
+    <div class="bar swfw" style="grid-column:5 / 7;"></div>
+
+    <div class="gantt-label">S-02</div>
+    <div class="bar swfw" style="grid-column:6 / 7;"></div>
+
+    <div class="gantt-label">V-02</div>
+    <div class="bar verify" style="grid-column:7 / 8;"></div>
+
+    <div class="gantt-label">I-01</div>
+    <div class="bar hwinteg" style="grid-column:8 / 10;"></div>
+
+    <div class="gantt-label">V-03</div>
+    <div class="bar verify" style="grid-column:10 / 11;"></div>
+
+    <div class="gantt-label">I-02</div>
+    <div class="bar hwinteg" style="grid-column:10 / 11;"></div>
+
+    <div class="gantt-label">V-04</div>
+    <div class="bar verify" style="grid-column:11 / 12;"></div>
+
+    <div class="gantt-label">I-03</div>
+    <div class="bar hwinteg" style="grid-column:11 / 12;"></div>
+
+    <div class="gantt-label">V-05</div>
+    <div class="bar verify" style="grid-column:12 / 13;"></div>
+
+    <div class="gantt-label">I-04</div>
+    <div class="bar hwinteg" style="grid-column:12 / 13;"></div>
+
+    <div class="gantt-label">V-06</div>
+    <div class="bar verify" style="grid-column:13 / 14;"></div>
+
+    <div class="gantt-label">FAT</div>
+    <div class="bar fat" style="grid-column:13 / 14;"></div>
+
+  </div>
+</div>
+
+<div class="legend">
+  <div class="legend-item">
+    <span class="legend-box procurement"></span>
+    Procurement / long-lead tooling
+  </div>
+  <div class="legend-item">
+    <span class="legend-box build"></span>
+    Subsystem build (hardware)
+  </div>
+  <div class="legend-item">
+    <span class="legend-box swfw"></span>
+    Software & firmware integration
+  </div>
+  <div class="legend-item">
+    <span class="legend-box hwinteg"></span>
+    Hardware integration (multi-subsystem)
+  </div>
+  <div class="legend-item">
+    <span class="legend-box verify"></span>
+    Verification / test event (gate-controlled)
+  </div>
+  <div class="legend-item">
+    <span class="legend-box fat"></span>
+    Factory acceptance milestone
+  </div>
+</div>
+
+</body>
+</html>
+

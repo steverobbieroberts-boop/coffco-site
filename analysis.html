@@ -1,0 +1,517 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CoffCo — Analysis</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.19.0/dist/tabler-icons.min.css">
+<link rel="stylesheet" href="assets/coffco.css">
+<style>
+/* ── ops design tokens ─────────────────────────────────────── */
+:root {
+  --bg:#f8f7f4; --surface:#fff; --surface2:#f1f0ed;
+  --border:rgba(0,0,0,.10); --border2:rgba(0,0,0,.20);
+  --text:#1a1a18; --text2:#6b6a66; --text3:#9b9a96;
+  --teal:#0F6E56; --teal-light:#E1F5EE; --teal-border:#5DCAA5; --teal-mid:#1D9E75;
+  --amber:#854F0B; --amber-light:#FAEEDA; --amber-mid:#EF9F27; --amber-border:#EF9F27;
+  --red:#A32D2D; --red-light:#FCEBEB; --red-border:#F09595; --red-mid:#E24B4A;
+  --blue:#185FA5; --blue-light:#E6F1FB;
+  --purple:#534AB7; --purple-light:#EEEDFE; --purple-border:#AFA9EC;
+  --radius:8px; --radius-lg:12px;
+  --mono:ui-monospace,"SF Mono","Fira Code",monospace;
+}
+* { box-sizing:border-box; margin:0; padding:0; }
+body { font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",system-ui,sans-serif;
+       background:var(--bg); color:var(--text); font-size:13px; }
+
+/* ── layout ─────────────────────────────────────────────────── */
+.page-body { max-width:1100px; margin:0 auto; padding:28px 32px 80px; }
+
+/* ── section header ─────────────────────────────────────────── */
+.section-banner {
+  display:flex; align-items:center; gap:12px;
+  margin:32px 0 16px; padding-bottom:10px;
+  border-bottom:.5px solid var(--border2);
+}
+.section-icon {
+  width:32px; height:32px; border-radius:var(--radius);
+  display:flex; align-items:center; justify-content:center;
+  font-size:16px; flex-shrink:0;
+}
+.section-title { font-size:15px; font-weight:600; color:var(--text); }
+.section-sub   { font-size:11px; color:var(--text3); margin-top:2px; }
+
+/* ── kpi strip ──────────────────────────────────────────────── */
+.kpi-row { display:grid; grid-template-columns:repeat(auto-fill,minmax(140px,1fr));
+           gap:10px; margin-bottom:24px; }
+.kpi { background:var(--surface2); border-radius:var(--radius); padding:12px 14px; }
+.kpi-label { font-size:10px; color:var(--text3); text-transform:uppercase;
+             letter-spacing:.06em; margin-bottom:6px; }
+.kpi-val  { font-size:22px; font-weight:500; line-height:1; color:var(--text); }
+.kpi-val.good { color:var(--teal); }
+.kpi-val.warn { color:var(--amber); }
+.kpi-sub  { font-size:10px; color:var(--text3); margin-top:4px; }
+
+/* ── panel ──────────────────────────────────────────────────── */
+.panel {
+  background:var(--surface); border:.5px solid var(--border);
+  border-radius:var(--radius-lg); padding:18px 20px; margin-bottom:14px;
+}
+.panel-title {
+  font-size:12px; font-weight:500; color:var(--text);
+  display:flex; align-items:center; justify-content:space-between;
+  margin-bottom:14px;
+}
+.panel-title-right { font-size:10px; font-weight:400; color:var(--text3); }
+
+/* ── ops-style table ─────────────────────────────────────────── */
+table.ops { width:100%; border-collapse:collapse; font-size:12px; }
+table.ops th {
+  text-align:left; font-weight:500; color:var(--text3);
+  padding:0 10px 8px 0; border-bottom:.5px solid var(--border2);
+  font-size:10px; text-transform:uppercase; letter-spacing:.04em;
+}
+table.ops td {
+  padding:9px 10px 9px 0; border-bottom:.5px solid var(--border);
+  vertical-align:top; line-height:1.5; color:var(--text2);
+}
+table.ops tr:last-child td { border-bottom:none; }
+table.ops tr:hover td { background:var(--surface2); }
+table.ops td strong { color:var(--text); }
+.id-cell { font-family:var(--mono); font-size:11px; font-weight:500;
+           color:var(--text); white-space:nowrap; }
+
+/* ── pill badges ─────────────────────────────────────────────── */
+.pill {
+  display:inline-flex; align-items:center; gap:3px;
+  font-size:10px; padding:2px 8px; border-radius:20px; font-weight:500;
+  white-space:nowrap;
+}
+.pill-teal   { background:var(--teal-light); color:var(--teal); border:.5px solid var(--teal-border); }
+.pill-amber  { background:var(--amber-light); color:var(--amber); border:.5px solid var(--amber-border); }
+.pill-red    { background:var(--red-light); color:var(--red); border:.5px solid var(--red-border); }
+.pill-purple { background:var(--purple-light); color:var(--purple); border:.5px solid var(--purple-border); }
+.pill-blue   { background:var(--blue-light); color:var(--blue); border:.5px solid #85B7EB; }
+.pill-grey   { background:var(--surface2); color:var(--text3); border:.5px solid var(--border2); }
+
+/* ── RPN cell ────────────────────────────────────────────────── */
+.rpn {
+  display:inline-block; width:28px; height:28px; border-radius:50%;
+  font-size:12px; font-weight:600; line-height:28px; text-align:center;
+}
+.rpn-hi  { background:var(--red-light); color:var(--red); }
+.rpn-mid { background:var(--amber-light); color:var(--amber); }
+.rpn-lo  { background:var(--teal-light); color:var(--teal); }
+
+/* ── bar (for rejected options) ──────────────────────────────── */
+.rejected { color:var(--text3); font-size:11px; }
+.rejected s { text-decoration:line-through; }
+
+/* ── DoD compliance table ─────────────────────────────────────── */
+.dod-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(260px,1fr));
+            gap:8px; margin-top:4px; }
+.dod-item {
+  background:var(--surface2); border:.5px solid var(--border);
+  border-radius:var(--radius); padding:10px 12px;
+  display:flex; align-items:flex-start; gap:10px;
+}
+.dod-tick {
+  width:20px; height:20px; border-radius:50%;
+  display:flex; align-items:center; justify-content:center;
+  font-size:11px; flex-shrink:0; margin-top:1px;
+}
+.tick-pass { background:var(--teal-light); color:var(--teal); }
+.dod-text { font-size:11px; color:var(--text2); line-height:1.45; }
+.dod-text strong { color:var(--text); display:block; margin-bottom:2px; }
+
+/* ── intro prose ─────────────────────────────────────────────── */
+.intro-p { font-size:13px; color:var(--text2); line-height:1.7;
+           margin-bottom:12px; max-width:800px; }
+
+/* ── callout ─────────────────────────────────────────────────── */
+.callout {
+  border-left:3px solid var(--teal-border); background:var(--teal-light);
+  padding:10px 14px; border-radius:0 var(--radius) var(--radius) 0;
+  font-size:12px; color:var(--teal); margin-bottom:16px; line-height:1.55;
+}
+.callout.amber {
+  border-color:var(--amber-border); background:var(--amber-light); color:var(--amber);
+}
+.reset-btn{padding:5px 13px;border:.5px solid var(--teal-border);border-radius:20px;background:transparent;font-size:11px;color:var(--teal);cursor:pointer;font-family:inherit;transition:all .12s}.reset-btn:hover{background:var(--teal-light)}
+</style>
+</head>
+<body>
+<nav class="sidebar"></nav>
+<main class="main">
+
+<!-- page cover uses site shell -->
+<div class="page-cover">
+  <div class="cover-eyebrow">DoD Deliverable 5 &middot; COFFCO-FMECA-001 V1.1</div>
+  <h1 class="cover-title">Analysis &mdash; Trade-off Studies and FMECA</h1>
+  <p class="cover-sub">6 architecture trade decisions &middot; 9-mode FMECA &middot; Through Life Support linkage &middot; Fan et al. (2009) evidence in causes column</p>
+  <div class="cover-meta">
+    <span><strong>Issue:</strong> V1.1</span>
+    <span><strong>Trade decisions:</strong> TD-01 to TD-06</span>
+    <span><strong>FMECA modes:</strong> FM-01 to FM-09</span>
+    <span><strong>All residual RPNs:</strong> &le;4</span>
+  </div>
+  <div class="cover-download">
+    <a href="downloads/5-analysis.docx" class="btn-download">&#11015; Download V1.1 (.docx)</a>
+  </div>
+</div>
+
+<div class="page-body">
+
+<!-- ── KPI STRIP ────────────────────────────────────────────── -->
+<div class="kpi-row">
+  <div class="kpi">
+    <div class="kpi-label">Trade Decisions</div>
+    <div class="kpi-val">6</div>
+    <div class="kpi-sub">TD-01 to TD-06</div>
+  </div>
+  <div class="kpi">
+    <div class="kpi-label">All Decided</div>
+    <div class="kpi-val good">5</div>
+    <div class="kpi-sub">TD-06 deferred</div>
+  </div>
+  <div class="kpi">
+    <div class="kpi-label">FMECA Modes</div>
+    <div class="kpi-val">9</div>
+    <div class="kpi-sub">FM-01 to FM-09</div>
+  </div>
+  <div class="kpi">
+    <div class="kpi-label">Max Initial RPN</div>
+    <div class="kpi-val warn">16</div>
+    <div class="kpi-sub">FM-03 (shock)</div>
+  </div>
+  <div class="kpi">
+    <div class="kpi-label">Max Residual RPN</div>
+    <div class="kpi-val good">4</div>
+    <div class="kpi-sub">All modes &le;4</div>
+  </div>
+  <div class="kpi">
+    <div class="kpi-label">Safety-Critical Modes</div>
+    <div class="kpi-val warn">4</div>
+    <div class="kpi-sub">FM-01,03,05,08</div>
+  </div>
+</div>
+
+<!-- ── SECTION 1: TRADE-OFF STUDIES ─────────────────────────── -->
+<div class="section-banner">
+  <div class="section-icon" style="background:var(--blue-light);color:var(--blue)">
+    <i class="ti ti-git-branch"></i>
+  </div>
+  <div>
+    <div class="section-title">1. Architecture Trade-off Studies &mdash; TD-01 to TD-06</div>
+    <div class="section-sub">Six decisions made during architecture definition. Each records selected option, rejected alternatives, and DfR linkage.</div>
+  </div>
+</div>
+
+<p class="intro-p">Trade-off studies were used to select the implementation approach for each major architectural decision point. The selected option in each case minimises lifecycle cost, maximises maintainability, and satisfies the relevant SRS requirements. All decisions are traceable to the Through Life Support (TLS) theme.</p>
+
+<div class="panel">
+  <div class="panel-title">
+    Architecture Trade Decisions
+    <span class="panel-title-right">TD-06 status: deferred &mdash; wireless technology subject to hotel network survey</span>
+  </div>
+  <table class="ops" id="tdTable">
+    <thead>
+      <tr>
+        <th style="width:60px">ID</th>
+        <th style="width:180px">Decision</th>
+        <th style="width:180px">Selected</th>
+        <th>Rejected Options</th>
+        <th>Rationale and DfR Linkage</th>
+        <th style="width:70px">Status</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td class="id-cell">TD-01</td>
+        <td><strong>Water supply method</strong></td>
+        <td><span class="pill pill-teal">Removable reservoir</span></td>
+        <td class="rejected">Plumbed hotel water connection — requires hotel plumber, room modification, blocked retrofit; 
+        Bottled water delivery — logistics burden, no telemetry possible</td>
+        <td>No hotel infrastructure modification. User-fillable from tap. Enables water hardness calibration per property (SRS 1.6). DfR: removable reservoir is the primary descale access point and eliminates a plumbing-related failure pathway entirely.</td>
+        <td><span class="pill pill-teal">Decided</span></td>
+      </tr>
+      <tr>
+        <td class="id-cell">TD-02</td>
+        <td><strong>Thermal path architecture</strong></td>
+        <td><span class="pill pill-teal">Unified thermal assembly with fluid switching</span></td>
+        <td class="rejected">Separate coffee and milk thermal paths — doubled component count, doubled seal failure surface area, doubled Fan et al. failure modes; 
+        Single-path sequential use — guest waits for thermal flush between drinks</td>
+        <td>Single assembly reduces failure mode count by 40%. Assembly-swap maintenance model becomes viable at 4 kg. DfR: fewer seals, fewer joints, fewer PRV interaction points. Fan et al.: seal aging is the primary fluid path failure driver — minimising seal count directly reduces failure frequency.</td>
+        <td><span class="pill pill-teal">Decided</span></td>
+      </tr>
+      <tr>
+        <td class="id-cell">TD-03</td>
+        <td><strong>Regional power connectors</strong></td>
+        <td><span class="pill pill-teal">Universal PSU + interchangeable plug module</span></td>
+        <td class="rejected">Market-specific PSU variants — 3× PSU SKUs, 3× certification programmes, regional stocking complexity; 
+        Hardwired regional cable — non-serviceable in field, full PSU swap on plug damage</td>
+        <td>Single PSU certified once (IEC 60335-1). Plug module swap in field in under 2 minutes. Regulatory change in one market (e.g. UK BS 1363 revision) requires only plug module update, not PSU re-certification. DfR: field-replaceable plug module is lowest-cost LRU in the support model.</td>
+        <td><span class="pill pill-teal">Decided</span></td>
+      </tr>
+      <tr>
+        <td class="id-cell">TD-04</td>
+        <td><strong>Control system integration</strong></td>
+        <td><span class="pill pill-teal">Single integrated Control Assembly (SS-2 + SS-5)</span></td>
+        <td class="rejected">Separate brewing MCU and UI MCU — 2× firmware images, inter-MCU comms protocol required, 2× watchdog configurations, debugging complexity doubles; 
+        Cloud-dependent control — unacceptable latency for real-time thermal loop</td>
+        <td>Single MCU simplifies firmware watchdog (SRS 3.12) — one heartbeat, one reset domain, one failure mode. UI and brew control share the same state machine, eliminating inter-processor state synchronisation as a failure pathway. DfR: integration reduces component count and eliminates an inter-board connector (a known reliability weak point).</td>
+        <td><span class="pill pill-teal">Decided</span></td>
+      </tr>
+      <tr>
+        <td class="id-cell">TD-05</td>
+        <td><strong>Anti-theft mechanism</strong></td>
+        <td><span class="pill pill-teal">Anti-tamper cable lug, tool-free removal at end of life</span></td>
+        <td class="rejected">Bolted security plate — requires drill for removal, damages hotel desk, end-of-life disassembly requires tools; 
+        Hotel room lock — not feasible for all room configurations; 
+        No security — opportunistic theft confirmed risk at CONOPS</td>
+        <td>Cable lug prevents opportunistic grab-and-go (SRS 1.8, &lt;60 s without tools). Tool-free removal at end of life is a deliberate Design for Disposal decision — one of two disposal-enabling design features alongside the modular assembly architecture (SP-02).</td>
+        <td><span class="pill pill-teal">Decided</span></td>
+      </tr>
+      <tr>
+        <td class="id-cell">TD-06</td>
+        <td><strong>Wireless technology</strong></td>
+        <td><span class="pill pill-amber">Deferred</span></td>
+        <td class="rejected">Wi-Fi (2.4/5 GHz) — dependent on hotel network VLAN approval (VS IT sign-off required); 
+        Zigbee/Z-Wave mesh — requires gateway hardware at each property; 
+        Cellular (LTE-M) — SIM provisioning per machine, recurring cost</td>
+        <td>Selection depends on Vacation Stables IT policy and hotel network survey results. Critical path item for telemetry (SRS 1.9) and OTA firmware (SRS 1.11). Decision gates the cloud platform go-live. SRS 1.9 and 1.11 are technology-neutral — they specify the interface, not the implementation. DfR: decision deferred to preserve design freedom until hotel network constraints are known.</td>
+        <td><span class="pill pill-amber">Deferred</span></td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- ── SECTION 2: FMECA ──────────────────────────────────────── -->
+<div class="section-banner" style="margin-top:36px">
+  <div class="section-icon" style="background:var(--red-light);color:var(--red)">
+    <i class="ti ti-alert-triangle"></i>
+  </div>
+  <div>
+    <div class="section-title">2. FMECA &mdash; Failure Mode, Effects and Criticality Analysis</div>
+    <div class="section-sub">FM-01 to FM-09 &middot; initial and residual RPN &middot; causes column enriched with Fan et al. (2009) evidence at V1.1</div>
+  </div>
+</div>
+
+<p class="intro-p">A qualitative FMECA was conducted across all six subsystems. Failure modes are defined at the CoffCo assembly level. Risk Priority Number (RPN) = Severity &times; Occurrence &times; Detectability. All residual RPNs are &le;4 following the design controls identified. At V1.1, the causes column was enriched with component-level evidence from Fan Jinjuan et al. (2009) <em>Engineering Failure Analysis</em> 16:1948&ndash;1954.</p>
+
+<div class="callout amber">
+  <strong>Fan et al. (2009) integration:</strong> The causes column at V1.1 incorporates external failure analysis evidence for FM-01, FM-02, FM-03, FM-05, FM-08, and FM-09. Failure mode definitions, effects, RPNs, and controls are unchanged &mdash; the evidence strengthens the analytical basis without altering the risk picture.
+</div>
+
+<div class="panel">
+  <div class="panel-title">
+    FMECA Register &mdash; FM-01 to FM-09
+    <span class="panel-title-right">RPN = Severity &times; Occurrence &times; Detectability &nbsp;|&nbsp; All residual RPNs &le;4</span>
+  </div>
+  <table class="ops">
+    <thead>
+      <tr>
+        <th style="width:55px">ID</th>
+        <th style="width:150px">Failure Mode</th>
+        <th style="width:120px">Assembly</th>
+        <th>Effect</th>
+        <th>Cause (inc. Fan et al. evidence)</th>
+        <th style="width:55px">Initial RPN</th>
+        <th>Controls</th>
+        <th style="width:65px">Residual RPN</th>
+      </tr>
+    </thead>
+    <tbody id="fmecaBody">
+    </tbody>
+  </table>
+</div>
+
+<!-- ── SECTION 3: DfR CONCLUSIONS ───────────────────────────── -->
+<div class="section-banner" style="margin-top:36px">
+  <div class="section-icon" style="background:var(--teal-light);color:var(--teal)">
+    <i class="ti ti-leaf"></i>
+  </div>
+  <div>
+    <div class="section-title">3. Through Life Support &mdash; Analysis Conclusions</div>
+    <div class="section-sub">How the trade-off studies and FMECA findings feed back into design decisions</div>
+  </div>
+</div>
+
+<div class="panel">
+  <div class="panel-title">DfR Linkage Table</div>
+  <table class="ops">
+    <thead>
+      <tr>
+        <th style="width:120px">Design Decision</th>
+        <th>DfR Benefit</th>
+        <th style="width:130px">Failure Mode Addressed</th>
+        <th style="width:120px">SRS Requirement</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>Assembly-swap maintenance model</strong></td>
+        <td>MTTR &le;4 h. Failed assembly returned to depot for refurbishment. Hotel room never opened to component level. Prevents introduction of secondary failures during field repair.</td>
+        <td><span class="pill pill-red" style="margin:2px">FM-01</span><span class="pill pill-red" style="margin:2px">FM-02</span><span class="pill pill-red" style="margin:2px">FM-05</span></td>
+        <td><span class="pill pill-blue">SRS 3.3</span> <span class="pill pill-blue">SRS 3.9</span></td>
+      </tr>
+      <tr>
+        <td><strong>Annual FKM seal replacement (PM-03)</strong></td>
+        <td>Fan et al.: seal aging is the primary fluid path failure driver across pump, check valve, NTC holder, and heater tube connections. Scheduled replacement before end of seal life eliminates this failure pathway entirely.</td>
+        <td><span class="pill pill-red" style="margin:2px">FM-02</span></td>
+        <td><span class="pill pill-blue">SRS 3.3</span> IPS PM-03</td>
+      </tr>
+      <tr>
+        <td><strong>Firmware descale scheduling (SRS 1.6)</strong></td>
+        <td>Scale is the root cause of pump clogging (#1 failure mode, Fan et al.), PRV spring erosion (#2), and heater tube blockage (#6). Proactive descale cycle triggered by brew count removes scale before it reaches a failure threshold. DESCALE-REQUIRED alert gives &ge;10 brews warning.</td>
+        <td><span class="pill pill-amber" style="margin:2px">FM-08</span></td>
+        <td><span class="pill pill-blue">SRS 1.6</span> <span class="pill pill-blue">SRS 1.9</span></td>
+      </tr>
+      <tr>
+        <td><strong>Hardware TCO independent of firmware</strong></td>
+        <td>If NTC sensor fails (Fan et al. #4 failure) or firmware hangs, the bi-metallic TCO provides an independent hardware-layer cutoff. Three-layer protection: NTC firmware &rarr; thermostat &rarr; TCO. All three must fail simultaneously for heater runaway to reach the user.</td>
+        <td><span class="pill pill-red" style="margin:2px">FM-01</span><span class="pill pill-red" style="margin:2px">FM-06</span></td>
+        <td><span class="pill pill-blue">SRS 3.10</span> <span class="pill pill-blue">SRS 3.12</span></td>
+      </tr>
+      <tr>
+        <td><strong>PRV vented to drip tray (SRS 3.13)</strong></td>
+        <td>Fan et al. identified PRV venting inside chassis as a hidden design hazard in the tested machine &mdash; steam directed toward user and electrical components. CoffCo routes PRV vent to drip tray only. Validated by Fan et al. FTA: PRV error is a basic event in the steam leakage top event.</td>
+        <td><span class="pill pill-red" style="margin:2px">FM-08</span></td>
+        <td><span class="pill pill-blue">SRS 3.13</span></td>
+      </tr>
+      <tr>
+        <td><strong>NTC holder upgrade PP&rarr;PPS (OA-IPS-01)</strong></td>
+        <td>Fan et al. simulation: PP NTC holder perforates at ~100&deg;C due to manufacturing quality deficiency. PPS (the material used for the lid and chassis) operates safely at 220&ndash;240&deg;C. Upgrade eliminates the manufacturing-quality failure pathway for this component.</td>
+        <td><span class="pill pill-amber" style="margin:2px">FM-01</span><span class="pill pill-amber" style="margin:2px">FM-02</span></td>
+        <td>OA-IPS-01 (SDD V1.2 action)</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- ── SECTION 4: DOD COMPLIANCE ─────────────────────────────── -->
+<div class="section-banner" style="margin-top:36px">
+  <div class="section-icon" style="background:var(--teal-light);color:var(--teal)">
+    <i class="ti ti-circle-check"></i>
+  </div>
+  <div>
+    
+    <div class="section-sub">DoD Section 5 criteria satisfied at V1.1</div>
+  </div>
+</div>
+
+<div class="dod-grid">
+  <div class="dod-item"><div class="dod-tick tick-pass">&#10003;</div><div class="dod-text"><strong>Trade-off studies conducted</strong>Six decisions documented, all with selected option, rejected alternatives, and rationale.</div></div>
+  <div class="dod-item"><div class="dod-tick tick-pass">&#10003;</div><div class="dod-text"><strong>FMECA completed</strong>Nine failure modes, all assemblies covered, initial and residual RPN calculated.</div></div>
+  <div class="dod-item"><div class="dod-tick tick-pass">&#10003;</div><div class="dod-text"><strong>All residual RPNs &le;4</strong>All nine failure modes at acceptable residual risk following design controls.</div></div>
+  <div class="dod-item"><div class="dod-tick tick-pass">&#10003;</div><div class="dod-text"><strong>Safety-critical modes identified</strong>FM-01, FM-03, FM-05, FM-08 flagged and linked to SRS safety requirements.</div></div>
+  <div class="dod-item"><div class="dod-tick tick-pass">&#10003;</div><div class="dod-text"><strong>DfR linkage documented</strong>Every analysis finding linked back to a design decision or IPS maintenance task.</div></div>
+  <div class="dod-item"><div class="dod-tick tick-pass">&#10003;</div><div class="dod-text"><strong>External evidence integrated</strong>Fan et al. (2009) failure analysis data incorporated into causes column at V1.1.</div></div>
+</div>
+
+</div><!-- /page-body -->
+</main>
+<script src="assets/nav.js"></script>
+<script>
+const FMECA = [
+  {
+    id:'FM-01', mode:'Heating element runaway', asm:'Thermal Assembly',
+    effect:'Fluid >90°C at dispensing outlet; burn risk to guest (H-01, H-02)',
+    cause:'Thermal control failure; NTC temperature sensor degradation; stuck relay. Fan et al. (2009): NTC holder PP plastic perforation at ~100°C (manufacturing quality deficiency) — steam leakage before thermostat responds. Thermostat locked is a basic event in the Fan et al. FTA.',
+    rpn_i:12, rpn_r:4, rpn_i_cls:'rpn-hi', rpn_r_cls:'rpn-lo',
+    controls:'FW-SF-01 dual-sensor temperature control; bi-metallic TCO hardware cutoff independent of firmware (SRS 3.10); SAFE-SHUTDOWN state on thermal fault; surface temperature limit 48°C (SRS 3.10)',
+    safety:true
+  },
+  {
+    id:'FM-02', mode:'Fluid path leak', asm:'Thermal Assembly',
+    effect:'Hot liquid contacts live electrical components; electric shock and fire risk (H-03)',
+    cause:'Seal degradation; overpressure; scale blockage. Fan et al. (2009): check valve aging and thermal melting (common failure); NTC holder sealing ring aging; eyewinker deposits blocking check valve; reverse flow from broken check valve piston (direct scald risk). Sealer error is a basic event in the Fan et al. electricity leakage FTA.',
+    rpn_i:15, rpn_r:4, rpn_i_cls:'rpn-hi', rpn_r_cls:'rpn-lo',
+    controls:'≥6mm fluid/electrical isolation on all internal pathways (SRS 3.11); IPX2 enclosure rating (SRS 3.11); annual FKM seal replacement at PM-03; pump strainer to intercept debris (OA-IPS-02)',
+    safety:false
+  },
+  {
+    id:'FM-03', mode:'Mains voltage exposure', asm:'Power Supply Unit',
+    effect:'Electric shock to user or maintenance staff; potential fatality (H-04)',
+    cause:'Insulation failure; casing damage; connector fault. Fan et al. (2009): aging of insulating layer and insulating layer error are basic events in the electricity leakage FTA. Open circuit of wires and pipe smelting (from heater overheating) are intermediate events leading to the same top event.',
+    rpn_i:16, rpn_r:2, rpn_i_cls:'rpn-hi', rpn_r_cls:'rpn-lo',
+    controls:'IEC 60335-1 Class II double insulation — no accessible live surfaces (SRS 3.11); mains input fuse at inlet (SRS 3.11); COTS PSU with certified insulation; electrical integrity check at PM-07 (Year 5)',
+    safety:true
+  },
+  {
+    id:'FM-04', mode:'Beverage cross-contamination', asm:'Thermal Assembly',
+    effect:'Coffee residue in milk output or vice versa; HACCP food safety breach (H-05)',
+    cause:'Inadequate flush between drink types; seal failure allowing fluid migration between circuits',
+    rpn_i:10, rpn_r:2, rpn_i_cls:'rpn-mid', rpn_r_cls:'rpn-lo',
+    controls:'Automated flush cycle between drink types; food-grade FKM elastomers throughout fluid path; HACCP documentation and VS food safety officer sign-off (SRS 4.9)',
+    safety:false
+  },
+  {
+    id:'FM-05', mode:'Dry-fire / empty fluid store', asm:'Control Assembly + Fluid Store',
+    effect:'Heating element energised without fluid cooling; burnout; fire (H-01)',
+    cause:'Level sensor fault; reservoir emptied between cycles. Fan et al. (2009): outlet clogging of pod holder confirmed in simulation testing (broken creamy pod is a basic event in steam leakage FTA). Clogged outlet causes pod holder to fill with hot water under pressure.',
+    rpn_i:14, rpn_r:4, rpn_i_cls:'rpn-hi', rpn_r_cls:'rpn-lo',
+    controls:'Fluid interlock: heating element inhibited below minimum fluid threshold (SRS 1.10); FLUID-EMPTY state within 5 s of detection; auto-recovery on refill confirmed by TC-008; consumable interlock prevents pod holder clogging (SRS 1.4)',
+    safety:true
+  },
+  {
+    id:'FM-06', mode:'Hardware watchdog failure', asm:'Control Assembly',
+    effect:'Firmware runaway; actuators remain energised in uncontrolled state (H-01)',
+    cause:'Dual-source watchdog IC fault; firmware heartbeat loop defect',
+    rpn_i:6, rpn_r:2, rpn_i_cls:'rpn-mid', rpn_r_cls:'rpn-lo',
+    controls:'Hardware watchdog IC resets MCU and de-energises all actuators within 500 ms of missed heartbeat (SRS 3.12); dual-source WDT IC + firmware loop; verified by TC-FW-01',
+    safety:false
+  },
+  {
+    id:'FM-07', mode:'Enclosure thermistor failure', asm:'Structural Chassis',
+    effect:'Surface temperature guard inoperative; surface >48°C not detected (H-02)',
+    cause:'Thermistor open circuit; mechanical damage during assembly',
+    rpn_i:4, rpn_r:3, rpn_i_cls:'rpn-mid', rpn_r_cls:'rpn-lo',
+    controls:'Build inspection at Phase 4; surface temperature test TC-ST-01 at commissioning; TCO provides independent overtemperature protection (SRS 3.10)',
+    safety:false
+  },
+  {
+    id:'FM-08', mode:'Fluid system overpressure', asm:'Thermal Assembly + Fluid Store',
+    effect:'Pressure vessel failure; scalding fluid or steam release (H-13)',
+    cause:'Pump control failure; blocked outlet; scale accumulation. Fan et al. (2009): PRV spring erosion from scale exposure (clogging of discharge outlet underpin) — PRV inoperative in simulation test, confirmed as hidden failure mode. Pump clogging from scale and debris (ranked #1 failure component in Fan et al.). Over-pressured pipe and smelting of pipe are middle events in Fan et al. steam leakage FTA.',
+    rpn_i:9, rpn_r:2, rpn_i_cls:'rpn-mid', rpn_r_cls:'rpn-lo',
+    controls:'Mechanical PRV ≤2.5 bar vented to drip tray only (SRS 3.13); FW-SF-08 firmware pressure guard at 1.5 bar; firmware descale scheduling (SRS 1.6); annual PM-05 PRV functional test',
+    safety:true
+  },
+  {
+    id:'FM-09', mode:'Mains overcurrent — fuse absent', asm:'Power Supply Unit',
+    effect:'Wiring ignition; fire (H-04)',
+    cause:'Internal wiring short; insulation breakdown; component failure. Fan et al. (2009): aging of insulating layer is a basic event in the electricity leakage FTA; insulating layer smelting (from heater overheat) is an intermediate event. Open circuit of wires (basic event) can cause unintended current paths.',
+    rpn_i:8, rpn_r:2, rpn_i_cls:'rpn-mid', rpn_r_cls:'rpn-lo',
+    controls:'T-type mains fuse at inlet (SRS 3.11); IEC 60335-1 Clause 25 overcurrent testing; COTS PSU with certified protection',
+    safety:false
+  },
+];
+
+function rpnClass(v) {
+  if (v >= 12) return 'rpn-hi';
+  if (v >= 6)  return 'rpn-mid';
+  return 'rpn-lo';
+}
+
+function buildFMECA() {
+  const tb = document.getElementById('fmecaBody');
+  FMECA.forEach(r => {
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td class="id-cell">${r.id}${r.safety ? ' <span class="pill pill-red" style="font-size:9px;padding:1px 5px">safety</span>' : ''}</td>
+      <td><strong>${r.mode}</strong></td>
+      <td><span class="pill pill-grey">${r.asm}</span></td>
+      <td>${r.effect}</td>
+      <td style="font-size:11px;color:var(--text2)">${r.cause}</td>
+      <td style="text-align:center"><span class="rpn ${rpnClass(r.rpn_i)}">${r.rpn_i}</span></td>
+      <td style="font-size:11px;color:var(--text2)">${r.controls}</td>
+      <td style="text-align:center"><span class="rpn rpn-lo">${r.rpn_r}</span></td>`;
+    tb.appendChild(tr);
+  });
+}
+
+buildFMECA();
+</script>
+</body>
+</html>

@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>CoffCo — Integration Plan and ICD</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.19.0/dist/tabler-icons.min.css">
+<link rel="stylesheet" href="assets/coffco.css">
+<style>
+:root{--bg:#f8f7f4;--surface:#fff;--surface2:#f1f0ed;--border:rgba(0,0,0,.10);--border2:rgba(0,0,0,.20);--text:#1a1a18;--text2:#6b6a66;--text3:#9b9a96;--teal:#0F6E56;--teal-light:#E1F5EE;--teal-border:#5DCAA5;--teal-mid:#1D9E75;--amber:#854F0B;--amber-light:#FAEEDA;--amber-border:#EF9F27;--red:#A32D2D;--red-light:#FCEBEB;--red-border:#F09595;--blue:#185FA5;--blue-light:#E6F1FB;--purple:#534AB7;--purple-light:#EEEDFE;--purple-border:#AFA9EC;--radius:8px;--radius-lg:12px;--mono:ui-monospace,'SF Mono','Fira Code',monospace;}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,sans-serif;background:var(--bg);color:var(--text);font-size:13px}
+.page-body{max-width:1100px;margin:0 auto;padding:28px 32px 80px}
+.kpi-row{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:10px;margin-bottom:24px}
+.kpi{background:var(--surface2);border-radius:var(--radius);padding:12px 14px}
+.kpi-label{font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px}
+.kpi-val{font-size:22px;font-weight:500;line-height:1;color:var(--text)}
+.kpi-val.good{color:var(--teal)}.kpi-sub{font-size:10px;color:var(--text3);margin-top:4px}
+.panel{background:var(--surface);border:.5px solid var(--border);border-radius:var(--radius-lg);padding:18px 20px;margin-bottom:14px}
+.section-banner{display:flex;align-items:center;gap:12px;margin:32px 0 14px;padding-bottom:10px;border-bottom:.5px solid var(--border2)}
+.section-icon{width:32px;height:32px;border-radius:var(--radius);display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0}
+.section-title{font-size:15px;font-weight:600;color:var(--text)}.section-sub{font-size:11px;color:var(--text3);margin-top:2px}
+table.ops{width:100%;border-collapse:collapse;font-size:12px}
+table.ops th{text-align:left;font-weight:500;color:var(--text3);padding:0 10px 8px 0;border-bottom:.5px solid var(--border2);font-size:10px;text-transform:uppercase;letter-spacing:.04em}
+table.ops th:first-child{padding-left:0}
+table.ops td{padding:8px 10px 8px 0;border-bottom:.5px solid var(--border);vertical-align:top;line-height:1.5;color:var(--text2)}
+table.ops td:first-child{padding-left:0}
+table.ops tr:last-child td{border-bottom:none}
+table.ops tr:hover td{background:var(--surface2)}
+table.ops td strong,table.ops td b{color:var(--text)}
+.pill{display:inline-flex;align-items:center;gap:3px;font-size:10px;padding:2px 8px;border-radius:20px;font-weight:500;white-space:nowrap}
+.pill-teal{background:var(--teal-light);color:var(--teal);border:.5px solid var(--teal-border)}
+.pill-amber{background:var(--amber-light);color:var(--amber);border:.5px solid var(--amber-border)}
+.pill-red{background:var(--red-light);color:var(--red);border:.5px solid var(--red-border)}
+.pill-blue{background:var(--blue-light);color:var(--blue);border:.5px solid #85B7EB}
+.pill-purple{background:var(--purple-light);color:var(--purple);border:.5px solid var(--purple-border)}
+.pill-grey{background:var(--surface2);color:var(--text3);border:.5px solid var(--border2)}
+.filter-row{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:12px}
+.filter-row input{flex:1;min-width:180px;padding:7px 11px;border:.5px solid var(--border2);border-radius:var(--radius);font-size:12px;background:var(--surface);color:var(--text);font-family:inherit;outline:none}
+.filter-row input:focus{border-color:var(--teal-mid)}
+.ftab{padding:5px 13px;border:.5px solid var(--border2);border-radius:20px;background:transparent;font-size:11px;color:var(--text2);cursor:pointer;font-family:inherit;transition:all .12s}
+.ftab:hover{background:var(--surface2)}.ftab.on{background:var(--text);color:#fff;border-color:var(--text)}
+.reset-btn{padding:5px 13px;border:.5px solid var(--teal-border);border-radius:20px;background:transparent;font-size:11px;color:var(--teal);cursor:pointer;font-family:inherit;transition:all .12s}
+.reset-btn:hover{background:var(--teal-light)}
+.count-line{font-size:11px;color:var(--text3);margin-bottom:10px}.count-line b{color:var(--text2)}
+
+/* Gate progress */
+.gate-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:8px;margin-bottom:24px}
+.gate-card{background:var(--surface);border:.5px solid var(--border);border-radius:var(--radius);padding:10px;cursor:pointer;transition:all .15s;text-align:center}
+.gate-card:hover{border-color:var(--border2);background:var(--surface2)}
+.gate-card.active{border-color:var(--teal-border);background:var(--teal-light)}
+.gate-num{font-size:16px;font-weight:600;color:var(--text3);margin-bottom:4px}
+.gate-card.active .gate-num{color:var(--teal)}
+.gate-name{font-size:10px;color:var(--text3);line-height:1.3}
+.gate-card.active .gate-name{color:var(--teal)}
+.gate-detail{background:var(--surface);border:.5px solid var(--teal-border);border-radius:var(--radius-lg);padding:16px 18px;margin-bottom:16px;display:none}
+.gate-detail.show{display:block}
+</style>
+</head>
+<body>
+<nav class="sidebar"></nav>
+<main class="main">
+<div class="page-cover">
+  <div class="cover-eyebrow">DoD Deliverable 7 &middot; CoffCo Coffee Machine V1.0</div>
+  <h1 class="cover-title">Integration Plan and Interface Control Document</h1>
+  <p class="cover-sub">7-gate bottom-up sequence &middot; KISS principle &middot; 7 external interfaces (EI-01–EI-07) &middot; 9 internal interfaces &middot; V&amp;V linkage per gate</p>
+  <div class="cover-meta">
+    <span><strong>Issue:</strong> V1.0</span>
+    <span><strong>Integration gates:</strong> G1–G7</span>
+    <span><strong>External interfaces:</strong> 7</span>
+    <span><strong>Internal interfaces:</strong> 9 (inc. 4 new at V1.0)</span>
+  </div>
+  <div class="cover-download">
+    <a href="downloads/7-integration.docx" class="btn-download">&#11015; Download V1.0 (.docx)</a>
+  </div>
+</div>
+<div class="page-body">
+
+<div class="kpi-row">
+  <div class="kpi"><div class="kpi-label">Integration gates</div><div class="kpi-val">7</div><div class="kpi-sub">G1–G7</div></div>
+  <div class="kpi"><div class="kpi-label">External interfaces</div><div class="kpi-val good">7</div><div class="kpi-sub">EI-01 to EI-07</div></div>
+  <div class="kpi"><div class="kpi-label">Internal interfaces</div><div class="kpi-val">9</div><div class="kpi-sub">II-01 to II-09</div></div>
+  <div class="kpi"><div class="kpi-label">Strategy</div><div class="kpi-val" style="font-size:13px">KISS</div><div class="kpi-sub">bottom-up assembly</div></div>
+  <div class="kpi"><div class="kpi-label">V&V linkage</div><div class="kpi-val good">7</div><div class="kpi-sub">test refs per gate</div></div>
+</div>
+
+<!-- Gate selector -->
+<div class="section-banner">
+  <div class="section-icon" style="background:var(--blue-light);color:var(--blue)"><i class="ti ti-stairs" aria-hidden="true"></i></div>
+  <div><div class="section-title">7-Gate Integration Sequence</div>
+  <div class="section-sub">Click any gate to see items integrated, tests, and V&amp;V linkage</div></div>
+</div>
+
+<div class="gate-grid" id="gateGrid"></div>
+<div class="gate-detail" id="gateDetail"></div>
+
+<!-- ICD -->
+<div class="section-banner">
+  <div class="section-icon" style="background:var(--purple-light);color:var(--purple)"><i class="ti ti-plug-connected" aria-hidden="true"></i></div>
+  <div><div class="section-title">Interface Control Document</div>
+  <div class="section-sub">Filter by interface type &middot; click to expand each interface</div></div>
+</div>
+<div class="filter-row">
+  <input type="text" id="icdSrch" placeholder="Search interfaces, types, descriptions&hellip;" oninput="filterICD()">
+  <button class="ftab on" data-t="ALL" onclick="setICDType(this)">All (16)</button>
+  <button class="ftab" data-t="EI" onclick="setICDType(this)">External (7)</button>
+  <button class="ftab" data-t="II" onclick="setICDType(this)">Internal (9)</button>
+  <button class="ftab" data-t="Power" onclick="setICDType(this)">Power</button>
+  <button class="ftab" data-t="Fluid" onclick="setICDType(this)">Fluid</button>
+  <button class="ftab" data-t="Human" onclick="setICDType(this)">Human</button>
+  <button class="ftab" data-t="Wireless" onclick="setICDType(this)">Wireless</button>
+  <button class="reset-btn" onclick="resetICD()">&#8635; Reset</button>
+</div>
+<div class="count-line" id="icdCount">Showing <b>16</b> of 16 interfaces</div>
+<div id="icdList"></div>
+
+</div>
+</main>
+<script src="assets/nav.js"></script>
+<script>
+const GATES = [
+  {g:'G1', name:'Power baseline', items:'PSU standalone', tests:'TC-G1-01: voltage rails, insulation, fuse',
+   vv:'Phase 1 — Component', pass:'All DC rails within tolerance. Fuse intact. No accessible live surface. EMC pre-scan pass.'},
+  {g:'G2', name:'Control Assembly', items:'PSU + Control Assembly', tests:'TC-FW-01: Hardware watchdog',
+   vv:'Phase 2 — Subsystem', pass:'WDT IC asserts RESET within 500 ms of halted heartbeat. All actuators de-energised.'},
+  {g:'G3', name:'Thermal Assembly', items:'G2 + Thermal Assembly', tests:'TC-HE-01: TCO; TC-PRV-01: PRV',
+   vv:'Phase 2 — Subsystem', pass:'TCO opens at ≥100°C, non-resettable. PRV opens ≤2.5 bar, vents to drip tray. Extraction 0.9–1.3 bar. Brew cycle ≤180 s.'},
+  {g:'G4', name:'Fluid Store', items:'G3 + Fluid Store', tests:'TC-008: dry-fire; TC-DT-01: drip tray; TC-CL-01: consumable interlock',
+   vv:'Phase 2 — Subsystem', pass:'Dry-fire interlock active: 0.0 A on empty reservoir. Drip-tray-full alert before overflow. Incorrect consumable cannot close chamber.'},
+  {g:'G5', name:'UI Panel', items:'G4 + UI Panel', tests:'TC-G5-01: UI functional',
+   vv:'Phase 3 — Integration', pass:'All 7 status states confirmed. Two-step brew confirmation functional. Volume dial accurate ±5 ml. Unaided trial ≥4/5 (VE-B1).'},
+  {g:'G6', name:'Structural Chassis', items:'Full system in chassis', tests:'TC-IPX2-01: IPX2; TC-ST-01: surface temp and stability',
+   vv:'Phase 4 — System', pass:'No water ingress to live parts. No external surface >48°C. System stable under 50 N lateral. Mass ≤10 kg. Envelope ≤300×300×300 mm.'},
+  {g:'G7', name:'System V&V', items:'Full system — all TCs', tests:'All TC-series; VE-D1; VE-B1',
+   vv:'Phase 4–6 — Validation', pass:'All Phase 4 TCs pass. VE-D1: Vacation Stables customer sign-off. VE-B1: ≥4/5 naive users succeed unaided. FAT signed.'},
+];
+
+const ICD = [
+  {id:'EI-01', grp:'EI', type:'Power',    a:'Hotel mains', b:'PSU',              desc:'110–240V AC, 50/60Hz mains input via regional plug module (BS1363/NEMA/CEE)', part:'Interchangeable plug module + IEC inlet'},
+  {id:'EI-02', grp:'EI', type:'Fluid',    a:'Hotel water supply', b:'Fluid Store', desc:'Cold water to removable reservoir; variable hardness 0–400 mg/L CaCO₃. User fills reservoir from tap.',       part:'Removable reservoir with fill mark'},
+  {id:'EI-03', grp:'EI', type:'Fluid',    a:'Fluid Store', b:'Dispensing outlet', desc:'Hot beverage (americano / frothed milk) dispensed at outlet. Shrouded outlet ≥105 mm clearance.',              part:'Dispensing nozzle and shroud'},
+  {id:'EI-04', grp:'EI', type:'Human',    a:'Hotel Guest', b:'UI Panel',          desc:'Drink selection (type + volume); brew confirmation via physical controls. Two-step confirmation required.',     part:'Physical fascia — buttons, dial, LED ring'},
+  {id:'EI-05', grp:'EI', type:'Human',    a:'UI Panel', b:'Hotel Guest',          desc:'System status communicated in 7 states via icon-only LED ring. No text labels — multi-language deployment.',    part:'LED status ring (7 states)'},
+  {id:'EI-06', grp:'EI', type:'Wireless', a:'Control Assembly', b:'CoffCo Cloud', desc:'Maintenance telemetry; fault alerts; OTA firmware delivery. MQTT-over-TLS. Technology TBD (TD-06).',           part:'COTS wireless module (TD-06 pending)'},
+  {id:'EI-07', grp:'EI', type:'Physical', a:'Hotel room', b:'Structural Chassis', desc:'Machine footprint on hotel desk; anti-theft cable lug to room fixture; housekeeping access panel.',              part:'Anti-theft lug; housekeeping panel'},
+  {id:'II-01', grp:'II', type:'Power',    a:'PSU', b:'Control Assembly',          desc:'DC power rails — 3.3V logic, 5V comms, 12V actuators', part:'PCB power connector'},
+  {id:'II-02', grp:'II', type:'Data',     a:'Control Assembly', b:'Thermal Assembly', desc:'Brew command parameters; pump/element relay drive signals; temperature and pressure sensor return',          part:'I2C bus + relay drive harness'},
+  {id:'II-03', grp:'II', type:'Data',     a:'Control Assembly', b:'UI Panel',      desc:'System state output for status LED drive; FSM state broadcast',                                                 part:'Low-voltage signal harness'},
+  {id:'II-04', grp:'II', type:'Data',     a:'UI Panel', b:'Control Assembly',      desc:'Drink type, volume, brew confirmation input signals',                                                           part:'Low-voltage signal harness'},
+  {id:'II-05', grp:'II', type:'Fluid',    a:'Thermal Assembly', b:'Fluid Store',   desc:'Hot water demand; fluid return path between thermal assembly and reservoir',                                    part:'Fluid hose / thermoplastic channel'},
+  {id:'II-06', grp:'II', type:'Data', a:'Fluid Store', b:'Control Assembly (SS-5)', desc:'Milk store temperature data — feeds MILK-SPOILAGE-RISK telemetry threshold (>4°C for >30 min)',           part:'Signal wire to Control PCBA'},
+  {id:'II-07', grp:'II', type:'Data', a:'Structural Chassis', b:'Control Assembly', desc:'Chassis wall thermistor signal — feeds FW-SF-07 surface temperature guard firmware function',             part:'Signal wire'},
+  {id:'II-08', grp:'II', type:'Data', a:'Fluid Store', b:'Control Assembly',   desc:'Drip tray full sensor signal — feeds DRIP-TRAY-FULL telemetry alert',                                         part:'Signal wire'},
+  {id:'II-09', grp:'II', type:'Data', a:'Thermal Assembly', b:'Control Assembly', desc:'In-circuit pressure transducer signal — feeds FW-SF-08 pressure guard firmware function',                   part:'Signal wire'},
+];
+
+const TYPE_PILLS = {
+  Power:    '<span class="pill pill-amber">Power</span>',
+  Fluid:    '<span class="pill pill-blue">Fluid</span>',
+  Human:    '<span class="pill pill-teal">Human</span>',
+  Wireless: '<span class="pill pill-purple">Wireless</span>',
+  Physical: '<span class="pill pill-grey">Physical</span>',
+  Data:     '<span class="pill pill-grey">Data</span>',
+};
+
+let activeGate = null, icdType = 'ALL';
+
+function buildGates() {
+  const grid = document.getElementById('gateGrid');
+  GATES.forEach(g => {
+    const card = document.createElement('div');
+    card.className = 'gate-card';
+    card.innerHTML = `<div class="gate-num">${g.g}</div><div class="gate-name">${g.name}</div>`;
+    card.onclick = () => selectGate(g, card);
+    grid.appendChild(card);
+  });
+}
+
+function selectGate(g, card) {
+  document.querySelectorAll('.gate-card').forEach(c => c.classList.remove('active'));
+  card.classList.add('active');
+  const det = document.getElementById('gateDetail');
+  det.className = 'gate-detail show';
+  det.innerHTML = `<div style="display:flex;align-items:center;gap:12px;margin-bottom:12px">
+      <span style="font-size:20px;font-weight:600;color:var(--teal)">${g.g}</span>
+      <span style="font-size:15px;font-weight:600;color:var(--text)">${g.name}</span>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px">
+      <div style="background:var(--surface2);border-radius:var(--radius);padding:10px 12px">
+        <div style="font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:4px">Items integrated</div>
+        <div style="font-size:12px;color:var(--text2)">${g.items}</div>
+      </div>
+      <div style="background:var(--surface2);border-radius:var(--radius);padding:10px 12px">
+        <div style="font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:4px">Integration tests</div>
+        <div style="font-size:12px;color:var(--text2)">${g.tests}</div>
+      </div>
+      <div style="background:var(--surface2);border-radius:var(--radius);padding:10px 12px">
+        <div style="font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:4px">V&amp;V linkage</div>
+        <div style="font-size:12px;color:var(--text2)">${g.vv}</div>
+      </div>
+    </div>
+    <div style="margin-top:10px;padding:8px 12px;background:var(--teal-light);border-left:2px solid var(--teal-border);border-radius:0 var(--radius) var(--radius) 0;font-size:12px;color:var(--teal)">
+      <strong>Gate pass criterion:</strong> ${g.pass}
+    </div>`;
+}
+
+function renderICD(list) {
+  const el = document.getElementById('icdList');
+  el.innerHTML = '';
+  list.forEach(r => {
+    const div = document.createElement('div');
+    div.style.cssText = 'border:.5px solid var(--border);border-radius:var(--radius);margin-bottom:6px;overflow:hidden';
+    div.innerHTML = `<div onclick="this.parentElement.classList.toggle('icd-open');this.querySelector('.acc-ch').style.transform=this.parentElement.classList.contains('icd-open')?'rotate(180deg)':'';" 
+        style="display:flex;align-items:center;gap:10px;padding:10px 14px;cursor:pointer;background:var(--surface)">
+      <span style="font-family:var(--mono);font-size:11px;font-weight:500;color:var(--text);min-width:80px">${r.id}</span>
+      ${TYPE_PILLS[r.type]||''}
+      <span style="font-size:12px;font-weight:500;color:var(--text);flex:1">${r.a} → ${r.b}</span>
+      <i class="ti ti-chevron-down acc-ch" style="font-size:13px;color:var(--text3);transition:transform .15s" aria-hidden="true"></i>
+    </div>
+    <div style="display:none;padding:10px 14px 12px;border-top:.5px solid var(--border);background:var(--surface)">
+      <div style="font-size:12px;color:var(--text2);margin-bottom:8px;line-height:1.6">${r.desc}</div>
+      <div style="font-size:11px;color:var(--text3)"><strong style="color:var(--text2)">Interface part:</strong> ${r.part}</div>
+    </div>`;
+    div.querySelector('[onclick]').addEventListener('click', function() {
+      const body = this.nextElementSibling;
+      body.style.display = body.style.display === 'none' ? 'block' : 'none';
+    });
+    el.appendChild(div);
+  });
+  document.getElementById('icdCount').innerHTML = `Showing <b>${list.length}</b> of ${ICD.length} interfaces`;
+}
+
+function setICDType(btn) {
+  document.querySelectorAll('[data-t]').forEach(b => b.classList.remove('on'));
+  btn.classList.add('on'); icdType = btn.dataset.t; filterICD();
+}
+function resetICD() {
+  document.getElementById('icdSrch').value = ''; icdType = 'ALL';
+  document.querySelectorAll('[data-t]').forEach(b => b.classList.remove('on'));
+  document.querySelector('[data-t="ALL"]').classList.add('on');
+  filterICD();
+}
+function filterICD() {
+  const q = document.getElementById('icdSrch').value.toLowerCase();
+  renderICD(ICD.filter(r => {
+    if (icdType === 'EI' && r.grp !== 'EI') return false;
+    if (icdType === 'II' && r.grp !== 'II') return false;
+    if (!['ALL','EI','II'].includes(icdType) && r.type !== icdType) return false;
+    if (q && !(r.id+' '+r.type+' '+r.a+' '+r.b+' '+r.desc+' '+r.part).toLowerCase().includes(q)) return false;
+    return true;
+  }));
+}
+
+buildGates(); renderICD(ICD);
+</script>
+</body>
+</html>

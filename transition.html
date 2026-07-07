@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CoffCo — Transition Plan</title>
+<link rel="stylesheet" href="assets/coffco.css">
+<style>
+</style>
+</head>
+<body>
+<nav class="sidebar"></nav>
+<main class="main">
+<div class="page-cover">
+  <div class="cover-eyebrow">Supporting Document · TEPIDOIL · TNA · V1.2</div>
+  <h1 class="cover-title">Transition Plan</h1>
+  <p class="cover-sub">Training Needs Analysis · TEPIDOIL · User Manual (9-step) · FIDA maintenance format · online delivery strategy · commissioning plan</p>
+  <div class="cover-meta"><span><strong>Issue:</strong> V1.2</span><span><strong>Customers:</strong> Vacation Stables + Hotel guests</span><span><strong>TEPIDOIL:</strong> All 8 elements</span><span><strong>Commissioning steps:</strong> C1–C10</span></div>
+  <div class="cover-download">
+    <a href="downloads/transition.docx" class="btn-download">&#11015; Download V1.2 (.docx)</a>
+  </div>
+</div>
+<div class="doc-body">
+<h2 class="doc-h1">1. Introduction</h2>
+<p class="doc-p">This plan defines how the CoffCo in-room hotel coffee machine is transitioned from development into operational service at Vacation Stables. Two stages are addressed: Preparing for Transition (TNA and TEPIDOIL analysis) and Performing Transition (commissioning). Two customers are served: Vacation Stables as the operational receiver and the hotel room guest as the end user.</p>
+<h2 class="doc-h1">2. Technical Publications — Delivery Strategy</h2>
+<h3 class="doc-h2">2.1 Online-First Approach</h3>
+<p class="doc-p">All CoffCo technical publications are delivered digitally. The CoffCo machine is a connected IoT product with a cloud operations platform and OTA firmware update capability. Delivering manuals on paper creates a version control problem that conflicts directly with the system architecture: when firmware changes, paper manuals become incorrect. Digital delivery solves this at the source — manuals are updated centrally and all users access the current version automatically.</p>
+<p class="doc-p">A secondary driver is the hotel room environment. Hotel guests do not read paper manuals — SRS 2.1 mandates that the machine must be operable without any documentation at all. Housekeeping staff work across multiple rooms and cannot carry physical binders. Field engineers work in plant rooms and hotel corridors where paper gets damaged. Digital delivery is therefore both the practical and the principled choice.</p>
+<h3 class="doc-h2">2.2 Delivery Method Per Audience</h3>
+<table class="doc-table"><thead>
+<tr><th>Audience</th><th>Manual</th><th>Delivery Method</th><th>Offline Fallback</th></tr></thead><tbody>
+<tr><td><strong>Hotel room guest</strong></td><td>User Manual</td><td>QR code on machine and in-room card links to web-hosted interactive manual. Includes embedded video demonstrations, animated diagrams, and multi-language support.</td><td>A5 Quick-Reference Card (laminated, physical) covers the 9-step operating sequence. This is the only printed item.</td></tr>
+<tr><td><strong>Vacation Stables housekeeping</strong></td><td>Housekeeping Guide (cleaning and maintaining sections)</td><td>QR code on housekeeping Quick-Start Card links to web-hosted guide. Updated automatically when procedures change.</td><td>Quick-Start Card (physical) covers daily routine and status indicator states. Adequate for routine service without network access.</td></tr>
+<tr><td><strong>Vacation Stables maintenance team</strong></td><td>Maintenance Manual (FIDA format)</td><td>Web-hosted, accessed via hotel maintenance team smartphone or tablet. Log-in gated — Vacation Stables maintenance staff receive credentials at on-site training.</td><td>Offline PDF version downloaded to maintenance team tablet during on-site training. Version-stamped; field engineer advises when an update is available.</td></tr>
+<tr><td><strong>CoffCo field engineer</strong></td><td>Field Service Manual + FIDA Maintenance Manual</td><td>Pre-loaded on CoffCo diagnostic tablet. Auto-syncs when Wi-Fi available. Works fully offline.</td><td>Diagnostic tablet always carries current downloaded version. Not dependent on hotel Wi-Fi during service visit.</td></tr>
+<tr><td><strong>Vacation Stables property manager</strong></td><td>Cloud Dashboard Guide</td><td>Web-hosted, accessed via browser. Linked from cloud platform login page.</td><td>PDF version emailed by CoffCo account manager at go-live.</td></tr>
+</tbody></table>
+
+<h3 class="doc-h2">2.3 Version Control</h3>
+<p class="doc-p">All online manuals are version-controlled on the CoffCo content management platform. A version number and effective date appear in the header of every page. When a new firmware version changes an operating procedure, the relevant manual section is updated before the firmware update is deployed. Field engineers and property managers are notified of manual updates via the cloud ops dashboard. The offline PDF on the Vacation Stables maintenance tablet is replaced at the next field engineer visit.</p>
+<h2 class="doc-h1">3. Training Needs Analysis</h2>
+<h3 class="doc-h2">3.1 Stakeholders and Baseline Assumptions</h3>
+<table class="doc-table"><thead>
+<tr><th>Stakeholder</th><th>Role</th><th>Baseline Assumption</th><th>Training Gap</th></tr></thead><tbody>
+<tr><td><strong>Hotel Room Guest</strong></td><td>Operates machine daily. Selects drink, adds water and milk, inserts consumable.</td><td>Assumed to be familiar with coffee machines in general — hotel guests are typically adults accustomed to domestic or commercial coffee equipment.</td><td>CoffCo-specific operating sequence and consumable format. Gap is minimal by design (SRS 2.1). User Manual provides supplementary guidance via QR code; no training session required.</td></tr>
+<tr><td><strong>Vacation Stables Housekeeping</strong></td><td>Daily service: consumable restocking, drip tray, cleaning, fault reporting.</td><td>Assumed trained for basic cleaning as part of standard housekeeping role.</td><td>CoffCo cleaning procedure (damp cloth, no spray), status indicator states (7 states), consumable restocking routine, fault escalation procedure, HACCP milk handling rule.</td></tr>
+<tr><td><strong>Vacation Stables Maintenance Team</strong></td><td>First-line fault response. Basic checks. Escalation to CoffCo field engineer.</td><td>Assumed capable of basic mechanical and electrical maintenance and repairs as part of the hotel maintenance function.</td><td>CoffCo FIDA fault structure, fault code reference, safe power isolation procedure, assembly identification (what to touch vs. what to refer), escalation threshold.</td></tr>
+</tbody></table>
+
+<h3 class="doc-h2">3.2 Training Outputs</h3>
+<table class="doc-table"><thead>
+<tr><th>Output</th><th>Audience</th><th>Content Summary</th><th>Delivery</th></tr></thead><tbody>
+<tr><td><strong>User Manual</strong></td><td>Hotel room guest</td><td>9-step operating sequence; visual aids and diagrams; tips and best practice; troubleshooting; coffee education; multi-language support.</td><td>Online via QR code. Physical Quick-Reference Card as fallback.</td></tr>
+<tr><td><strong>Housekeeping Guide</strong></td><td>Housekeeping staff</td><td>Daily service routine; cleaning procedure; status indicator reference; fault reporting SOP; HACCP milk rule.</td><td>Online via QR code on Quick-Start Card. Quick-Start Card (physical) as fallback.</td></tr>
+<tr><td><strong>Maintenance Manual (FIDA)</strong></td><td>VS maintenance team + CoffCo field engineer</td><td>Fault Identification, Diagnosis, Action format — see Section 4. Fault code reference, assembly identification, safe isolation, escalation matrix.</td><td>Online (web-hosted). Offline PDF on maintenance tablet. Pre-loaded on CoffCo diagnostic tablet.</td></tr>
+<tr><td><strong>On-site training</strong></td><td>All VS teams</td><td>Practical walkthrough at each property: housekeeping (45 min), maintenance team (60 min), property manager (30 min cloud dashboard).</td><td>In-person, delivered by CoffCo field engineer at commissioning. Attendance recorded.</td></tr>
+</tbody></table>
+
+<h2 class="doc-h1">4. Maintenance Manual — FIDA Format</h2>
+<h3 class="doc-h2">4.1 Why FIDA</h3>
+<p class="doc-p">The CoffCo Maintenance Manual is structured in FIDA (Fault Identification, Diagnosis, Action) format. FIDA is the appropriate format for a technically-capable maintainer working on a system they did not design. It provides a structured, systematic path from observable symptom to correct resolution action, without requiring the maintainer to understand the full system architecture.</p>
+<p class="doc-p">FIDA is particularly well-suited to the CoffCo assembly-swap maintenance model. The Vacation Stables maintenance team and CoffCo field engineers do not repair failed components — they identify the faulty assembly, verify the diagnosis, and swap it. FIDA maps directly to this three-step process: Identify what is wrong → Diagnose which assembly → Act to resolve. It also determines the correct escalation point: if the action cannot be completed at the maintenance team level, FIDA tells the maintainer to escalate to the CoffCo field engineer before attempting anything further.</p>
+<h3 class="doc-h2">4.2 FIDA Structure</h3>
+<table class="doc-table"><thead>
+<tr><th>Step</th><th>FIDA Element</th><th>What the Maintainer Does</th></tr></thead><tbody>
+<tr><td><strong>1</strong></td><td><strong>Fault Identification</strong></td><td>Identify the observable symptom — either from the machine status indicator (FAULT / MAINTENANCE REQUIRED state), from a cloud ops alert (MILK-SPOILAGE-RISK, COMMS-FAULT, SAFE-SHUTDOWN), from a guest report, or from a fault code on the CoffCo diagnostic tool. This step produces a Fault ID — a specific symptom label that is the entry point to the Diagnosis section.</td></tr>
+<tr><td><strong>2</strong></td><td><strong>Diagnosis</strong></td><td>Carry out the structured checks and tests specified for the identified fault. Each diagnosis procedure isolates the fault to one assembly (Control Assembly, Thermal Assembly, PSU, Fluid Store, or Structural Chassis) or determines that the fault requires field engineer escalation. Diagnosis uses: visual inspection, status indicator state, cloud alert type, and where applicable, the CoffCo diagnostic tool (field engineers only).</td></tr>
+<tr><td><strong>3</strong></td><td><strong>Action</strong></td><td>Carry out the specified corrective action. For Vacation Stables maintenance team: this is limited to power cycle, consumable clear, drip tray service, or escalation to CoffCo field engineer. For CoffCo field engineer: this includes assembly swap, firmware update, safety interlock test, and HACCP fluid path cleaning after swap.</td></tr>
+</tbody></table>
+
+<h3 class="doc-h2">4.3 Maintainer Tier — What Each Tier Can Action</h3>
+<table class="doc-table"><thead>
+<tr><th>Action</th><th>VS Maintenance Team</th><th>CoffCo Field Engineer</th></tr></thead><tbody>
+<tr><td><strong>Power cycle machine</strong></td><td>✓ Yes</td><td>✓ Yes</td></tr>
+<tr><td><strong>Clear blocked consumable from chamber</strong></td><td>✓ Yes — refer to Housekeeping Guide if in doubt</td><td>✓ Yes</td></tr>
+<tr><td><strong>Empty drip tray / clear DRIP-TRAY-FULL</strong></td><td>✓ Yes</td><td>✓ Yes</td></tr>
+<tr><td><strong>Refill water reservoir</strong></td><td>✓ Yes</td><td>✓ Yes</td></tr>
+<tr><td><strong>Run manual descale cycle (firmware command)</strong></td><td>✓ Yes — via QR code menu</td><td>✓ Yes</td></tr>
+<tr><td><strong>Read fault codes (diagnostic tool)</strong></td><td>✗ No — diagnostic tool is field engineer equipment</td><td>✓ Yes</td></tr>
+<tr><td><strong>Replace mains fuse</strong></td><td>✗ No — fuse panel is field engineer access only (SRS 3.11)</td><td>✓ Yes</td></tr>
+<tr><td><strong>Swap Control Assembly</strong></td><td>✗ No — escalate to CoffCo field engineer</td><td>✓ Yes — with firmware re-registration</td></tr>
+<tr><td><strong>Swap Thermal Assembly</strong></td><td>✗ No — escalate to CoffCo field engineer</td><td>✓ Yes — with HACCP fluid path clean</td></tr>
+<tr><td><strong>Swap Power Supply Unit</strong></td><td>✗ No — mains isolation required; escalate</td><td>✓ Yes</td></tr>
+<tr><td><strong>Test TCO, PRV, hardware watchdog</strong></td><td>✗ No — requires calibrated tooling</td><td>✓ Yes — with calibrated gauge and thermocouple</td></tr>
+<tr><td><strong>Push firmware OTA update</strong></td><td>✗ No</td><td>✓ Yes — via diagnostic tool or cloud ops</td></tr>
+<tr><td><strong>Escalate to CoffCo engineering</strong></td><td>✓ Yes — via CoffCo support line if field engineer cannot resolve</td><td>✓ Yes — direct escalation to engineering team</td></tr>
+</tbody></table>
+
+<h3 class="doc-h2">4.4 FIDA Worked Examples</h3>
+<p class="doc-p">The following three examples show how the FIDA structure is applied to common CoffCo fault scenarios. These are representative entries from the Maintenance Manual.</p>
+<table class="doc-table"><thead>
+<tr><th>FIDA Example 1 — Machine shows MAINTENANCE REQUIRED</th></tr></thead><tbody>
+<tr><td><strong>F — Fault Identification</strong></td><td><strong>Symptom / Entry Point</strong></td></tr>
+<tr><td><strong>Observable symptom</strong></td><td>Status indicator shows MAINTENANCE REQUIRED (amber). Cloud ops dashboard shows alert. Guest has reported 'machine won't start'.</td></tr>
+<tr><td><strong>D — Diagnosis</strong></td><td><strong>Structured Checks</strong></td></tr>
+<tr><td><strong>Check sequence</strong></td><td>D1: Is the drip tray full? — Remove drip tray and check. If full → go to Action A1. D2: Is water reservoir empty? — Check reservoir level. If empty → go to Action A2. D3: Is consumable supply low or empty? — Check consumable count. If low → go to Action A3. D4: Is COMMS-FAULT also shown? — Check cloud dashboard. If COMMS-FAULT → go to Action A4. D5: None of the above — go to Action A5 (escalate).</td></tr>
+<tr><td><strong>A — Action</strong></td><td><strong>Resolution</strong></td></tr>
+<tr><td><strong>Actions by diagnosis outcome</strong></td><td>A1 (drip tray full): Empty and clean drip tray. Refit. Confirm MAINTENANCE REQUIRED clears. [VS maintenance team] A2 (empty reservoir): Refill water reservoir to MAX. Confirm status clears. [VS maintenance team] A3 (low consumable): Restock consumables from floor store. [Housekeeping / VS maintenance team] A4 (COMMS-FAULT): Check hotel Wi-Fi status. Power cycle machine. If alert persists >60 min — log with CoffCo cloud ops. [VS maintenance team] A5 (unresolved): Escalate to CoffCo field engineer. Record fault code if available.</td></tr>
+</tbody></table>
+
+<table class="doc-table"><thead>
+<tr><th>FIDA Example 2 — Machine enters SAFE-SHUTDOWN  [SAFETY-CRITICAL — escalate immediately]</th></tr></thead><tbody>
+<tr><td><strong>F — Fault Identification</strong></td><td><strong>Symptom / Entry Point</strong></td></tr>
+<tr><td><strong>Observable symptom</strong></td><td>Machine is unresponsive. Status indicator shows FAULT (red, steady). Cloud ops alert SAFE-SHUTDOWN received. Machine does not respond to controls. No brew possible.</td></tr>
+<tr><td><strong>D — Diagnosis</strong></td><td><strong>Structured Checks</strong></td></tr>
+<tr><td><strong>Check sequence</strong></td><td>D1: Has the machine been physically disturbed or tipped? — Visual check. If yes, check for fluid spillage before any further action. D2: Is there any smell of burning or visible smoke? — If yes: do not touch. Evacuate room and call hotel emergency procedure immediately. D3: Is there water or liquid around the base of the machine? — If yes: do not touch. Isolate mains at room socket. Call CoffCo field engineer immediately. D4: None of the above — power cycle machine (switch off at mains socket for 60 seconds, then restore). Does SAFE-SHUTDOWN clear?    → Yes (clears to STANDBY): Monitor for 30 minutes. If re-enters SAFE-SHUTDOWN, go to D5.    → No (remains in FAULT): Go to Action A1.</td></tr>
+<tr><td><strong>A — Action</strong></td><td><strong>Resolution</strong></td></tr>
+<tr><td><strong>Actions</strong></td><td>A1 (SAFE-SHUTDOWN persists after power cycle): Isolate machine at mains. Do not attempt to open machine. Mark out of service. Contact CoffCo field engineer immediately — SLA: 4 hours response. Log fault with time and machine serial number. A2 (fire/smoke/burning smell): Hotel emergency procedure. Mains isolation. Do not attempt to recover machine. A3 (fluid around base): Mains isolation. Do not restore power. CoffCo field engineer to attend and inspect electrical safety before machine is returned to service.  NOTE: SAFE-SHUTDOWN recovery requires field engineer investigation. VS maintenance team must not attempt internal access.</td></tr>
+</tbody></table>
+
+<table class="doc-table"><thead>
+<tr><th>FIDA Example 3 — Machine shows FLUID-EMPTY / no brew on command</th></tr></thead><tbody>
+<tr><td><strong>F — Fault Identification</strong></td><td><strong>Symptom / Entry Point</strong></td></tr>
+<tr><td><strong>Observable symptom</strong></td><td>Guest or housekeeping reports: machine accepts selection but does not start brew. Status indicator shows EMPTY or LOW. Cloud ops alert FLUID-EMPTY received.</td></tr>
+<tr><td><strong>D — Diagnosis</strong></td><td><strong>Structured Checks</strong></td></tr>
+<tr><td><strong>Check sequence</strong></td><td>D1: Is water reservoir empty or below MIN line? — Check reservoir. If empty/low → go to Action A1. D2: Is consumable correctly seated? — Open extraction chamber. Is consumable present and fully seated? If misloaded → go to Action A2. D3: Is consumable format correct? — Does the consumable appear to be a non-CoffCo item or wrong format? If yes → go to Action A3. D4: Reservoir full and consumable correct, but still FLUID-EMPTY → go to Action A4 (potential level sensor fault — escalate).</td></tr>
+<tr><td><strong>A — Action</strong></td><td><strong>Resolution</strong></td></tr>
+<tr><td><strong>Actions</strong></td><td>A1 (empty reservoir): Refill reservoir to MAX. FLUID-EMPTY state clears automatically on refill. [Housekeeping / VS maintenance] A2 (misloaded consumable): Open chamber, remove and reseat consumable correctly until it clicks. Close chamber. Retry brew. [VS maintenance] A3 (wrong consumable format): Remove incorrect item. Insert correct CoffCo consumable. Retry brew. Note: extraction chamber interlock (SRS 1.4) will prevent chamber closing on wrong format — if guest has forced a non-CoffCo item, inspect chamber for damage before returning to service. [VS maintenance — visual inspection] A4 (level sensor suspected): Power cycle. If FLUID-EMPTY persists with full reservoir: escalate to CoffCo field engineer. Do not continue to operate — heating element inhibit is a safety function.</td></tr>
+</tbody></table>
+
+<h2 class="doc-h1">5. TEPIDOIL Analysis</h2>
+<p class="doc-p">Full TEPIDOIL analysis for transition of CoffCo to operational service at Vacation Stables.</p>
+<div class="doc-section-divider">
+  <div class="doc-section-num">T</div>
+  <div>
+    <div class="doc-section-name">Training</div>
+    <div class="doc-section-sub">What training is needed and for whom?</div>
+  </div>
+</div>
+
+<p class="doc-p">Training is addressed in full in Section 3. Three stakeholder groups: hotel room guest (no training required by design — SRS 2.1); Vacation Stables housekeeping (online Housekeeping Guide + on-site training); Vacation Stables maintenance team (online FIDA Maintenance Manual + on-site training). All training materials delivered digitally as per the online-first strategy in Section 2.</p>
+<div class="doc-section-divider">
+  <div class="doc-section-num">E</div>
+  <div>
+    <div class="doc-section-name">Equipment</div>
+    <div class="doc-section-sub">What equipment must be provided?</div>
+  </div>
+</div>
+
+<table class="doc-table"><thead>
+<tr><th>Equipment Item</th><th>Description</th><th>Provided By</th></tr></thead><tbody>
+<tr><td><strong>CoffCo coffee machine (certified unit)</strong></td><td>Production machine, IEC 60335 type-test certificate, CE/UKCA/UL marked. Anti-tip bracket included.</td><td>CoffCo</td></tr>
+<tr><td><strong>Power lead</strong></td><td>Mains cable correct length for hotel room desk socket.</td><td>CoffCo — in deployment kit</td></tr>
+<tr><td><strong>Regional plug</strong></td><td>BS 1363 (UK) / CEE 7/16 (EU) / NEMA 5-15 (US) — confirmed at site survey.</td><td>CoffCo — in deployment kit</td></tr>
+<tr><td><strong>Initial consumable stock</strong></td><td>Minimum 20 brews per room, timed to arrive before machine installation.</td><td>CoffCo supply chain</td></tr>
+<tr><td><strong>Route for consumables</strong></td><td>Standing order agreed; delivery schedule confirmed; hotel storage location identified.</td><td>CoffCo supply chain + VS facilities</td></tr>
+<tr><td><strong>Anti-tip bracket and M6 fixings</strong></td><td>Fitted by field engineer at installation.</td><td>CoffCo — in deployment kit</td></tr>
+<tr><td><strong>Quick-Reference Card (physical)</strong></td><td>A5 laminated card: 9-step operating sequence, status indicator guide, QR codes to online manuals. Only printed item.</td><td>CoffCo — in deployment kit</td></tr>
+<tr><td><strong>CoffCo diagnostic tablet</strong></td><td>Pre-loaded with FIDA Maintenance Manual, Field Service Manual, firmware, and offline sync. Field engineer equipment.</td><td>CoffCo — field engineer kit</td></tr>
+<tr><td><strong>Calibrated pressure gauge and thermocouple</strong></td><td>For PRV test (TC-PRV-01) and TCO test (TC-HE-01) at commissioning.</td><td>CoffCo — field engineer kit</td></tr>
+</tbody></table>
+
+<div class="doc-section-divider">
+  <div class="doc-section-num">P</div>
+  <div>
+    <div class="doc-section-name">People</div>
+    <div class="doc-section-sub">Who needs to be in place?</div>
+  </div>
+</div>
+
+<table class="doc-table"><thead>
+<tr><th>Person / Role</th><th>Responsibilities</th><th>What They Receive</th></tr></thead><tbody>
+<tr><td><strong>Hotel room guest</strong></td><td>Operates machine. Self-sufficient by design (SRS 2.1).</td><td>User Manual via QR code. Quick-Reference Card at machine.</td></tr>
+<tr><td><strong>VS housekeeping</strong></td><td>Daily service, cleaning, restocking, fault reporting.</td><td>Housekeeping Guide (online) + on-site training. Quick-Start Card.</td></tr>
+<tr><td><strong>VS maintenance team</strong></td><td>First-line fault response, FIDA diagnosis, escalation.</td><td>FIDA Maintenance Manual (online + offline PDF on tablet). On-site training. CoffCo support contact.</td></tr>
+<tr><td><strong>VS property manager</strong></td><td>Dashboard monitoring, alert escalation, staff coordination.</td><td>Cloud Dashboard Guide (online). 30-min orientation by CoffCo account manager.</td></tr>
+<tr><td><strong>CoffCo field engineer</strong></td><td>Installation, commissioning, corrective maintenance, on-site training delivery.</td><td>Field Service Manual + FIDA Maintenance Manual on diagnostic tablet. 2-day qualification.</td></tr>
+<tr><td><strong>CoffCo cloud operations</strong></td><td>Remote monitoring, alert triage, OTA firmware.</td><td>Cloud ops training. 24/7 roster from go-live.</td></tr>
+</tbody></table>
+
+<div class="doc-section-divider">
+  <div class="doc-section-num">I2</div>
+  <div>
+    <div class="doc-section-name">Infrastructure</div>
+    <div class="doc-section-sub">What does the system need to operate?</div>
+  </div>
+</div>
+
+<table class="doc-table"><thead>
+<tr><th>Input</th><th>Requirement</th><th>Status / Dependency</th></tr></thead><tbody>
+<tr><td><strong>Water</strong></td><td>Removable reservoir filled from hotel tap. No plumbed connection required.</td><td>Existing in all VS rooms. No action required.</td></tr>
+<tr><td><strong>Power</strong></td><td>Standard mains socket at desk: 230V/50Hz (UK/EU) or 110V/60Hz (US). Universal PSU accepts both.</td><td>Existing. Confirmed at site survey.</td></tr>
+<tr><td><strong>Milk</strong></td><td>Fresh cold milk supplied by hotel (minibar, room service, or housekeeping). Machine refrigerates at ≤4°C. Assumption A-09.</td><td>VS to confirm milk supply route per property before go-live.</td></tr>
+<tr><td><strong>Coffee consumables</strong></td><td>CoffCo consumables delivered to property. Stored in housekeeping store. Replenished daily.</td><td>Consumable supply chain to be confirmed. Standing order before first machine goes live.</td></tr>
+<tr><td><strong>Hotel Wi-Fi</strong></td><td>Required for telemetry, alerts, and OTA updates. Technology subject to TD-06 resolution.</td><td>Open dependency. VS IT sign-off required. Critical path item.</td></tr>
+<tr><td><strong>CoffCo cloud platform</strong></td><td>In production before first machine deployed. Machine registered at commissioning.</td><td>In development. Must be live before Stage 1 pilot.</td></tr>
+</tbody></table>
+
+<div class="doc-section-divider">
+  <div class="doc-section-num">D</div>
+  <div>
+    <div class="doc-section-name">Doctrine</div>
+    <div class="doc-section-sub">What operating doctrine applies?</div>
+  </div>
+</div>
+
+<table class="doc-table"><thead>
+<tr><th>Assessment</th><th>Rationale</th></tr></thead><tbody>
+<tr><td><strong>No new operating doctrine required</strong></td><td>The CoffCo machine fits within Vacation Stables existing hotel operations without requiring a new way of working or a change to operating policy. For guests — no doctrine. For housekeeping — the machine adds to the existing room service routine, not a new process. For the maintenance team — the FIDA format provides structured procedures rather than a new doctrine. The proactive maintenance model (cloud alerts trigger response) is an operational benefit delivered by the system, not a doctrine change imposed on the customer.</td></tr>
+</tbody></table>
+
+<div class="doc-section-divider">
+  <div class="doc-section-num">O</div>
+  <div>
+    <div class="doc-section-name">Organisation</div>
+    <div class="doc-section-sub">Is Vacation Stables structured to receive the system?</div>
+  </div>
+</div>
+
+<ul class="doc-list"><li>Vacation Stables staff informed — housekeeping management chain, maintenance supervisors, property managers, and front desk briefed before go-live. Coordinated by CoffCo account manager and named VS property coordinator.</li></ul>
+<ul class="doc-list"><li>Training programmes in place — on-site training sessions scheduled and delivered at each property before first machine goes live. Attendance recorded. Sign-off by property manager.</li></ul>
+<ul class="doc-list"><li>VS IT sign-off obtained — IoT device registered on hotel network. Wi-Fi access approved before TD-06 technology is configured.</li></ul>
+<ul class="doc-list"><li>CoffCo account manager named — single point of contact for VS CEO and estate management. Present at Stage 1 pilot go-live.</li></ul>
+<table class="doc-table"><thead>
+<tr><th>Info</th><th>Information — What documentation must be ready?</th></tr></thead><tbody>
+</tbody></table>
+
+<table class="doc-table"><thead>
+<tr><th>Document</th><th>Content</th><th>Delivery / Status</th></tr></thead><tbody>
+<tr><td><strong>User Manual (web-hosted)</strong></td><td>9-step operating sequence; visual aids; tips; troubleshoot; coffee education; multi-language.</td><td>Online via QR code. Draft — to be finalised before Stage 1 pilot.</td></tr>
+<tr><td><strong>Housekeeping Guide (web-hosted)</strong></td><td>Daily service routine; cleaning; status indicators; fault reporting; HACCP milk rule.</td><td>Online via QR code. Draft — to be finalised before Stage 1 pilot.</td></tr>
+<tr><td><strong>Maintenance Manual — FIDA format (web-hosted)</strong></td><td>FIDA fault entries for all cloud alert types and fault codes. Tier matrix. Worked examples (see Section 4).</td><td>Online + offline PDF. Draft — FIDA entries to be completed for all fault codes before Stage 1 pilot.</td></tr>
+<tr><td><strong>Field Service Manual (on diagnostic tablet)</strong></td><td>Full technical: assembly swap, firmware update, safety interlock testing, HACCP cleaning.</td><td>Pre-loaded on diagnostic tablet. Field engineer access only.</td></tr>
+<tr><td><strong>HACCP Documentation</strong></td><td>Food safety plan; approved cleaning products; temperature monitoring.</td><td>To be reviewed and approved by VS food safety officer before go-live.</td></tr>
+<tr><td><strong>IEC 60335-1 Certificate</strong></td><td>Type-test certification. Lodged with VS facilities management.</td><td>Obtained at Phase 5 certification before deployment.</td></tr>
+<tr><td><strong>Quick-Reference Card (physical)</strong></td><td>9-step sequence, status states, QR codes. Only physical document.</td><td>Printed and in deployment kit.</td></tr>
+</tbody></table>
+
+<div class="doc-section-divider">
+  <div class="doc-section-num">L</div>
+  <div>
+    <div class="doc-section-name">Logistics</div>
+    <div class="doc-section-sub">How does the system get there and how are consumables supplied?</div>
+  </div>
+</div>
+
+<table class="doc-table"><thead>
+<tr><th>Logistics Element</th><th>Description</th><th>Third-Party Provider</th></tr></thead><tbody>
+<tr><td><strong>Machine packaging</strong></td><td>Protective double-wall carton with foam inserts. Anti-tip bracket and accessories included. Return carton used for assembly swap.</td><td>CoffCo approved packaging supplier.</td></tr>
+<tr><td><strong>Machine shipping — outbound</strong></td><td>Pallet to hotel goods entrance (estate rollout); parcel direct to property (single replacements).</td><td>UPS, Royal Mail, DHL Freight, DPD — carrier selected by CoffCo logistics per delivery requirement and property location.</td></tr>
+<tr><td><strong>Consumable supply — ongoing</strong></td><td>Standing order. Delivery to hotel goods entrance. Housekeeping distributes to floor stores. Demand: 2 brews/day/room.</td><td>UPS, Royal Mail, or equivalent — regular scheduled delivery.</td></tr>
+<tr><td><strong>Assembly swap-and-return</strong></td><td>Field engineer brings replacement; failed assembly returned in pre-labelled return carton.</td><td>UPS or Royal Mail collection. Return label generated by cloud ops on fault alert.</td></tr>
+<tr><td><strong>Consumable waste collection</strong></td><td>Spent consumables in recycling pouch. Collection via CoffCo recycling programme. Zero landfill (SRS 3.7).</td><td>CoffCo recycling partner — to be contracted.</td></tr>
+<tr><td><strong>Customs (international)</strong></td><td>CE (EU), UL/ETL (US) marking confirmed before shipping to those markets. Customs documentation for international shipments.</td><td>CoffCo compliance + third-party customs broker.</td></tr>
+</tbody></table>
+
+<h2 class="doc-h1">6. Performing the Transition — Commissioning</h2>
+<p class="doc-p">Each machine is installed, verified, and accepted by a qualified CoffCo field engineer before it is in service. The commissioning sequence includes delivery of on-site training and placement of the digital access point (Quick-Reference Card with QR codes) at each machine.</p>
+<table class="doc-table"><thead>
+<tr><th>Step</th><th>Activity</th><th>Detail</th><th>Sign-Off</th></tr></thead><tbody>
+<tr><td><strong>C1</strong></td><td><strong>Site survey</strong></td><td>Desk ≥300×300mm; mains socket; Wi-Fi signal; M6 fixing point; water hardness recorded.</td><td>Field engineer</td></tr>
+<tr><td><strong>C2</strong></td><td><strong>Installation</strong></td><td>Unpack, inspect, fit anti-tip bracket, connect power lead and plug, power on — confirm STANDBY.</td><td>Field engineer</td></tr>
+<tr><td><strong>C3</strong></td><td><strong>Cloud registration</strong></td><td>Register serial number on CoffCo cloud platform. Confirm first heartbeat at cloud ops.</td><td>CoffCo cloud ops</td></tr>
+<tr><td><strong>C4</strong></td><td><strong>Calibration</strong></td><td>Set water hardness in firmware. Confirm descale interval calculation.</td><td>Field engineer</td></tr>
+<tr><td><strong>C5</strong></td><td><strong>Commissioning brew</strong></td><td>200 ml americano: ≤180 s; outlet ≥60°C; no leaks; STANDBY on completion.</td><td>Field engineer</td></tr>
+<tr><td><strong>C6</strong></td><td><strong>Safety spot-check</strong></td><td>Dry-fire interlock (TC-008): 0.0 A on element with empty reservoir; FLUID-EMPTY within 5 s; auto-recovery on refill.</td><td>Field engineer</td></tr>
+<tr><td><strong>C7</strong></td><td><strong>Telemetry check</strong></td><td>STANDBY confirmed on cloud dashboard. Test alert received at cloud ops within 60 s.</td><td>CoffCo cloud ops</td></tr>
+<tr><td><strong>C8</strong></td><td><strong>On-site training</strong></td><td>Housekeeping training (45 min); maintenance team training with FIDA walkthrough (60 min). Attendance recorded.</td><td>Field engineer + VS property coordinator</td></tr>
+<tr><td><strong>C9</strong></td><td><strong>Documentation placement</strong></td><td>Quick-Reference Card placed at machine. Consumable stock in floor housekeeping store.</td><td>Field engineer</td></tr>
+<tr><td><strong>C10</strong></td><td><strong>Commissioning sign-off</strong></td><td>Commissioning record completed and uploaded to cloud asset register. Machine declared in service.</td><td>Field engineer + VS property coordinator</td></tr>
+</tbody></table>
+
+<p class="doc-p">School of Systems Engineering Secondment  |  Vacation Stables × CoffCo	Page  of</p>
+</div>
+</main>
+<script src="assets/nav.js"></script>
+</body>
+</html>

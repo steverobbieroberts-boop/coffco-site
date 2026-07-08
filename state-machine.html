@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>CoffCo — System State Machine</title>
+<link rel="stylesheet" href="assets/coffco.css">
+<style>
+:root{--navy:#1C2B4A;--teal:#0F6E56;--teal-light:#E1F5EE;--teal-border:#5DCAA5;--amber:#854F0B;--amber-light:#FAEEDA;--red:#A32D2D;--red-light:#FCEBEB;--red-border:#F09595;--blue:#185FA5;--blue-light:#E6F1FB;--radius:8px;--radius-lg:12px;}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#f8f7f4;color:#1a1a18;font-size:13px}
+.page-body{max-width:1060px;margin:0 auto;padding:36px 40px 80px}
+.kpi-row{display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:10px;margin-bottom:24px}
+.kpi{background:#fff;border:.5px solid rgba(0,0,0,.1);border-radius:var(--radius);padding:12px 14px}
+.kpi-label{font-size:10px;color:#9b9a96;text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px}
+.kpi-val{font-size:20px;font-weight:600;color:#1a1a18;line-height:1}
+.kpi-val.good{color:var(--teal)}.kpi-val.bad{color:var(--red)}
+.sec-banner{display:flex;align-items:center;gap:12px;margin:28px 0 14px;padding-bottom:10px;border-bottom:.5px solid rgba(0,0,0,.15)}
+.sec-icon{width:32px;height:32px;border-radius:var(--radius);display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0}
+.sec-title{font-size:15px;font-weight:600;color:#1a1a18}
+.sec-sub{font-size:11px;color:#9b9a96;margin-top:2px}
+.callout{border-left:3px solid var(--teal);background:var(--teal-light);padding:12px 16px;border-radius:0 var(--radius) var(--radius) 0;margin:0 0 20px;font-size:13px;line-height:1.7;color:#1a3a3a}
+.callout strong{color:var(--teal)}
+.callout.red{border-color:var(--red);background:var(--red-light);color:#3a0000}
+.callout.red strong{color:var(--red)}
+/* State cards */
+.state-grid{display:flex;flex-direction:column;gap:6px;margin-bottom:24px}
+.state-card{border-radius:var(--radius);overflow:hidden;border:.5px solid rgba(0,0,0,.12)}
+.state-head{display:flex;align-items:center;gap:12px;padding:12px 16px;cursor:pointer;user-select:none}
+.state-head:hover{filter:brightness(1.08)}
+.state-id{font-size:13px;font-weight:700;color:#fff;flex:1;letter-spacing:.02em}
+.state-sub-head{font-size:11px;color:rgba(255,255,255,.7);flex:2}
+.state-chevron{font-size:11px;color:rgba(255,255,255,.6);transition:transform .15s;flex-shrink:0}
+.state-card.open .state-chevron{transform:rotate(180deg)}
+.state-body{padding:14px 16px;background:#fff;border-top:.5px solid rgba(0,0,0,.08)}
+.state-desc{font-size:13px;line-height:1.7;color:#3A3F47;margin-bottom:12px}
+.state-io{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:10px}
+.io-label{font-size:10px;font-weight:600;color:#9b9a96;text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px}
+.io-list{list-style:none;padding:0;margin:0}
+.io-list li{font-size:12px;color:#5A5A5A;padding:3px 0 3px 14px;position:relative;line-height:1.5}
+.io-list li::before{content:"→";position:absolute;left:0;color:var(--teal);font-size:10px;top:4px}
+.state-srs{font-size:11px;color:#9b9a96;padding-top:8px;border-top:.5px solid rgba(0,0,0,.08)}
+.state-srs strong{color:#5A5A5A}
+/* Transition table */
+table.ops{width:100%;border-collapse:collapse;font-size:12px}
+table.ops th{text-align:left;font-weight:500;color:#9b9a96;padding:0 10px 8px 0;border-bottom:.5px solid rgba(0,0,0,.15);font-size:10px;text-transform:uppercase;letter-spacing:.04em}
+table.ops th:first-child{padding-left:0}
+table.ops td{padding:8px 10px 8px 0;border-bottom:.5px solid rgba(0,0,0,.07);vertical-align:top;line-height:1.55;color:#1a1a18}
+table.ops tr:last-child td{border-bottom:none}
+table.ops tr:hover td{background:#f8f7f4}
+/* Filter buttons */
+.filter-row{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px}
+.ftab{padding:5px 13px;border:.5px solid rgba(0,0,0,.2);border-radius:20px;background:transparent;font-size:11px;color:#6b6a66;cursor:pointer;font-family:inherit;transition:all .12s}
+.ftab:hover{background:#f1f0ed}
+.ftab.on{background:#1a1a18;color:#fff;border-color:#1a1a18}
+.pill{display:inline-flex;font-size:10px;padding:2px 8px;border-radius:20px;font-weight:500}
+.pill-red{background:var(--red-light);color:var(--red);border:.5px solid var(--red-border)}
+.panel{background:#fff;border:.5px solid rgba(0,0,0,.1);border-radius:var(--radius-lg);padding:0;overflow:hidden;margin-bottom:12px}
+/* SVG diagram */
+.diagram-wrap{background:#fff;border:.5px solid rgba(0,0,0,.1);border-radius:var(--radius-lg);overflow:hidden;margin-bottom:20px}
+.diagram-wrap svg{display:block;width:100%}
+</style>
+</head>
+<body>
+<nav class="sidebar"></nav>
+<main class="main">
+<div class="page-cover">
+  <div class="cover-eyebrow">Architecture Reference &middot; COFFCO-ARCH-001 V2.2 &middot; FSM Specification</div>
+  <h1 class="cover-title">System State Machine</h1>
+  <p class="cover-sub">11 states &middot; 9 operational · SAFE-SHUTDOWN and FLUID-EMPTY as dedicated safety states · state machine is the primary gate for brew safety and OTA updates</p>
+  <div class="cover-meta">
+    <span><strong>Source:</strong> COFFCO-ARCH-001 V2.2</span>
+    <span><strong>States:</strong> 11 total</span>
+    <span><strong>Safety states:</strong> 3</span>
+    <span><strong>SRS:</strong> 1.7, 1.10, 1.11</span>
+  </div>
+  <div class="cover-download">
+    <a href="architecture.html#diag-state" class="btn-download">&#128196; View in Architecture page</a>
+  </div>
+</div>
+<div class="page-body">
+
+<div class="kpi-row">
+  <div class="kpi"><div class="kpi-label">Total states</div><div class="kpi-val">11</div></div>
+  <div class="kpi"><div class="kpi-label">Operational</div><div class="kpi-val good">9</div></div>
+  <div class="kpi"><div class="kpi-label">Safety states</div><div class="kpi-val bad">3</div><div style="font-size:10px;color:#9b9a96;margin-top:4px">FAULT · FLUID-EMPTY · SAFE-SHUTDOWN</div></div>
+  <div class="kpi"><div class="kpi-label">Transitions</div><div class="kpi-val">20</div></div>
+  <div class="kpi"><div class="kpi-label">OTA gate</div><div class="kpi-val" style="font-size:13px;color:var(--blue)">STANDBY only</div></div>
+  <div class="kpi"><div class="kpi-label">Brew gate</div><div class="kpi-val" style="font-size:13px">2-step confirm</div></div>
+</div>
+
+<div class="callout red"><strong>SAFE-SHUTDOWN supersedes all.</strong> A safety trigger (SAF-01, SAF-07, SAF-11, SAF-12) transitions the machine to SAFE-SHUTDOWN from ANY state immediately, de-energising all actuators. Recovery requires a power cycle and field engineer clearance — it cannot be reset by software or housekeeping.</div>
+
+<!-- State explorer -->
+<div class="sec-banner">
+  <div class="sec-icon" style="background:var(--blue-light);color:var(--blue)">🔄</div>
+  <div><div class="sec-title">State Explorer</div>
+  <div class="sec-sub">Click any state to expand entry conditions, exit transitions, and SRS traceability</div></div>
+</div>
+
+<div class="filter-row">
+  <button class="ftab on" data-g="ALL" onclick="filterStates(this)">All states</button>
+  <button class="ftab" data-g="OPERATIONAL" onclick="filterStates(this)">Operational</button>
+  <button class="ftab" data-g="SAFETY" onclick="filterStates(this)">Safety states</button>
+  <button class="ftab" data-g="OTA" onclick="filterStates(this)">OTA related</button>
+</div>
+
+<div class="state-grid" id="stateGrid">
+
+<div class="state-card" id="st-INITIALISING" data-state="INITIALISING">
+  <div class="state-head" style="background:#185FA5" onclick="toggleState('INITIALISING')">
+    <div class="state-id">INITIALISING</div>
+    <div class="state-sub-head">Self-test · warm-up · hardness calibration</div>
+    <div class="state-chevron">▼</div>
+  </div>
+  <div class="state-body" style="display:none">
+    <p class="state-desc">Power-on self-test sequence. Firmware integrity check, sensor validation, hardness calibration, subsystem health check. Approximately 15–30 seconds.</p>
+    <div class="state-io">
+      <div>
+        <div class="io-label">Entry conditions</div>
+        <ul class="io-list"><li>Power applied to machine</li></ul>
+      </div>
+      <div>
+        <div class="io-label">Exit transitions</div>
+        <ul class="io-list"><li>Self-test OK → STANDBY</li><li>Self-test FAIL → FAULT</li></ul>
+      </div>
+    </div>
+    <div class="state-srs">SRS / Safety refs: <strong>SRS 1.7, SRS 3.12</strong></div>
+  </div>
+</div>
+<div class="state-card" id="st-STANDBY" data-state="STANDBY">
+  <div class="state-head" style="background:#0F6E56" onclick="toggleState('STANDBY')">
+    <div class="state-id">STANDBY</div>
+    <div class="state-sub-head">Idle · low power · monitoring active</div>
+    <div class="state-chevron">▼</div>
+  </div>
+  <div class="state-body" style="display:none">
+    <p class="state-desc">Machine idle, low-power mode. Telemetry heartbeat active. UI status indicator showing ready state. Awaiting user selection. Normal resting state between brews.</p>
+    <div class="state-io">
+      <div>
+        <div class="io-label">Entry conditions</div>
+        <ul class="io-list"><li>Self-test OK from INITIALISING</li><li>Brew cycle complete from DISPENSING</li><li>Fault cleared from FAULT</li><li>OTA update complete from OTA-UPDATE</li></ul>
+      </div>
+      <div>
+        <div class="io-label">Exit transitions</div>
+        <ul class="io-list"><li>User selection → BREWING</li><li>Fault detected → FAULT</li><li>OTA trigger (03:00–06:00) → OTA-UPDATE</li><li>Safety trigger → SAFE-SHUTDOWN</li></ul>
+      </div>
+    </div>
+    <div class="state-srs">SRS / Safety refs: <strong>SRS 1.7, SRS 1.9</strong></div>
+  </div>
+</div>
+<div class="state-card" id="st-BREWING" data-state="BREWING">
+  <div class="state-head" style="background:#854F0B" onclick="toggleState('BREWING')">
+    <div class="state-id">BREWING</div>
+    <div class="state-sub-head">Heating · pressurising · extracting</div>
+    <div class="state-chevron">▼</div>
+  </div>
+  <div class="state-body" style="display:none">
+    <p class="state-desc">Heating element energised. Water heating to 60–90°C. Pump building extraction pressure to 0.9–1.3 bar. Consumable loaded and sealed. Temperature and pressure monitored continuously.</p>
+    <div class="state-io">
+      <div>
+        <div class="io-label">Entry conditions</div>
+        <ul class="io-list"><li>User selection confirmed (2-step CONFIRM BREW)</li></ul>
+      </div>
+      <div>
+        <div class="io-label">Exit transitions</div>
+        <ul class="io-list"><li>Target temp/pressure achieved → DISPENSING</li><li>Fault detected → FAULT</li><li>Safety trigger → SAFE-SHUTDOWN</li></ul>
+      </div>
+    </div>
+    <div class="state-srs">SRS / Safety refs: <strong>SRS 1.1, 1.2, 1.5, 3.10, 3.13</strong></div>
+  </div>
+</div>
+<div class="state-card" id="st-DISPENSING" data-state="DISPENSING">
+  <div class="state-head" style="background:#854F0B" onclick="toggleState('DISPENSING')">
+    <div class="state-id">DISPENSING</div>
+    <div class="state-sub-head">Delivering beverage · measuring volume</div>
+    <div class="state-chevron">▼</div>
+  </div>
+  <div class="state-body" style="display:none">
+    <p class="state-desc">Beverage being delivered to guest mug. Flow sensor measuring volume. Target volume 200–400 ml in 50 ml steps. Dispensing completes when target volume reached.</p>
+    <div class="state-io">
+      <div>
+        <div class="io-label">Entry conditions</div>
+        <ul class="io-list"><li>Target temperature and pressure achieved from BREWING</li></ul>
+      </div>
+      <div>
+        <div class="io-label">Exit transitions</div>
+        <ul class="io-list"><li>Volume reached → STANDBY</li><li>Fault detected → FAULT</li><li>Safety trigger → SAFE-SHUTDOWN</li></ul>
+      </div>
+    </div>
+    <div class="state-srs">SRS / Safety refs: <strong>SRS 1.3, 2.2, 2.7, 4.6, 4.7</strong></div>
+  </div>
+</div>
+<div class="state-card" id="st-LOW_CONSUMABLE" data-state="LOW_CONSUMABLE">
+  <div class="state-head" style="background:#A06010" onclick="toggleState('LOW_CONSUMABLE')">
+    <div class="state-id">LOW CONSUMABLE</div>
+    <div class="state-sub-head">Status indicator active · brewing still possible</div>
+    <div class="state-chevron">▼</div>
+  </div>
+  <div class="state-body" style="display:none">
+    <p class="state-desc">Consumable level below 20% threshold. Brewing is still possible. Status LED indicates low consumable state. Cloud ops alert transmitted. Machine continues to operate normally — this is a warning state only.</p>
+    <div class="state-io">
+      <div>
+        <div class="io-label">Entry conditions</div>
+        <ul class="io-list"><li>Level sensor threshold reached during any operational state</li></ul>
+      </div>
+      <div>
+        <div class="io-label">Exit transitions</div>
+        <ul class="io-list"><li>Housekeeping replenishes → previous operational state</li><li>Level exhausted → EMPTY/UNAVAILABLE</li><li>OTA trigger → OTA-UPDATE (STANDBY-equivalent)</li></ul>
+      </div>
+    </div>
+    <div class="state-srs">SRS / Safety refs: <strong>SRS 1.4, 1.9</strong></div>
+  </div>
+</div>
+<div class="state-card" id="st-EMPTY_UNAVAILABLE" data-state="EMPTY_UNAVAILABLE">
+  <div class="state-head" style="background:#7A2A1A" onclick="toggleState('EMPTY_UNAVAILABLE')">
+    <div class="state-id">EMPTY UNAVAILABLE</div>
+    <div class="state-sub-head">No brewing possible · wireless alert sent</div>
+    <div class="state-chevron">▼</div>
+  </div>
+  <div class="state-body" style="display:none">
+    <p class="state-desc">Consumable or water store exhausted. No brewing possible. UI shows unavailable state. Wireless alert sent to cloud ops and housekeeping. Machine safe but non-functional until restocked.</p>
+    <div class="state-io">
+      <div>
+        <div class="io-label">Entry conditions</div>
+        <ul class="io-list"><li>Consumable exhausted from LOW CONSUMABLE</li><li>Water reservoir empty</li></ul>
+      </div>
+      <div>
+        <div class="io-label">Exit transitions</div>
+        <ul class="io-list"><li>Housekeeping replenishes → STANDBY</li></ul>
+      </div>
+    </div>
+    <div class="state-srs">SRS / Safety refs: <strong>SRS 1.4, 1.9, SRS 1.10</strong></div>
+  </div>
+</div>
+<div class="state-card" id="st-FLUID_EMPTY" data-state="FLUID_EMPTY">
+  <div class="state-head" style="background:#A32D2D" onclick="toggleState('FLUID_EMPTY')">
+    <div class="state-id">FLUID EMPTY</div>
+    <div class="state-sub-head">Heating element inhibited · SRS 1.10 · SAF-02</div>
+    <div class="state-chevron">▼</div>
+  </div>
+  <div class="state-body" style="display:none">
+    <p class="state-desc">Water reservoir level below minimum threshold for a brew cycle. Heating element inhibited — dry-fire interlock active (SRS 1.10, FW-SF-09). Brew cycle aborted. EMPTY telemetry transmitted. Automatic recovery when reservoir refilled above minimum.</p>
+    <div class="state-io">
+      <div>
+        <div class="io-label">Entry conditions</div>
+        <ul class="io-list"><li>Brew command received with level < minimum</li></ul>
+      </div>
+      <div>
+        <div class="io-label">Exit transitions</div>
+        <ul class="io-list"><li>Refill above minimum (automatic) → STANDBY</li></ul>
+      </div>
+    </div>
+    <div class="state-srs">SRS / Safety refs: <strong>SRS 1.10, SAF-02, FW-SF-09</strong></div>
+  </div>
+</div>
+<div class="state-card" id="st-OTA_UPDATE" data-state="OTA_UPDATE">
+  <div class="state-head" style="background:#185FA5" onclick="toggleState('OTA_UPDATE')">
+    <div class="state-id">OTA UPDATE</div>
+    <div class="state-sub-head">03:00–06:00 window · STANDBY only · A/B partition</div>
+    <div class="state-chevron">▼</div>
+  </div>
+  <div class="state-body" style="display:none">
+    <p class="state-desc">Firmware update in progress. Only entered from STANDBY, within 03:00–06:00 local time window, after 30-minute activity-free check. A/B partition install — automatic rollback to previous partition if STANDBY not achieved within 120 s post-reboot.</p>
+    <div class="state-io">
+      <div>
+        <div class="io-label">Entry conditions</div>
+        <ul class="io-list"><li>OTA trigger from cloud ops (STANDBY state only, night window only)</li></ul>
+      </div>
+      <div>
+        <div class="io-label">Exit transitions</div>
+        <ul class="io-list"><li>Update complete → STANDBY (UPDATE-COMPLETE telemetry)</li><li>Update failed → FAULT (UPDATE-FAILED, rollback to previous partition)</li></ul>
+      </div>
+    </div>
+    <div class="state-srs">SRS / Safety refs: <strong>SRS 1.11, FW-SF-09</strong></div>
+  </div>
+</div>
+<div class="state-card" id="st-MAINTENANCE" data-state="MAINTENANCE">
+  <div class="state-head" style="background:#534AB7" onclick="toggleState('MAINTENANCE')">
+    <div class="state-id">MAINTENANCE</div>
+    <div class="state-sub-head">Housekeeping service cycle · panel open</div>
+    <div class="state-chevron">▼</div>
+  </div>
+  <div class="state-body" style="display:none">
+    <p class="state-desc">Housekeeping service cycle active. Panel open for consumable restock or drip tray emptying. Brewing inhibited. Machine safe. No tools required for housekeeping tasks.</p>
+    <div class="state-io">
+      <div>
+        <div class="io-label">Entry conditions</div>
+        <ul class="io-list"><li>Housekeeping opens access panel</li></ul>
+      </div>
+      <div>
+        <div class="io-label">Exit transitions</div>
+        <ul class="io-list"><li>Panel closed / complete → STANDBY</li></ul>
+      </div>
+    </div>
+    <div class="state-srs">SRS / Safety refs: <strong>SRS 1.4, 2.5, SRS 3.3</strong></div>
+  </div>
+</div>
+<div class="state-card" id="st-FAULT" data-state="FAULT">
+  <div class="state-head" style="background:#7A2A1A" onclick="toggleState('FAULT')">
+    <div class="state-id">FAULT</div>
+    <div class="state-sub-head">Brewing suspended · wireless alert sent</div>
+    <div class="state-chevron">▼</div>
+  </div>
+  <div class="state-body" style="display:none">
+    <p class="state-desc">Recoverable fault detected — temperature or pressure out of range, sensor read failure, firmware watchdog reset. Brewing suspended. Wireless alert sent to cloud ops. Recovery possible after fault is cleared by field engineer or automatic reset.</p>
+    <div class="state-io">
+      <div>
+        <div class="io-label">Entry conditions</div>
+        <ul class="io-list"><li>Temperature or pressure out of range</li><li>Sensor read failure</li><li>Firmware watchdog reset</li><li>OTA update failed (rollback)</li></ul>
+      </div>
+      <div>
+        <div class="io-label">Exit transitions</div>
+        <ul class="io-list"><li>Fault cleared by service / reset → INITIALISING</li></ul>
+      </div>
+    </div>
+    <div class="state-srs">SRS / Safety refs: <strong>SRS 1.7, 1.9, SRS 3.9, 3.12</strong></div>
+  </div>
+</div>
+<div class="state-card" id="st-SAFE_SHUTDOWN" data-state="SAFE_SHUTDOWN">
+  <div class="state-head" style="background:#1A1A18" onclick="toggleState('SAFE_SHUTDOWN')">
+    <div class="state-id">SAFE SHUTDOWN</div>
+    <div class="state-sub-head">All actuators de-energised · recovery: power cycle only</div>
+    <div class="state-chevron">▼</div>
+  </div>
+  <div class="state-body" style="display:none">
+    <p class="state-desc">All actuators de-energised immediately. Entered from ANY state on safety trigger. Heating element, pump, frother, valves all off. Field engineer notified via cloud ops. Recovery by power cycle only — cannot be reset by software or housekeeping.</p>
+    <div class="state-io">
+      <div>
+        <div class="io-label">Entry conditions</div>
+        <ul class="io-list"><li>SAF-01 (overtemperature TCO)</li><li>SAF-07 (insulation fault)</li><li>SAF-11 (interlock failure)</li><li>SAF-12 (watchdog timeout in safety function)</li></ul>
+      </div>
+      <div>
+        <div class="io-label">Exit transitions</div>
+        <ul class="io-list"><li>Power cycle → INITIALISING (after field engineer clearance)</li></ul>
+      </div>
+    </div>
+    <div class="state-srs">SRS / Safety refs: <strong>SAF-01, SAF-07, SAF-11, SAF-12</strong></div>
+  </div>
+</div>
+</div>
+
+<!-- Transition table -->
+<div class="sec-banner">
+  <div class="sec-icon" style="background:var(--teal-light);color:var(--teal)">↔️</div>
+  <div><div class="sec-title">Transition Register</div>
+  <div class="sec-sub">All 20 named state transitions</div></div>
+</div>
+<div class="panel">
+<table class="ops">
+<thead><tr>
+  <th style="padding-left:18px;width:280px">Trigger / event</th>
+  <th>Transition</th>
+</tr></thead>
+<tbody>
+<tr><td style="padding-left:18px">Power on</td><td style="color:#6b6a66">INITIALISING</td></tr><tr><td style="padding-left:18px">Self-test OK</td><td style="color:#6b6a66">INITIALISING → STANDBY</td></tr><tr><td style="padding-left:18px">Self-test FAIL</td><td style="color:#6b6a66">INITIALISING → FAULT</td></tr><tr><td style="padding-left:18px">User selection (2-step confirm)</td><td style="color:#6b6a66">STANDBY → BREWING</td></tr><tr><td style="padding-left:18px">Target temp + pressure achieved</td><td style="color:#6b6a66">BREWING → DISPENSING</td></tr><tr><td style="padding-left:18px">Volume reached</td><td style="color:#6b6a66">DISPENSING → STANDBY</td></tr><tr><td style="padding-left:18px">Level threshold reached</td><td style="color:#6b6a66">ANY → LOW_CONSUMABLE</td></tr><tr><td style="padding-left:18px">Consumable exhausted</td><td style="color:#6b6a66">LOW_CONSUMABLE → EMPTY_UNAVAILABLE</td></tr><tr><td style="padding-left:18px">Housekeeping replenishes</td><td style="color:#6b6a66">EMPTY_UNAVAILABLE → STANDBY</td></tr><tr><td style="padding-left:18px">Brew cmd + level < minimum</td><td style="color:#6b6a66">STANDBY → FLUID_EMPTY</td></tr><tr><td style="padding-left:18px">Refill above minimum</td><td style="color:#6b6a66">FLUID_EMPTY → STANDBY (automatic)</td></tr><tr><td style="padding-left:18px">OTA trigger (night window)</td><td style="color:#6b6a66">STANDBY → OTA_UPDATE</td></tr><tr><td style="padding-left:18px">UPDATE-COMPLETE</td><td style="color:#6b6a66">OTA_UPDATE → STANDBY</td></tr><tr><td style="padding-left:18px">UPDATE-FAILED + rollback</td><td style="color:#6b6a66">OTA_UPDATE → FAULT</td></tr><tr><td style="padding-left:18px">Housekeeping opens panel</td><td style="color:#6b6a66">STANDBY → MAINTENANCE</td></tr><tr><td style="padding-left:18px">Panel closed / complete</td><td style="color:#6b6a66">MAINTENANCE → STANDBY</td></tr><tr><td style="padding-left:18px">Fault detected</td><td style="color:#6b6a66">BREWING/DISPENSING → FAULT</td></tr><tr><td style="padding-left:18px">Fault cleared</td><td style="color:#6b6a66">FAULT → INITIALISING</td></tr><tr><td style="padding-left:18px">Safety trigger (supersedes all)</td><td style="color:#6b6a66">ANY STATE → SAFE_SHUTDOWN</td></tr><tr><td style="padding-left:18px">Power cycle + engineer clearance</td><td style="color:#6b6a66">SAFE_SHUTDOWN → INITIALISING</td></tr>
+</tbody>
+</table>
+</div>
+
+<!-- State machine diagram -->
+<div class="sec-banner">
+  <div class="sec-icon" style="background:var(--blue-light);color:var(--blue)">📐</div>
+  <div><div class="sec-title">State Diagram</div>
+  <div class="sec-sub">From COFFCO-ARCH-001 V2.2 — open in Architecture page for full resolution</div></div>
+</div>
+<div class="diagram-wrap">
+  <div style="overflow-x:auto;padding:12px;background:#f8f7f4">
+    <a href="architecture.html#diag-state" style="display:inline-block;background:var(--navy);color:#fff;padding:8px 16px;border-radius:var(--radius);font-size:12px;font-weight:600;text-decoration:none;margin-bottom:10px">
+      &#128196; Open full diagram in Architecture page →
+    </a>
+  </div>
+</div>
+
+</div>
+</main>
+<script src="assets/nav.js"></script>
+<script>
+const SAFETY_STATES = ['FAULT','SAFE_SHUTDOWN','FLUID_EMPTY'];
+const OTA_STATES    = ['STANDBY','OTA_UPDATE'];
+
+function toggleState(id) {
+  const card = document.getElementById('st-' + id);
+  const body = card.querySelector('.state-body');
+  const open = body.style.display !== 'none';
+  body.style.display = open ? 'none' : 'block';
+  card.classList.toggle('open', !open);
+}
+
+function filterStates(btn) {
+  document.querySelectorAll('.ftab').forEach(b => b.classList.remove('on'));
+  btn.classList.add('on');
+  const g = btn.dataset.g;
+  document.querySelectorAll('.state-card').forEach(card => {
+    const id = card.dataset.state;
+    let show = true;
+    if (g === 'SAFETY')      show = SAFETY_STATES.includes(id);
+    if (g === 'OPERATIONAL') show = !SAFETY_STATES.includes(id);
+    if (g === 'OTA')         show = OTA_STATES.includes(id);
+    card.style.display = show ? '' : 'none';
+  });
+}
+</script>
+</body>
+</html>

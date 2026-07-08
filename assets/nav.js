@@ -22,6 +22,7 @@ const NAV_ITEMS = [
   { label: 'divider' },
   { label: 'Reference', type: 'heading' },
   { label: 'Supporting Documents', href: 'supporting-docs.html', num: '' },
+  { label: 'Market Trade Study', href: 'trade-study.html', num: '' },
   { label: 'OTA Firmware Spec', href: 'ota-firmware.html', num: '' },
   { label: 'RCM2 FMEA', href: 'rcm2-fmea.html', num: '' },
   { label: 'Definitions & Acronyms', href: 'definitions.html', num: '' },
@@ -32,7 +33,7 @@ const NAV_ITEMS = [
   { label: 'Investor Deck', href: 'investor.html', num: '✦' },
   { label: 'HMI Prototype', href: 'hmi.html', num: '✦' },
   { label: 'Cloud Ops Dashboard', href: 'cloudops-wrapper.html', num: '✦' },
-  { label: 'State Machine', href: 'architecture.html#state', num: '✦' },
+  { label: 'State Machine', href: 'state-machine.html', num: '✦' },
 ];
 
 function buildNav(currentPage) {

@@ -20,8 +20,8 @@
     <a href="downloads/ips.docx" class="btn-download">&#11015; Download V3.0 (.docx)</a>
   </div>
 </div>
-<div class="doc-body">
-doc-section-divider">
+<div class="prose-body">
+<div class="doc-section-divider">
   <div class="doc-section-num">1</div>
   <div>
     <div class="doc-section-name">Maintenance Support</div>
@@ -29,7 +29,7 @@ doc-section-divider">
   </div>
 </div>
 
-<h3 class="doc-h2">1.1 Target Availability and RAM Metrics</h3>
+<h3 class="sub-head" style="font-size:14px;color:#5A5A5A">1.1 Target Availability and RAM Metrics</h3>
 <table class="doc-table"><thead>
 <tr><th>Metric</th><th>Target</th><th>Rationale</th><th>SRS Ref</th></tr></thead><tbody>
 <tr><td><strong>Operational Availability (Ao)</strong></td><td><strong>≥ 98.5%</strong></td><td>358 available days/year per room minimum. 1.5% downtime budget allocated across corrective, preventive, and logistics delay.</td><td>SRS 3.3, 3.9</td></tr>
@@ -39,7 +39,7 @@ doc-section-divider">
 <tr><td><strong>Preventive Maintenance Interval</strong></td><td><strong>≥ 365 days</strong></td><td>No scheduled maintenance more than once per year (housekeeping daily service excluded).</td><td>SRS 3.3</td></tr>
 </tbody></table>
 
-<h3 class="doc-h2">1.2 Three-Tier Maintenance Concept</h3>
+<h3 class="sub-head" style="font-size:14px;color:#5A5A5A">1.2 Three-Tier Maintenance Concept</h3>
 <table class="doc-table"><thead>
 <tr><th>Tier</th><th>Who</th><th>Scope (Preventive + Corrective)</th><th>Trigger</th></tr></thead><tbody>
 <tr><td><strong>Tier 1 Organisational</strong></td><td>VS Housekeeping (no tools)</td><td>PM-01: Daily consumable, drip tray, cleaning, visual check, HACCP milk, status report. PM-02: monitor firmware descale cycle. No repair scope.</td><td>Daily — every room service visit</td></tr>
@@ -47,7 +47,7 @@ doc-section-divider">
 <tr><td><strong>Tier 3 Depot / Engineering</strong></td><td>CoffCo Engineering</td><td>PM-06 fleet telemetry review (quarterly). Assembly refurbishment after swap-and-return. Design-level investigation. PM-07 end-of-life assessment.</td><td>Escalated from Tier 2; quarterly fleet review; Year 5 EOL</td></tr>
 </tbody></table>
 
-<h3 class="doc-h2">1.3 Maintenance Schedule — PM-01 to PM-07</h3>
+<h3 class="sub-head" style="font-size:14px;color:#5A5A5A">1.3 Maintenance Schedule — PM-01 to PM-07</h3>
 <table class="doc-table"><thead>
 <tr><th>ID</th><th>Task</th><th>Trigger</th><th>Procedure Summary</th><th>Tier</th><th>Down-time</th></tr></thead><tbody>
 <tr><td><strong>PM-01</strong></td><td><strong>Daily check</strong></td><td>Daily</td><td>Restock consumables (<3 remaining). Empty drip tray. Wipe exterior. Check status indicator. Report FAULT/MAINTENANCE REQUIRED.</td><td>Tier 1</td><td>0</td></tr>
@@ -59,7 +59,7 @@ doc-section-divider">
 <tr><td><strong>PM-07</strong></td><td><strong>End-of-life assessment</strong></td><td>Year 5</td><td>Field engineer: (1) Extraction pressure at outlet vs. spec. (2) Fluid path seal condition - visual inspect for weeping. (3) Chassis integrity - casing, PPS lid fixings, ventilation slots. (4) Firmware supportability - confirm OTA update support continues. (5) Electrical integrity check (Fan et al. evidence - insulating layer aging and open circuit of wires are basic events in the electricity leakage FTA): insulation resistance test on PSU primary-to-secondary and primary-to-earth (pass criterion: greater than 1 MOhm per IEC 60335-1); visual inspection of mains wiring for insulation discolouration, cracking, or chafing; check solder joints and crimp connections at PSU terminals for fatigue cracking. If insulation resistance below 1 MOhm or visible wiring damage found: mandatory PSU swap before machine returns to service. Confirm COTS PSU supplier stated design life has not been exceeded - if design life is 5 years or less, treat as a hard swap trigger. Decision: extend service life, refurbish, or replace.</td><td>Tier 2/3</td><td>1 h/machine</td></tr>
 </tbody></table>
 
-<h3 class="doc-h2">1.4 Manpower and Skills</h3>
+<h3 class="sub-head" style="font-size:14px;color:#5A5A5A">1.4 Manpower and Skills</h3>
 <table class="doc-table"><thead>
 <tr><th>Role</th><th>Quantity</th><th>Employment Type</th><th>Key Competencies</th><th>Security Clearance</th></tr></thead><tbody>
 <tr><td><strong>VS Housekeeping</strong></td><td>Per hotel property — existing headcount</td><td>VS civilian staff</td><td>CoffCo 45-min onboarding; damp-cloth cleaning; status indicator literacy; HACCP milk awareness</td><td>No clearance required</td></tr>
@@ -69,7 +69,6 @@ doc-section-divider">
 <tr><td><strong>CoffCo Field Engineer — Senior (Tier 3 escalation)</strong></td><td>1–2 per region</td><td>CoffCo employed</td><td>All Tier 2 competencies plus design-level fault investigation; firmware fault analysis; fleet analytics</td><td>Standard DBS + CoffCo engineering NDA</td></tr>
 </tbody></table>
 
-<h2 class="doc-h1">§2. Computer Support</h2>
 <div class="doc-section-divider">
   <div class="doc-section-num">2</div>
   <div>
@@ -78,7 +77,7 @@ doc-section-divider">
   </div>
 </div>
 
-<h3 class="doc-h2">2.1 Hardware</h3>
+<h3 class="sub-head" style="font-size:14px;color:#5A5A5A">2.1 Hardware</h3>
 <table class="doc-table"><thead>
 <tr><th>Hardware Element</th><th>Specification</th><th>Role in CoffCo IPS</th></tr></thead><tbody>
 <tr><td><strong>Cloud platform servers</strong></td><td>Hosted cloud infrastructure (AWS / Azure / GCP — TBD at TD-06 resolution). Minimum 99.9% uptime SLA. Auto-scaling for fleet telemetry load.</td><td>Receives all machine telemetry; hosts maintenance alerts; OTA firmware distribution; as-built config register for all deployed machines.</td></tr>
@@ -88,7 +87,7 @@ doc-section-divider">
 <tr><td><strong>VS maintenance tablet</strong></td><td>Standard tablet (VS-provided). Browser-based access to FIDA Maintenance Manual (web-hosted).</td><td>Vacation Stables maintenance team access to FIDA procedures in the field without specialist hardware.</td></tr>
 </tbody></table>
 
-<h3 class="doc-h2">2.2 Software and Data Systems</h3>
+<h3 class="sub-head" style="font-size:14px;color:#5A5A5A">2.2 Software and Data Systems</h3>
 <table class="doc-table"><thead>
 <tr><th>System</th><th>Function</th><th>Data Held</th></tr></thead><tbody>
 <tr><td><strong>CoffCo Cloud Platform</strong></td><td>Central system: telemetry ingestion, alert generation, OTA firmware, fleet dashboard, machine registration, as-built config records, commissioning records.</td><td>Machine serial numbers; firmware versions; water hardness calibrations; fault history per machine; consumable level trends; SAFE-SHUTDOWN events.</td></tr>
@@ -98,7 +97,7 @@ doc-section-divider">
 <tr><td><strong>Spares Inventory System</strong></td><td>Tracks depot stock levels per region. Triggers reorder at minimum stock threshold. Manages rotable cycle (swap-out assembly status: in-service, returned, under repair, refurbished, available).</td><td>Stock counts by part number and region; reorder points; lead times; rotable status.</td></tr>
 </tbody></table>
 
-<h3 class="doc-h2">2.3 Cybersecurity</h3>
+<h3 class="sub-head" style="font-size:14px;color:#5A5A5A">2.3 Cybersecurity</h3>
 <p class="doc-p">The CoffCo cloud platform connects IoT devices in hotel rooms to a central cloud infrastructure. This creates an attack surface that must be addressed in the IPS plan.</p>
 <table class="doc-table"><thead>
 <tr><th>Cybersecurity Element</th><th>Control</th><th>Rationale</th></tr></thead><tbody>
@@ -110,12 +109,11 @@ doc-section-divider">
 <tr><td><strong>Diagnostic tablet security</strong></td><td>CoffCo diagnostic tablets are managed devices (MDM enrolled). Remote wipe capability. Encrypted storage. PIN/biometric lock. Cannot be used for personal internet access.</td><td>Tablets contain machine config data and Field Service Manual. If lost, data must be recoverable and wipe-capable.</td></tr>
 </tbody></table>
 
-<h3 class="doc-h2">2.4 Firmware Management</h3>
-<ul class="doc-list"><li>Firmware version controlled in CoffCo Git repository. Each deployed machine has a current firmware version recorded in the cloud platform asset register.</li></ul>
-<ul class="doc-list"><li>OTA updates pushed by cloud ops during low-usage window (03:00–06:00 local time). Machine must be in STANDBY state. Update process: download → signature verify → install → reboot → confirm STANDBY. Rollback triggered automatically if machine does not reach STANDBY within 120 s post-update.</li></ul>
-<ul class="doc-list"><li>Manual firmware update via diagnostic tablet used when machine has no Wi-Fi access (fallback for TD-06 failure or hotel IT issues).</li></ul>
-<ul class="doc-list"><li>Firmware change notes captured in Technical Publications CMS and linked to relevant SRS requirement. If update changes an operating procedure, associated online manual updated before firmware is deployed.</li></ul>
-<h2 class="doc-h1">§3. Facilities</h2>
+<h3 class="sub-head" style="font-size:14px;color:#5A5A5A">2.4 Firmware Management</h3>
+<ul style="list-style:none;padding:0;margin:8px 0 16px;display:flex;flex-direction:column;gap:6px"><li style="font-size:13px;line-height:1.7;color:#3A3F47;padding-left:16px;position:relative">Firmware version controlled in CoffCo Git repository. Each deployed machine has a current firmware version recorded in the cloud platform asset register.</li></ul>
+<ul style="list-style:none;padding:0;margin:8px 0 16px;display:flex;flex-direction:column;gap:6px"><li style="font-size:13px;line-height:1.7;color:#3A3F47;padding-left:16px;position:relative">OTA updates pushed by cloud ops during low-usage window (03:00–06:00 local time). Machine must be in STANDBY state. Update process: download → signature verify → install → reboot → confirm STANDBY. Rollback triggered automatically if machine does not reach STANDBY within 120 s post-update.</li></ul>
+<ul style="list-style:none;padding:0;margin:8px 0 16px;display:flex;flex-direction:column;gap:6px"><li style="font-size:13px;line-height:1.7;color:#3A3F47;padding-left:16px;position:relative">Manual firmware update via diagnostic tablet used when machine has no Wi-Fi access (fallback for TD-06 failure or hotel IT issues).</li></ul>
+<ul style="list-style:none;padding:0;margin:8px 0 16px;display:flex;flex-direction:column;gap:6px"><li style="font-size:13px;line-height:1.7;color:#3A3F47;padding-left:16px;position:relative">Firmware change notes captured in Technical Publications CMS and linked to relevant SRS requirement. If update changes an operating procedure, associated online manual updated before firmware is deployed.</li></ul>
 <div class="doc-section-divider">
   <div class="doc-section-num">3</div>
   <div>
@@ -124,7 +122,7 @@ doc-section-divider">
   </div>
 </div>
 
-<h3 class="doc-h2">3.1 CoffCo Regional Depot — Maintenance and Storage Facility</h3>
+<h3 class="sub-head" style="font-size:14px;color:#5A5A5A">3.1 CoffCo Regional Depot — Maintenance and Storage Facility</h3>
 <table class="doc-table"><thead>
 <tr><th>Facility Element</th><th>Specification</th><th>Rationale</th></tr></thead><tbody>
 <tr><td><strong>Workshop</strong></td><td>Minimum 30 m² workshop per regional depot. Assembly-swap workbench (2×). ESD (electrostatic discharge) protected workstations for Control Assembly handling. Adequate lighting. Ventilation for HACCP cleaning agents.</td><td>Tier 3 assembly refurbishment and testing. ESD protection required for Control Assembly PCBs. Ventilation required for food-grade cleaning agents used after Thermal Assembly swap.</td></tr>
@@ -135,11 +133,11 @@ doc-section-divider">
 <tr><td><strong>Utilities</strong></td><td>Three-phase power supply (for test equipment). Cold water (for Thermal Assembly post-refurbishment test brew). Standard IT connectivity (Ethernet + Wi-Fi for diagnostic tablets and MMS terminal).</td><td>Test brew requires water supply at depot. Three-phase power for calibration rigs. IT connectivity for MMS and cloud platform access.</td></tr>
 </tbody></table>
 
-<h3 class="doc-h2">3.2 Field Engineer Garaging and Mobile Facilities</h3>
-<ul class="doc-list"><li>Field engineers operate from home or regional depot — no dedicated field office required. Service vehicles carry the full field engineer service kit (see §5).</li></ul>
-<ul class="doc-list"><li>Service vehicle specification: minimum estate car or small van. Internal racking for assembly transit cases. Power inverter for diagnostic tablet charging. Refrigerated cooler bag for HACCP-critical components if Thermal Assembly transit requires temperature control.</li></ul>
-<ul class="doc-list"><li>Hotel rooms provide the working environment for Tier 2 maintenance. No special facilities required at hotel — field engineer brings all tools.</li></ul>
-<h3 class="doc-h2">3.3 Training Facilities</h3>
+<h3 class="sub-head" style="font-size:14px;color:#5A5A5A">3.2 Field Engineer Garaging and Mobile Facilities</h3>
+<ul style="list-style:none;padding:0;margin:8px 0 16px;display:flex;flex-direction:column;gap:6px"><li style="font-size:13px;line-height:1.7;color:#3A3F47;padding-left:16px;position:relative">Field engineers operate from home or regional depot — no dedicated field office required. Service vehicles carry the full field engineer service kit (see §5).</li></ul>
+<ul style="list-style:none;padding:0;margin:8px 0 16px;display:flex;flex-direction:column;gap:6px"><li style="font-size:13px;line-height:1.7;color:#3A3F47;padding-left:16px;position:relative">Service vehicle specification: minimum estate car or small van. Internal racking for assembly transit cases. Power inverter for diagnostic tablet charging. Refrigerated cooler bag for HACCP-critical components if Thermal Assembly transit requires temperature control.</li></ul>
+<ul style="list-style:none;padding:0;margin:8px 0 16px;display:flex;flex-direction:column;gap:6px"><li style="font-size:13px;line-height:1.7;color:#3A3F47;padding-left:16px;position:relative">Hotel rooms provide the working environment for Tier 2 maintenance. No special facilities required at hotel — field engineer brings all tools.</li></ul>
+<h3 class="sub-head" style="font-size:14px;color:#5A5A5A">3.3 Training Facilities</h3>
 <table class="doc-table"><thead>
 <tr><th>Facility</th><th>Purpose and Specification</th></tr></thead><tbody>
 <tr><td><strong>CoffCo Field Engineer Training Centre</strong></td><td>Minimum 1 dedicated training centre per CoffCo operating region. Equipped with: 4–6 representative CoffCo machines (production-representative, not necessarily certified units); full field engineer service kit (1 set per 2 trainees); calibration rigs; water supply; HACCP cleaning facilities; classroom space (12 seats); projector and digital display for training materials. Used for 2-day Field Service qualification and annual refresher.</td></tr>
@@ -149,7 +147,6 @@ doc-section-divider">
 <tr><td><strong>On-site training environment</strong></td><td>Each hotel property at commissioning serves as an on-site training environment. The installed machine (post-commissioning sign-off) is used for Housekeeping and VS maintenance team on-site training. Delivered by field engineer at each property before go-live.</td></tr>
 </tbody></table>
 
-<h2 class="doc-h1">§4. Packaging, Handling, Storage, and Transportation (PHS**&amp;**T)</h2>
 <div class="doc-section-divider">
   <div class="doc-section-num">4</div>
   <div>
@@ -158,7 +155,7 @@ doc-section-divider">
   </div>
 </div>
 
-<h3 class="doc-h2">4.1 Packaging</h3>
+<h3 class="sub-head" style="font-size:14px;color:#5A5A5A">4.1 Packaging</h3>
 <table class="doc-table"><thead>
 <tr><th>Item</th><th>Packaging Specification</th></tr></thead><tbody>
 <tr><td><strong>New machine (outbound)</strong></td><td>Double-wall corrugated carton with custom-fit polyethylene foam inserts (minimum 50mm). Rated for drops up to 1.0m per ASTM D5276. Anti-tip bracket and Quick-Reference Card in separate compartment within same carton. Carton labelled with: machine serial number, destination room number, property name, and ‘FRAGILE — HOT LIQUID APPLIANCE’.</td></tr>
@@ -168,12 +165,12 @@ doc-section-divider">
 <tr><td><strong>Hazardous materials</strong></td><td>No Class 1 (explosive) or Class 8 (corrosive) materials. Descale fluid (citric acid based): GHS07 (irritant), non-hazardous for transport (UN3082 if applicable — confirm with CoffCo compliance). WEEE marking on all electronic assemblies per Directive 2012/19/EU.</td></tr>
 </tbody></table>
 
-<h3 class="doc-h2">4.2 Handling</h3>
-<ul class="doc-list"><li>Thermal Assembly: maximum mass 4 kg. One-person lift within manual handling guidelines (HSE Manual Handling Operations Regulations 1992). No mechanical aids required for routine assembly swap.</li></ul>
-<ul class="doc-list"><li>Full machine (new installation): maximum mass 10 kg (SRS 4.10). One-person carry acceptable for flat-surface hotel room delivery. Use of sack truck for multi-floor hotel deliveries where lift access is unavailable.</li></ul>
-<ul class="doc-list"><li>ESD precautions: anti-static wrist strap mandatory when handling Control Assembly PCB. ESD bag used during transit.</li></ul>
-<ul class="doc-list"><li>HACCP handling: Thermal Assembly handled with food-grade disposable gloves when any fluid path surfaces are accessible. HACCP cleaning completed before assembly is returned to storage.</li></ul>
-<h3 class="doc-h2">4.3 Storage (Depot and Property)</h3>
+<h3 class="sub-head" style="font-size:14px;color:#5A5A5A">4.2 Handling</h3>
+<ul style="list-style:none;padding:0;margin:8px 0 16px;display:flex;flex-direction:column;gap:6px"><li style="font-size:13px;line-height:1.7;color:#3A3F47;padding-left:16px;position:relative">Thermal Assembly: maximum mass 4 kg. One-person lift within manual handling guidelines (HSE Manual Handling Operations Regulations 1992). No mechanical aids required for routine assembly swap.</li></ul>
+<ul style="list-style:none;padding:0;margin:8px 0 16px;display:flex;flex-direction:column;gap:6px"><li style="font-size:13px;line-height:1.7;color:#3A3F47;padding-left:16px;position:relative">Full machine (new installation): maximum mass 10 kg (SRS 4.10). One-person carry acceptable for flat-surface hotel room delivery. Use of sack truck for multi-floor hotel deliveries where lift access is unavailable.</li></ul>
+<ul style="list-style:none;padding:0;margin:8px 0 16px;display:flex;flex-direction:column;gap:6px"><li style="font-size:13px;line-height:1.7;color:#3A3F47;padding-left:16px;position:relative">ESD precautions: anti-static wrist strap mandatory when handling Control Assembly PCB. ESD bag used during transit.</li></ul>
+<ul style="list-style:none;padding:0;margin:8px 0 16px;display:flex;flex-direction:column;gap:6px"><li style="font-size:13px;line-height:1.7;color:#3A3F47;padding-left:16px;position:relative">HACCP handling: Thermal Assembly handled with food-grade disposable gloves when any fluid path surfaces are accessible. HACCP cleaning completed before assembly is returned to storage.</li></ul>
+<h3 class="sub-head" style="font-size:14px;color:#5A5A5A">4.3 Storage (Depot and Property)</h3>
 <table class="doc-table"><thead>
 <tr><th>Item</th><th>Storage Conditions</th><th>Max Storage Duration</th><th>Environmental Protection</th></tr></thead><tbody>
 <tr><td><strong>Thermal Assembly (refurbished, awaiting dispatch)</strong></td><td>10–25°C, <60% RH. Climate-controlled racking. HACCP food-grade area.</td><td>12 months maximum before re-test brew required</td><td>Sealed food-grade bag. Desiccant in transit case.</td></tr>
@@ -185,7 +182,7 @@ doc-section-divider">
 <tr><td><strong>Hotel property consumable stock</strong></td><td>Housekeeping store: ambient, dry, clean. Not accessible to guests.</td><td>Rotate per demand rate (2 brews/day/room). No long-term storage.</td><td>Standard packaging. First-in-first-out.</td></tr>
 </tbody></table>
 
-<h3 class="doc-h2">4.4 Transportation</h3>
+<h3 class="sub-head" style="font-size:14px;color:#5A5A5A">4.4 Transportation</h3>
 <table class="doc-table"><thead>
 <tr><th>Shipment Type</th><th>Method and Carrier</th><th>Regulatory Compliance</th></tr></thead><tbody>
 <tr><td><strong>New machine — estate rollout (bulk)</strong></td><td>Palletised delivery to hotel goods entrance. Pallet wrap. Carrier: DHL Freight, XPO, or equivalent.</td><td>No IATA restrictions (mains appliance, no lithium cells). WEEE marking per EU Directive 2012/19/EU. Carton marked ‘FRAGILE’.</td></tr>
@@ -195,7 +192,6 @@ doc-section-divider">
 <tr><td><strong>International shipment (EU/US markets)</strong></td><td>Freight forwarder with customs brokerage. CE declaration (EU), UL/ETL certificate (US) included in shipping documentation.</td><td>Import duties per destination market. RoHS compliance documentation. Country-specific plug module variant confirmed before dispatch.</td></tr>
 </tbody></table>
 
-<h2 class="doc-h1">§5. Support and Test Equipment</h2>
 <div class="doc-section-divider">
   <div class="doc-section-num">5</div>
   <div>
@@ -219,7 +215,6 @@ doc-section-divider">
 <tr><td><strong>Sack truck / hand truck</strong></td><td>Handling aid</td><td>For multi-floor hotel deliveries where lift is unavailable. Collapsible, stored in service vehicle.</td><td>CoffCo field engineer service vehicle.</td></tr>
 </tbody></table>
 
-<h2 class="doc-h1">§6. Technical Data</h2>
 <div class="doc-section-divider">
   <div class="doc-section-num">6</div>
   <div>
@@ -228,7 +223,7 @@ doc-section-divider">
   </div>
 </div>
 
-<h3 class="doc-h2">6.1 Documentation Suite</h3>
+<h3 class="sub-head" style="font-size:14px;color:#5A5A5A">6.1 Documentation Suite</h3>
 <table class="doc-table"><thead>
 <tr><th>Document</th><th>Content</th><th>Format / Delivery</th><th>Audience</th><th>Version Control</th></tr></thead><tbody>
 <tr><td><strong>User Manual</strong></td><td>9-step operating sequence; visual aids; tips; troubleshooting; coffee education; multi-language.</td><td>Web-hosted (QR code). PDF download.</td><td>Hotel room guest</td><td>CoffCo CMS. Updated before any firmware change affecting operation.</td></tr>
@@ -239,12 +234,12 @@ doc-section-divider">
 <tr><td><strong>IEC 60335-1 Certificate</strong></td><td>Type-test certificate confirming machine compliance. Declaration of Conformity.</td><td>PDF. Lodged with VS facilities management.</td><td>VS facilities, CoffCo compliance</td><td>Reissued on any hardware change requiring re-test.</td></tr>
 </tbody></table>
 
-<h3 class="doc-h2">6.2 Engineering Drawings and CAD</h3>
-<ul class="doc-list"><li>All CoffCo machine CAD models and engineering drawings held in CoffCo PLM (Product Lifecycle Management) system. Access restricted to CoffCo engineering team and approved subcontractors.</li></ul>
-<ul class="doc-list"><li>Assembly drawings (2D PDF) provided to regional depot for assembly-swap reference. Drawings version-stamped. Superseded drawings archived but not deleted.</li></ul>
-<ul class="doc-list"><li>Schematics (electrical wiring, fluid circuit) held in PLM. PDF versions on diagnostic tablet for field engineer reference during fault diagnosis.</li></ul>
-<ul class="doc-list"><li>VS does not receive CAD or detailed drawings — these contain CoffCo IP. VS receives only the User Manual, Housekeeping Guide, FIDA Manual, and certification documents.</li></ul>
-<h3 class="doc-h2">6.3 Data Management and Configuration Control</h3>
+<h3 class="sub-head" style="font-size:14px;color:#5A5A5A">6.2 Engineering Drawings and CAD</h3>
+<ul style="list-style:none;padding:0;margin:8px 0 16px;display:flex;flex-direction:column;gap:6px"><li style="font-size:13px;line-height:1.7;color:#3A3F47;padding-left:16px;position:relative">All CoffCo machine CAD models and engineering drawings held in CoffCo PLM (Product Lifecycle Management) system. Access restricted to CoffCo engineering team and approved subcontractors.</li></ul>
+<ul style="list-style:none;padding:0;margin:8px 0 16px;display:flex;flex-direction:column;gap:6px"><li style="font-size:13px;line-height:1.7;color:#3A3F47;padding-left:16px;position:relative">Assembly drawings (2D PDF) provided to regional depot for assembly-swap reference. Drawings version-stamped. Superseded drawings archived but not deleted.</li></ul>
+<ul style="list-style:none;padding:0;margin:8px 0 16px;display:flex;flex-direction:column;gap:6px"><li style="font-size:13px;line-height:1.7;color:#3A3F47;padding-left:16px;position:relative">Schematics (electrical wiring, fluid circuit) held in PLM. PDF versions on diagnostic tablet for field engineer reference during fault diagnosis.</li></ul>
+<ul style="list-style:none;padding:0;margin:8px 0 16px;display:flex;flex-direction:column;gap:6px"><li style="font-size:13px;line-height:1.7;color:#3A3F47;padding-left:16px;position:relative">VS does not receive CAD or detailed drawings — these contain CoffCo IP. VS receives only the User Manual, Housekeeping Guide, FIDA Manual, and certification documents.</li></ul>
+<h3 class="sub-head" style="font-size:14px;color:#5A5A5A">6.3 Data Management and Configuration Control</h3>
 <table class="doc-table"><thead>
 <tr><th>Data Management Element</th><th>CoffCo Approach</th></tr></thead><tbody>
 <tr><td><strong>Version control (documents)</strong></td><td>All technical publications version-controlled in CoffCo CMS. Version number format: V[major].[minor]. Major increment on substantive procedure change; minor increment on editorial correction. Previous versions archived. QR code links always resolve to current version.</td></tr>
@@ -254,7 +249,6 @@ doc-section-divider">
 <tr><td><strong>Compliance standards referenced</strong></td><td>IEC 60335-1 (electrical safety); IEC 60529 (IPX2 ingress protection); IEC 61000-4-5 (surge immunity); EN 55014 (EMC Class B); HACCP (food safety); GDPR (data protection); WEEE Directive 2012/19/EU (end-of-life); RoHS Directive 2011/65/EU (hazardous substances).</td></tr>
 </tbody></table>
 
-<h2 class="doc-h1">§7. Training</h2>
 <div class="doc-section-divider">
   <div class="doc-section-num">7</div>
   <div>
@@ -263,7 +257,7 @@ doc-section-divider">
   </div>
 </div>
 
-<h3 class="doc-h2">7.1 Training Needs Analysis</h3>
+<h3 class="sub-head" style="font-size:14px;color:#5A5A5A">7.1 Training Needs Analysis</h3>
 <table class="doc-table"><thead>
 <tr><th>Stakeholder</th><th>Baseline Assumption</th><th>Training Gap</th><th>Training Output</th></tr></thead><tbody>
 <tr><td><strong>Hotel room guest</strong></td><td>Familiar with coffee machines generally.</td><td>CoffCo-specific operating sequence and consumable format only.</td><td>User Manual (web via QR code). No formal training session required (SRS 2.1).</td></tr>
@@ -274,7 +268,7 @@ doc-section-divider">
 <tr><td><strong>VS property managers</strong></td><td>Hotel management background.</td><td>Cloud dashboard: machine fleet status, alert types, escalation SLA.</td><td>30-min cloud dashboard orientation by CoffCo account manager at go-live.</td></tr>
 </tbody></table>
 
-<h3 class="doc-h2">7.2 Delivery Methods</h3>
+<h3 class="sub-head" style="font-size:14px;color:#5A5A5A">7.2 Delivery Methods</h3>
 <table class="doc-table"><thead>
 <tr><th>Method</th><th>Used For</th><th>Detail</th></tr></thead><tbody>
 <tr><td><strong>E-learning (web-hosted)</strong></td><td>User Manual, Housekeeping Guide, FIDA Maintenance Manual</td><td>Online manuals with embedded interactive diagrams, step-by-step animations, and video walkthroughs. Multi-language support. Accessible via QR code on machine or Quick-Reference Card. No login required for User Manual and Housekeeping Guide.</td></tr>
@@ -284,7 +278,6 @@ doc-section-divider">
 <tr><td><strong>Simulator (diagnostic tablet)</strong></td><td>VS maintenance team FIDA familiarisation; cloud ops triage training</td><td>Pre-loaded simulated fault scenarios on diagnostic tablet. No live machine required. Allows maintenance team to practice FIDA fault navigation before encountering a real fault.</td></tr>
 </tbody></table>
 
-<h2 class="doc-h1">§8. Personnel</h2>
 <div class="doc-section-divider">
   <div class="doc-section-num">8</div>
   <div>
@@ -293,7 +286,7 @@ doc-section-divider">
   </div>
 </div>
 
-<h3 class="doc-h2">8.1 Workforce Planning</h3>
+<h3 class="sub-head" style="font-size:14px;color:#5A5A5A">8.1 Workforce Planning</h3>
 <table class="doc-table"><thead>
 <tr><th>Role</th><th>Employment Type</th><th>Headcount (per region)</th><th>Certification / Qualification</th><th>Scaling Basis</th></tr></thead><tbody>
 <tr><td><strong>CoffCo Field Engineer</strong></td><td>CoffCo employed or contracted</td><td>2 minimum at go-live; scale at 1 FE per 50 machines deployed</td><td>2-day CoffCo Field Service qualification. Annual refresher. Basic DBS check. Calibration-checked tooling.</td><td>1 FE per 50 machines is the planning rule (1 annual PM-03 per machine per year; FE can complete approx. 3 per day = 50 machines per year at 2 days/week field time, allowing for corrective callouts).</td></tr>
@@ -304,7 +297,7 @@ doc-section-divider">
 <tr><td><strong>VS Maintenance Team (trained for CoffCo)</strong></td><td>VS employed</td><td>Existing maintenance headcount</td><td>CoffCo 60-min on-site FIDA training.</td><td>No additional headcount for CoffCo. Existing hotel maintenance team absorbs first-line fault response.</td></tr>
 </tbody></table>
 
-<h3 class="doc-h2">8.2 Human Factors — Field Engineer and Maintenance Team</h3>
+<h3 class="sub-head" style="font-size:14px;color:#5A5A5A">8.2 Human Factors — Field Engineer and Maintenance Team</h3>
 <table class="doc-table"><thead>
 <tr><th>Human Factors Element</th><th>CoffCo Approach</th></tr></thead><tbody>
 <tr><td><strong>Ergonomics — assembly swap</strong></td><td>Thermal Assembly maximum 4 kg one-person lift. All panels accessed from front or top — no under-machine access required. Anti-tamper screws located at accessible heights. No kneeling or sustained awkward postures for routine PM-03.</td></tr>
@@ -316,12 +309,11 @@ doc-section-divider">
 <tr><td><strong>Error prevention — diagnostic tablet</strong></td><td>Diagnostic tablet guides field engineer step-by-step through assembly swap with visual reference. Assembly is keyed (mechanical) to prevent installation in wrong orientation. Firmware re-registration is mandatory step on Control Assembly swap — tablet prompts before closing work order.</td></tr>
 </tbody></table>
 
-<h3 class="doc-h2">8.3 Recruitment and Retention</h3>
-<ul class="doc-list"><li>Field engineers are the critical resource for CoffCo IPS delivery. Target profile: HNC/HND in electrical or mechanical engineering, or equivalent experience. Electrical bias preferred (IEC 60335 electrical safety work). HACCP food handler certificate desirable.</li></ul>
-<ul class="doc-list"><li>Career framework: Junior FE (0–2 years, supervised) → FE (2+ years, independent) → Senior FE (5+ years, Tier 3 escalation, training delivery). Senior FEs can progress to CoffCo engineering team.</li></ul>
-<ul class="doc-list"><li>Retention: competitive day rates for contracted FEs; mileage and accommodation covered for travel-heavy regions; diagnostic tablet and tooling provided (not personal equipment). Annual refresher training maintains engagement and skills currency.</li></ul>
-<ul class="doc-list"><li>Cloud ops analysts: graduate-level IT/software operations profile. Shift-premium pay for out-of-hours coverage. Progression into CoffCo platform engineering team.</li></ul>
-<h2 class="doc-h1">§9. Supply Support</h2>
+<h3 class="sub-head" style="font-size:14px;color:#5A5A5A">8.3 Recruitment and Retention</h3>
+<ul style="list-style:none;padding:0;margin:8px 0 16px;display:flex;flex-direction:column;gap:6px"><li style="font-size:13px;line-height:1.7;color:#3A3F47;padding-left:16px;position:relative">Field engineers are the critical resource for CoffCo IPS delivery. Target profile: HNC/HND in electrical or mechanical engineering, or equivalent experience. Electrical bias preferred (IEC 60335 electrical safety work). HACCP food handler certificate desirable.</li></ul>
+<ul style="list-style:none;padding:0;margin:8px 0 16px;display:flex;flex-direction:column;gap:6px"><li style="font-size:13px;line-height:1.7;color:#3A3F47;padding-left:16px;position:relative">Career framework: Junior FE (0–2 years, supervised) → FE (2+ years, independent) → Senior FE (5+ years, Tier 3 escalation, training delivery). Senior FEs can progress to CoffCo engineering team.</li></ul>
+<ul style="list-style:none;padding:0;margin:8px 0 16px;display:flex;flex-direction:column;gap:6px"><li style="font-size:13px;line-height:1.7;color:#3A3F47;padding-left:16px;position:relative">Retention: competitive day rates for contracted FEs; mileage and accommodation covered for travel-heavy regions; diagnostic tablet and tooling provided (not personal equipment). Annual refresher training maintains engagement and skills currency.</li></ul>
+<ul style="list-style:none;padding:0;margin:8px 0 16px;display:flex;flex-direction:column;gap:6px"><li style="font-size:13px;line-height:1.7;color:#3A3F47;padding-left:16px;position:relative">Cloud ops analysts: graduate-level IT/software operations profile. Shift-premium pay for out-of-hours coverage. Progression into CoffCo platform engineering team.</li></ul>
 <div class="doc-section-divider">
   <div class="doc-section-num">9</div>
   <div>
@@ -330,7 +322,7 @@ doc-section-divider">
   </div>
 </div>
 
-<h3 class="doc-h2">9.1 Supported Repair List (SRL)</h3>
+<h3 class="sub-head" style="font-size:14px;color:#5A5A5A">9.1 Supported Repair List (SRL)</h3>
 <table class="doc-table"><thead>
 <tr><th>Item</th><th>Class</th><th>Fail Rank</th><th>Criticality</th><th>Lead Time</th><th>Min Stock (per region)</th><th>Notes</th></tr></thead><tbody>
 <tr><td><strong>Thermal Assembly</strong></td><td>Rotable</td><td>1</td><td><strong>CRITICAL</strong></td><td>5 days</td><td>2</td><td>Primary failure concentration. Depot holds 2 at all times. Includes PRV and seals. Refurbishment SLA: 10 days after receipt.</td></tr>
@@ -346,7 +338,7 @@ doc-section-divider">
 <tr><td><strong>Quick-Reference Card (laminated)</strong></td><td>Consumable</td><td>N/A</td><td><strong>LOW</strong></td><td>1 day</td><td>5/property</td><td>Replace if damaged or procedure changes. Held at depot.</td></tr>
 </tbody></table>
 
-<h3 class="doc-h2">9.2 Rotable Cycle Management</h3>
+<h3 class="sub-head" style="font-size:14px;color:#5A5A5A">9.2 Rotable Cycle Management</h3>
 <p class="doc-p">Rotable assets (Thermal Assembly, Control Assembly, PSU) cycle between three states. The cloud platform MMS tracks each rotable by serial number through its full cycle.</p>
 <table class="doc-table"><thead>
 <tr><th>State</th><th>Description</th><th>MMS Action</th></tr></thead><tbody>
@@ -357,7 +349,7 @@ doc-section-divider">
 <tr><td><strong>Rejected — beyond economical repair</strong></td><td>Damage beyond refurbishment. Disposed of per WEEE directive. Component parts harvested where possible.</td><td>MMS: status = BER. Dispose of per WEEE. Record for fleet failure trend analysis.</td></tr>
 </tbody></table>
 
-<h3 class="doc-h2">9.3 Obsolescence Management</h3>
+<h3 class="sub-head" style="font-size:14px;color:#5A5A5A">9.3 Obsolescence Management</h3>
 <table class="doc-table"><thead>
 <tr><th>Obsolescence Risk</th><th>Mitigation</th></tr></thead><tbody>
 <tr><td><strong>COTS component obsolescence (pump, PRV, NTC, WDT IC)</strong></td><td>Multi-source all safety-critical COTS components at design stage (minimum 2 approved suppliers). Maintain Approved Equivalent List (AEL) for each COTS part. AEL reviewed annually. Last-Time-Buy (LTB) option exercised if a primary supplier withdraws — quantity calculated from remaining fleet life × annual replacement rate.</td></tr>
@@ -367,7 +359,6 @@ doc-section-divider">
 <tr><td><strong>Cloud platform technology evolution</strong></td><td>Cloud platform built on standard REST API. Machine telemetry protocol documented and version-controlled. Platform upgrade must not break deployed machine firmware compatibility — breaking changes managed through versioned API.</td></tr>
 </tbody></table>
 
-<h2 class="doc-h1">§10. Engineering Support</h2>
 <div class="doc-section-divider">
   <div class="doc-section-num">10</div>
   <div>
@@ -376,12 +367,12 @@ doc-section-divider">
   </div>
 </div>
 
-<h3 class="doc-h2">10.1 Design for Supportability</h3>
-<ul class="doc-list"><li>Modular physical architecture (SP-02): assembly-swap model achieves MTTR ≤4 h without requiring component-level repair in the field. Each physical element is independently replaceable.</li></ul>
-<ul class="doc-list"><li>Tool-free housekeeping access (SRS 2.5): water reservoir, drip tray, and consumable chamber all accessible without tools. Tier 1 maintenance requires zero specialist equipment.</li></ul>
-<ul class="doc-list"><li>Accessibility: all Tier 2 serviceable panels accessed from front or top. No machine movement required for any routine maintenance task.</li></ul>
-<ul class="doc-list"><li>Life cycle cost considerations: assembly-swap model has higher upfront spares cost but lower MTTR and lower field engineer skill requirement than component-level repair. LCC modelling confirms swap model is preferred for a hotel room deployment context where minimising downtime is the primary commercial driver.</li></ul>
-<h3 class="doc-h2">10.2 Configuration Management</h3>
+<h3 class="sub-head" style="font-size:14px;color:#5A5A5A">10.1 Design for Supportability</h3>
+<ul style="list-style:none;padding:0;margin:8px 0 16px;display:flex;flex-direction:column;gap:6px"><li style="font-size:13px;line-height:1.7;color:#3A3F47;padding-left:16px;position:relative">Modular physical architecture (SP-02): assembly-swap model achieves MTTR ≤4 h without requiring component-level repair in the field. Each physical element is independently replaceable.</li></ul>
+<ul style="list-style:none;padding:0;margin:8px 0 16px;display:flex;flex-direction:column;gap:6px"><li style="font-size:13px;line-height:1.7;color:#3A3F47;padding-left:16px;position:relative">Tool-free housekeeping access (SRS 2.5): water reservoir, drip tray, and consumable chamber all accessible without tools. Tier 1 maintenance requires zero specialist equipment.</li></ul>
+<ul style="list-style:none;padding:0;margin:8px 0 16px;display:flex;flex-direction:column;gap:6px"><li style="font-size:13px;line-height:1.7;color:#3A3F47;padding-left:16px;position:relative">Accessibility: all Tier 2 serviceable panels accessed from front or top. No machine movement required for any routine maintenance task.</li></ul>
+<ul style="list-style:none;padding:0;margin:8px 0 16px;display:flex;flex-direction:column;gap:6px"><li style="font-size:13px;line-height:1.7;color:#3A3F47;padding-left:16px;position:relative">Life cycle cost considerations: assembly-swap model has higher upfront spares cost but lower MTTR and lower field engineer skill requirement than component-level repair. LCC modelling confirms swap model is preferred for a hotel room deployment context where minimising downtime is the primary commercial driver.</li></ul>
+<h3 class="sub-head" style="font-size:14px;color:#5A5A5A">10.2 Configuration Management</h3>
 <table class="doc-table"><thead>
 <tr><th>CM Element</th><th>CoffCo Approach</th></tr></thead><tbody>
 <tr><td><strong>Configuration baseline</strong></td><td>Established at commissioning. Commissioning record defines: machine serial number, hardware configuration, firmware version, water hardness calibration, plug module variant, installation date, property/room assignment. Stored in cloud platform asset register.</td></tr>
@@ -391,7 +382,7 @@ doc-section-divider">
 <tr><td><strong>Feedback loop</strong></td><td>Field data → FMECA update → IPS Plan update (this document) → SDD update → training update. Cycle time target: 90 days from identification of significant field anomaly to updated IPS Plan issue.</td></tr>
 </tbody></table>
 
-<h3 class="doc-h2">10.3 Engineering Change Process</h3>
+<h3 class="sub-head" style="font-size:14px;color:#5A5A5A">10.3 Engineering Change Process</h3>
 <p class="doc-p">An Engineering Change Notice (ECN) is raised whenever a design change affects the IPS — for example, when a new COTS component is approved as an equivalent, when a firmware change affects a maintenance procedure, or when a field failure trend requires a design modification.</p>
 <table class="doc-table"><thead>
 <tr><th>Step</th><th>Activity</th><th>Detail</th><th>Owner</th></tr></thead><tbody>
@@ -402,7 +393,7 @@ doc-section-divider">
 <tr><td><strong>ECN-5</strong></td><td><strong>Implementation and close</strong></td><td>Implement change across fleet. Record completion in cloud platform. Close ECN. Archive previous baseline documents.</td><td>CoffCo field engineers + cloud ops</td></tr>
 </tbody></table>
 
-<h3 class="doc-h2">10.4 Open Actions from External Failure Analysis (Fan et al. 2009)</h3>
+<h3 class="sub-head" style="font-size:14px;color:#5A5A5A">10.4 Open Actions from External Failure Analysis (Fan et al. 2009)</h3>
 <table class="doc-table"><thead>
 <tr><th>Ref</th><th>Action</th><th>Detail</th><th>Owner / When</th></tr></thead><tbody>
 <tr><td><strong>OA-IPS-01</strong></td><td><strong>NTC holder material upgrade</strong></td><td>Upgrade NTC holder specification from PP plastic to PPS material (Fan et al.: PP holder perforates at ~100°C due to poor processing). Add to SDD V1.2. Incoming inspection for NTC holders at manufacture.</td><td>CoffCo engineering / SDD V1.2</td></tr>

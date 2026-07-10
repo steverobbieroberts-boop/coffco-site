@@ -1,14 +1,16 @@
-/* CoffCo Site — Shared Navigation */
-
-const NAV_ITEMS = [
+const NAV = [
   { label: 'Project Overview', href: 'index.html', num: '' },
+  { label: 'Investor Deck', href: 'investor.html', num: '✦' },
   { label: 'divider' },
   { label: 'DoD Deliverables', type: 'heading' },
   { label: 'Systems Thinking', href: 'systems-thinking.html', num: '1' },
   { label: 'Operational Concept', href: 'opscon.html', num: '' },
   { label: 'Requirements (SRS)', href: 'srs.html', num: '2' },
   { label: 'Architecture', href: 'architecture.html', num: '3' },
+  { label: 'State Machine', href: 'state-machine.html', num: '✦' },
   { label: 'System Design', href: 'design.html', num: '4' },
+  { label: 'HMI Prototype', href: 'hmi.html', num: '✦' },
+  { label: 'Cloud Ops Dashboard', href: 'cloudops-wrapper.html', num: '✦' },
   { label: 'Analysis & FMECA', href: 'analysis.html', num: '5' },
   { label: 'Implementation', href: 'implementation.html', num: '6' },
   { label: 'BIV Schedule', href: 'schedule.html', num: '' },
@@ -18,24 +20,18 @@ const NAV_ITEMS = [
   { label: 'HAZID Register', href: 'hazid.html', num: '' },
   { label: 'Transition Plan', href: 'transition.html', num: '' },
   { label: 'IPS Plan', href: 'ips.html', num: '10' },
+  { label: 'OTA Firmware Spec', href: 'ota-firmware.html', num: '' },
+  { label: 'RCM2 FMEA', href: 'rcm2-fmea.html', num: '' },
   { label: 'Disposal Plan', href: 'disposal.html', num: '11' },
   { label: 'divider' },
   { label: 'Reference', type: 'heading' },
   { label: 'Supporting Documents', href: 'supporting-docs.html', num: '' },
   { label: 'Market Trade Study', href: 'trade-study.html', num: '' },
-  { label: 'OTA Firmware Spec', href: 'ota-firmware.html', num: '' },
-  { label: 'RCM2 FMEA', href: 'rcm2-fmea.html', num: '' },
   { label: 'Definitions & Acronyms', href: 'definitions.html', num: '' },
   { label: 'Assumptions & Deps', href: 'assumptions.html', num: '' },
   { label: 'Operating Environment', href: 'operating-environment.html', num: '' },
   { label: 'Useful Links', href: 'useful-links.html', num: '' },
   { label: 'Glossary of Terms', href: 'glossary.html', num: '' },
-  { label: 'divider' },
-  { label: 'Interactive Tools', type: 'heading' },
-  { label: 'Investor Deck', href: 'investor.html', num: '✦' },
-  { label: 'HMI Prototype', href: 'hmi.html', num: '✦' },
-  { label: 'Cloud Ops Dashboard', href: 'cloudops-wrapper.html', num: '✦' },
-  { label: 'State Machine', href: 'state-machine.html', num: '✦' },
 ];
 
 function buildNav(currentPage) {

@@ -44,7 +44,7 @@ function buildNav(currentPage) {
       <div class="logo-sub">Systems Engineering Portfolio</div>
     </div>`;
 
-  NAV_ITEMS.forEach(item => {
+  NAV.forEach(item => {
     if (item.label === 'divider') {
       html += `<div class="sidebar-divider"></div>`;
     } else if (item.type === 'heading') {

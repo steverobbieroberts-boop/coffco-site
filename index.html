@@ -171,8 +171,8 @@
   margin: 20px 0;
 }
 .metric-card {
-  background: var(--white);
-  border: 1px solid var(--rule);
+  background: rgba(255,255,255,0.1);
+  border: 1px solid rgba(255,255,255,0.2);
   border-radius: 8px;
   padding: 16px;
   text-align: center;
@@ -182,15 +182,16 @@
   font-weight: 800;
   color: #fff;
   line-height: 1;
+  text-shadow: 0 1px 3px rgba(0,0,0,0.3);
 }
 .metric-unit {
   font-size: 12px;
-  color: var(--teal);
+  color: #5DCAA5;
   font-weight: 600;
 }
 .metric-lbl {
   font-size: 11px;
-  color: rgba(255,255,255,0.6);
+  color: rgba(255,255,255,0.8);
   margin-top: 4px;
 }
 
@@ -301,10 +302,10 @@
   </div>
 
   <div class="section-header">
-    <div class="section-num">◉</div>
+    <div class="section-num" style="background:rgba(255,255,255,0.15);color:#fff;width:28px;height:28px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0">◉</div>
     <div>
-      <div class="section-title">Definition of Done — 11 Deliverables</div>
-      <div class="section-sub">Applied Systems Engineering Certificate · all sections addressed</div>
+      <div class="section-title" style="color:#fff;font-size:16px;font-weight:700">Definition of Done — 11 Deliverables</div>
+      <div class="section-sub" style="color:rgba(255,255,255,0.6);font-size:12px;margin-top:2px">Applied Systems Engineering Certificate · all sections addressed</div>
     </div>
   </div>
 
@@ -397,10 +398,10 @@
   
 
   <div class="section-header" style="margin-top:48px">
-    <div class="section-num">◈</div>
+    <div class="section-num" style="background:rgba(255,255,255,0.15);color:#fff;width:28px;height:28px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0">◈</div>
     <div>
-      <div class="section-title">Key System Metrics</div>
-      <div class="section-sub">Design targets derived from SRS and IPS analysis</div>
+      <div class="section-title" style="color:#fff;font-size:16px;font-weight:700">Key System Metrics</div>
+      <div class="section-sub" style="color:rgba(255,255,255,0.6);font-size:12px;margin-top:2px">Design targets derived from SRS and IPS analysis</div>
     </div>
   </div>
 
@@ -440,30 +441,36 @@
   </div>
 
   <div class="section-header" style="margin-top:48px">
-    <div class="section-num">↓</div>
+    <div class="section-num" style="background:rgba(255,255,255,0.15);color:#fff;width:28px;height:28px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0">↓</div>
     <div>
-      <div class="section-title">Document Downloads</div>
-      <div class="section-sub">All deliverables available as Word / Excel files</div>
+      <div class="section-title" style="color:#fff;font-size:16px;font-weight:700">Document Downloads</div>
+      <div class="section-sub" style="color:rgba(255,255,255,0.6);font-size:12px;margin-top:2px">All deliverables available as Word / Excel files</div>
     </div>
   </div>
-  <div class="callout">
+  <div style="background:rgba(255,255,255,0.1);border-left:3px solid #5DCAA5;border-radius:0 8px 8px 0;padding:12px 18px;margin-bottom:16px;font-size:13px;line-height:1.7;color:rgba(255,255,255,0.9)">
     All documents follow the naming convention: <strong>Subject — CoffCo Coffee Machine — Version</strong>. The 9 numbered deliverables map directly to the Applied Systems Engineering Certificate Definitions of Done.
   </div>
-  <table class="data-table">
-    <thead><tr><th>#</th><th>Document</th><th>Version</th><th>Format</th><th>Download</th></tr></thead>
+  <table style="width:100%;border-collapse:collapse;font-size:13px">
+    <thead><tr style="background:rgba(255,255,255,0.15)">
+      <th style="padding:10px 14px;text-align:left;color:#fff;font-size:11px;font-weight:600;letter-spacing:.06em;text-transform:uppercase">#</th>
+      <th style="padding:10px 14px;text-align:left;color:#fff;font-size:11px;font-weight:600;letter-spacing:.06em;text-transform:uppercase">Document</th>
+      <th style="padding:10px 14px;text-align:left;color:#fff;font-size:11px;font-weight:600;letter-spacing:.06em;text-transform:uppercase">Version</th>
+      <th style="padding:10px 14px;text-align:left;color:#fff;font-size:11px;font-weight:600;letter-spacing:.06em;text-transform:uppercase">Format</th>
+      <th style="padding:10px 14px;text-align:left;color:#fff;font-size:11px;font-weight:600;letter-spacing:.06em;text-transform:uppercase">Download</th>
+    </tr></thead>
     <tbody>
-      <tr><td>1</td><td>Systems Thinking CoffCo Coffee Machine</td><td>V1.0</td><td>docx</td><td><a href="downloads/1-systems-thinking.docx">⬇ Download</a></td></tr>
-      <tr><td>2</td><td>System Requirements Specification CoffCo Coffee Machine</td><td>V3.0</td><td>xlsx</td><td><a href="downloads/2-srs.xlsx">⬇ Download</a></td></tr>
-      <tr><td>3</td><td>System Architecture CoffCo Coffee Machine</td><td>V2.2</td><td>docx</td><td><a href="downloads/3-architecture.docx">⬇ Download</a></td></tr>
-      <tr><td>4</td><td>System Design Description CoffCo Coffee Machine</td><td>V1.0</td><td>docx</td><td><a href="downloads/4-design.docx">⬇ Download</a></td></tr>
-      <tr><td>5</td><td>Analysis (Trade-off Studies and FMECA) CoffCo Coffee Machine</td><td>V1.1</td><td>docx</td><td><a href="downloads/5-analysis.docx">⬇ Download</a></td></tr>
-      <tr><td>6</td><td>Implementation Plan CoffCo Coffee Machine</td><td>V1.0</td><td>docx</td><td><a href="downloads/6-implementation.docx">⬇ Download</a></td></tr>
-      <tr><td>7</td><td>Integration Plan CoffCo Coffee Machine</td><td>V1.0</td><td>docx</td><td><a href="downloads/7-integration.docx">⬇ Download</a></td></tr>
-      <tr><td>8</td><td>Verification and Validation Plan CoffCo Coffee Machine</td><td>V2.0</td><td>docx</td><td><a href="downloads/8-vvp.docx">⬇ Download</a></td></tr>
-      <tr><td>9</td><td>Safety Analysis CoffCo Coffee Machine</td><td>V2.0</td><td>docx</td><td><a href="downloads/9-safety.docx">⬇ Download</a></td></tr>
-      <tr><td>—</td><td>Transition Plan CoffCo Coffee Machine</td><td>V1.2</td><td>docx</td><td><a href="downloads/transition.docx">⬇ Download</a></td></tr>
-      <tr><td>10</td><td>Integrated Product Support Plan CoffCo Coffee Machine</td><td>V3.0</td><td>docx</td><td><a href="downloads/10-ips.docx">⬇ Download</a></td></tr>
-      <tr><td>11</td><td>Disposal Plan CoffCo Coffee Machine</td><td>V1.0</td><td>docx</td><td><a href="downloads/disposal.docx">⬇ Download</a></td></tr>
+      <tr style="border-bottom:.5px solid rgba(255,255,255,0.1)"><td style="padding:9px 14px;color:rgba(255,255,255,0.85);vertical-align:middle">1</td><td style="padding:9px 14px;color:rgba(255,255,255,0.85);vertical-align:middle">Systems Thinking CoffCo Coffee Machine</td><td style="padding:9px 14px;color:rgba(255,255,255,0.85);vertical-align:middle">V1.0</td><td style="padding:9px 14px;color:rgba(255,255,255,0.85);vertical-align:middle">docx</td><td style="padding:9px 14px;color:rgba(255,255,255,0.85);vertical-align:middle"><a href="downloads/1-systems-thinking.docx" style="display:inline-flex;align-items:center;gap:5px;background:rgba(93,202,165,0.2);color:#5DCAA5;border:1px solid rgba(93,202,165,0.4);padding:5px 12px;border-radius:6px;font-size:12px;font-weight:600;text-decoration:none">⬇ Download</a></td></tr>
+      <tr style="border-bottom:.5px solid rgba(255,255,255,0.1)"><td style="padding:9px 14px;color:rgba(255,255,255,0.85);vertical-align:middle">2</td><td style="padding:9px 14px;color:rgba(255,255,255,0.85);vertical-align:middle">System Requirements Specification CoffCo Coffee Machine</td><td style="padding:9px 14px;color:rgba(255,255,255,0.85);vertical-align:middle">V3.0</td><td style="padding:9px 14px;color:rgba(255,255,255,0.85);vertical-align:middle">xlsx</td><td style="padding:9px 14px;color:rgba(255,255,255,0.85);vertical-align:middle"><a href="downloads/2-srs.xlsx" style="display:inline-flex;align-items:center;gap:5px;background:rgba(93,202,165,0.2);color:#5DCAA5;border:1px solid rgba(93,202,165,0.4);padding:5px 12px;border-radius:6px;font-size:12px;font-weight:600;text-decoration:none">⬇ Download</a></td></tr>
+      <tr style="border-bottom:.5px solid rgba(255,255,255,0.1)"><td style="padding:9px 14px;color:rgba(255,255,255,0.85);vertical-align:middle">3</td><td style="padding:9px 14px;color:rgba(255,255,255,0.85);vertical-align:middle">System Architecture CoffCo Coffee Machine</td><td style="padding:9px 14px;color:rgba(255,255,255,0.85);vertical-align:middle">V2.2</td><td style="padding:9px 14px;color:rgba(255,255,255,0.85);vertical-align:middle">docx</td><td style="padding:9px 14px;color:rgba(255,255,255,0.85);vertical-align:middle"><a href="downloads/3-architecture.docx" style="display:inline-flex;align-items:center;gap:5px;background:rgba(93,202,165,0.2);color:#5DCAA5;border:1px solid rgba(93,202,165,0.4);padding:5px 12px;border-radius:6px;font-size:12px;font-weight:600;text-decoration:none">⬇ Download</a></td></tr>
+      <tr style="border-bottom:.5px solid rgba(255,255,255,0.1)"><td style="padding:9px 14px;color:rgba(255,255,255,0.85);vertical-align:middle">4</td><td style="padding:9px 14px;color:rgba(255,255,255,0.85);vertical-align:middle">System Design Description CoffCo Coffee Machine</td><td style="padding:9px 14px;color:rgba(255,255,255,0.85);vertical-align:middle">V1.0</td><td style="padding:9px 14px;color:rgba(255,255,255,0.85);vertical-align:middle">docx</td><td style="padding:9px 14px;color:rgba(255,255,255,0.85);vertical-align:middle"><a href="downloads/4-design.docx" style="display:inline-flex;align-items:center;gap:5px;background:rgba(93,202,165,0.2);color:#5DCAA5;border:1px solid rgba(93,202,165,0.4);padding:5px 12px;border-radius:6px;font-size:12px;font-weight:600;text-decoration:none">⬇ Download</a></td></tr>
+      <tr style="border-bottom:.5px solid rgba(255,255,255,0.1)"><td style="padding:9px 14px;color:rgba(255,255,255,0.85);vertical-align:middle">5</td><td style="padding:9px 14px;color:rgba(255,255,255,0.85);vertical-align:middle">Analysis (Trade-off Studies and FMECA) CoffCo Coffee Machine</td><td style="padding:9px 14px;color:rgba(255,255,255,0.85);vertical-align:middle">V1.1</td><td style="padding:9px 14px;color:rgba(255,255,255,0.85);vertical-align:middle">docx</td><td style="padding:9px 14px;color:rgba(255,255,255,0.85);vertical-align:middle"><a href="downloads/5-analysis.docx" style="display:inline-flex;align-items:center;gap:5px;background:rgba(93,202,165,0.2);color:#5DCAA5;border:1px solid rgba(93,202,165,0.4);padding:5px 12px;border-radius:6px;font-size:12px;font-weight:600;text-decoration:none">⬇ Download</a></td></tr>
+      <tr style="border-bottom:.5px solid rgba(255,255,255,0.1)"><td style="padding:9px 14px;color:rgba(255,255,255,0.85);vertical-align:middle">6</td><td style="padding:9px 14px;color:rgba(255,255,255,0.85);vertical-align:middle">Implementation Plan CoffCo Coffee Machine</td><td style="padding:9px 14px;color:rgba(255,255,255,0.85);vertical-align:middle">V1.0</td><td style="padding:9px 14px;color:rgba(255,255,255,0.85);vertical-align:middle">docx</td><td style="padding:9px 14px;color:rgba(255,255,255,0.85);vertical-align:middle"><a href="downloads/6-implementation.docx" style="display:inline-flex;align-items:center;gap:5px;background:rgba(93,202,165,0.2);color:#5DCAA5;border:1px solid rgba(93,202,165,0.4);padding:5px 12px;border-radius:6px;font-size:12px;font-weight:600;text-decoration:none">⬇ Download</a></td></tr>
+      <tr style="border-bottom:.5px solid rgba(255,255,255,0.1)"><td style="padding:9px 14px;color:rgba(255,255,255,0.85);vertical-align:middle">7</td><td style="padding:9px 14px;color:rgba(255,255,255,0.85);vertical-align:middle">Integration Plan CoffCo Coffee Machine</td><td style="padding:9px 14px;color:rgba(255,255,255,0.85);vertical-align:middle">V1.0</td><td style="padding:9px 14px;color:rgba(255,255,255,0.85);vertical-align:middle">docx</td><td style="padding:9px 14px;color:rgba(255,255,255,0.85);vertical-align:middle"><a href="downloads/7-integration.docx" style="display:inline-flex;align-items:center;gap:5px;background:rgba(93,202,165,0.2);color:#5DCAA5;border:1px solid rgba(93,202,165,0.4);padding:5px 12px;border-radius:6px;font-size:12px;font-weight:600;text-decoration:none">⬇ Download</a></td></tr>
+      <tr style="border-bottom:.5px solid rgba(255,255,255,0.1)"><td style="padding:9px 14px;color:rgba(255,255,255,0.85);vertical-align:middle">8</td><td style="padding:9px 14px;color:rgba(255,255,255,0.85);vertical-align:middle">Verification and Validation Plan CoffCo Coffee Machine</td><td style="padding:9px 14px;color:rgba(255,255,255,0.85);vertical-align:middle">V2.0</td><td style="padding:9px 14px;color:rgba(255,255,255,0.85);vertical-align:middle">docx</td><td style="padding:9px 14px;color:rgba(255,255,255,0.85);vertical-align:middle"><a href="downloads/8-vvp.docx" style="display:inline-flex;align-items:center;gap:5px;background:rgba(93,202,165,0.2);color:#5DCAA5;border:1px solid rgba(93,202,165,0.4);padding:5px 12px;border-radius:6px;font-size:12px;font-weight:600;text-decoration:none">⬇ Download</a></td></tr>
+      <tr style="border-bottom:.5px solid rgba(255,255,255,0.1)"><td style="padding:9px 14px;color:rgba(255,255,255,0.85);vertical-align:middle">9</td><td style="padding:9px 14px;color:rgba(255,255,255,0.85);vertical-align:middle">Safety Analysis CoffCo Coffee Machine</td><td style="padding:9px 14px;color:rgba(255,255,255,0.85);vertical-align:middle">V2.0</td><td style="padding:9px 14px;color:rgba(255,255,255,0.85);vertical-align:middle">docx</td><td style="padding:9px 14px;color:rgba(255,255,255,0.85);vertical-align:middle"><a href="downloads/9-safety.docx" style="display:inline-flex;align-items:center;gap:5px;background:rgba(93,202,165,0.2);color:#5DCAA5;border:1px solid rgba(93,202,165,0.4);padding:5px 12px;border-radius:6px;font-size:12px;font-weight:600;text-decoration:none">⬇ Download</a></td></tr>
+      <tr style="border-bottom:.5px solid rgba(255,255,255,0.1)"><td style="padding:9px 14px;color:rgba(255,255,255,0.85);vertical-align:middle">—</td><td style="padding:9px 14px;color:rgba(255,255,255,0.85);vertical-align:middle">Transition Plan CoffCo Coffee Machine</td><td style="padding:9px 14px;color:rgba(255,255,255,0.85);vertical-align:middle">V1.2</td><td style="padding:9px 14px;color:rgba(255,255,255,0.85);vertical-align:middle">docx</td><td style="padding:9px 14px;color:rgba(255,255,255,0.85);vertical-align:middle"><a href="downloads/transition.docx" style="display:inline-flex;align-items:center;gap:5px;background:rgba(93,202,165,0.2);color:#5DCAA5;border:1px solid rgba(93,202,165,0.4);padding:5px 12px;border-radius:6px;font-size:12px;font-weight:600;text-decoration:none">⬇ Download</a></td></tr>
+      <tr style="border-bottom:.5px solid rgba(255,255,255,0.1)"><td style="padding:9px 14px;color:rgba(255,255,255,0.85);vertical-align:middle">10</td><td style="padding:9px 14px;color:rgba(255,255,255,0.85);vertical-align:middle">Integrated Product Support Plan CoffCo Coffee Machine</td><td style="padding:9px 14px;color:rgba(255,255,255,0.85);vertical-align:middle">V3.0</td><td style="padding:9px 14px;color:rgba(255,255,255,0.85);vertical-align:middle">docx</td><td style="padding:9px 14px;color:rgba(255,255,255,0.85);vertical-align:middle"><a href="downloads/10-ips.docx" style="display:inline-flex;align-items:center;gap:5px;background:rgba(93,202,165,0.2);color:#5DCAA5;border:1px solid rgba(93,202,165,0.4);padding:5px 12px;border-radius:6px;font-size:12px;font-weight:600;text-decoration:none">⬇ Download</a></td></tr>
+      <tr style="border-bottom:.5px solid rgba(255,255,255,0.1)"><td style="padding:9px 14px;color:rgba(255,255,255,0.85);vertical-align:middle">11</td><td style="padding:9px 14px;color:rgba(255,255,255,0.85);vertical-align:middle">Disposal Plan CoffCo Coffee Machine</td><td style="padding:9px 14px;color:rgba(255,255,255,0.85);vertical-align:middle">V1.0</td><td style="padding:9px 14px;color:rgba(255,255,255,0.85);vertical-align:middle">docx</td><td style="padding:9px 14px;color:rgba(255,255,255,0.85);vertical-align:middle"><a href="downloads/disposal.docx" style="display:inline-flex;align-items:center;gap:5px;background:rgba(93,202,165,0.2);color:#5DCAA5;border:1px solid rgba(93,202,165,0.4);padding:5px 12px;border-radius:6px;font-size:12px;font-weight:600;text-decoration:none">⬇ Download</a></td></tr>
 
     </tbody>
   </table>

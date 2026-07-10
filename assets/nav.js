@@ -28,6 +28,7 @@ const NAV_ITEMS = [
   { label: 'Definitions & Acronyms', href: 'definitions.html', num: '' },
   { label: 'Assumptions & Deps', href: 'assumptions.html', num: '' },
   { label: 'Operating Environment', href: 'operating-environment.html', num: '' },
+  { label: 'Useful Links', href: 'useful-links.html', num: '' },
   { label: 'divider' },
   { label: 'Interactive Tools', type: 'heading' },
   { label: 'Investor Deck', href: 'investor.html', num: '✦' },

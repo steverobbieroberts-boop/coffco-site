@@ -20,11 +20,11 @@ const NAV_ITEMS = [
   { label: 'Integration & ICD', href: 'integration.html', num: '7' },
   { label: 'V&V Plan', href: 'vvp.html', num: '8' },
   { label: 'Safety Analysis', href: 'safety.html', num: '9' },
-  { label: 'HAZID Register', href: 'hazid.html', num: '' },
-  { label: 'Transition Plan', href: 'transition.html', num: '' },
+  { label: 'HAZID Register', href: 'hazid.html', num: '9a' },
+  { label: 'Transition Plan', href: 'transition.html', num: '9b' },
   { label: 'IPS Plan', href: 'ips.html', num: '10' },
-  { label: 'OTA Firmware Spec', href: 'ota-firmware.html', num: '' },
-  { label: 'RCM2 FMEA', href: 'rcm2-fmea.html', num: '' },
+  { label: 'OTA Firmware Spec', href: 'ota-firmware.html', num: '10a' },
+  { label: 'RCM2 FMEA', href: 'rcm2-fmea.html', num: '10b' },
   { label: 'Disposal Plan', href: 'disposal.html', num: '11' },
   { label: 'divider' },
   { label: 'Reference', type: 'heading' },
@@ -37,6 +37,46 @@ const NAV_ITEMS = [
 function buildNav(currentPage) {
   const sidebar = document.querySelector('.sidebar');
   if (!sidebar) return;
+
+  // Inject hamburger button if not already present
+  if (!document.getElementById('nav-hamburger')) {
+    const btn = document.createElement('button');
+    btn.id = 'nav-hamburger';
+    btn.className = 'hamburger';
+    btn.setAttribute('aria-label', 'Open navigation');
+    btn.innerHTML = '<span></span><span></span><span></span>';
+    document.body.appendChild(btn);
+
+    const overlay = document.createElement('div');
+    overlay.className = 'nav-overlay';
+    overlay.id = 'nav-overlay';
+    document.body.appendChild(overlay);
+
+    function openNav() {
+      sidebar.classList.add('open');
+      btn.classList.add('open');
+      overlay.classList.add('visible');
+      btn.setAttribute('aria-label', 'Close navigation');
+    }
+    function closeNav() {
+      sidebar.classList.remove('open');
+      btn.classList.remove('open');
+      overlay.classList.remove('visible');
+      btn.setAttribute('aria-label', 'Open navigation');
+    }
+
+    btn.addEventListener('click', () => {
+      sidebar.classList.contains('open') ? closeNav() : openNav();
+    });
+    overlay.addEventListener('click', closeNav);
+
+    // Close when a nav link is tapped on mobile
+    sidebar.addEventListener('click', (e) => {
+      if (e.target.tagName === 'A' && window.innerWidth <= 768) {
+        closeNav();
+      }
+    });
+  }
 
   let html = `
     <div class="sidebar-logo">
@@ -51,10 +91,11 @@ function buildNav(currentPage) {
       html += `<div class="sidebar-section-label">${item.label}</div>`;
     } else {
       const active = currentPage && item.href === currentPage ? 'active' : '';
+      const isSub = item.num && /[a-z]/.test(item.num);
       const numEl = item.num
-        ? `<span class="nav-num">${item.num}</span>`
+        ? `<span class="nav-num${isSub ? ' nav-num-sub' : ''}">${item.num}</span>`
         : `<span class="nav-num" style="background:transparent;"></span>`;
-      html += `<a href="${item.href}" class="${active}">${numEl}${item.label}</a>`;
+      html += `<a href="${item.href}" class="${active}${isSub ? ' nav-sub' : ''}">${numEl}${item.label}</a>`;
     }
   });
 

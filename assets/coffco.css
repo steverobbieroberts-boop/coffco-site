@@ -133,6 +133,33 @@ body {
   color: #fff;
 }
 
+.sidebar a.nav-sub {
+  padding-left: 32px;
+  font-size: 12px;
+  color: rgba(176,192,216,0.8);
+  border-left: 3px solid transparent;
+}
+
+.sidebar a.nav-sub:hover {
+  background: rgba(255,255,255,0.04);
+  color: #fff;
+}
+
+.sidebar a.nav-sub.active {
+  background: rgba(13,92,92,0.25);
+  color: #fff;
+  border-left-color: var(--teal);
+}
+
+.nav-num-sub {
+  width: 24px;
+  height: 18px;
+  font-size: 9px;
+  background: rgba(255,255,255,0.07) !important;
+  color: rgba(200,216,232,0.7) !important;
+  border-radius: 3px;
+}
+
 .sidebar-divider {
   height: 1px;
   background: rgba(255,255,255,0.08);
@@ -355,9 +382,56 @@ p { margin-bottom: 12px; }
 }
 
 /* ── RESPONSIVE ───────────────────────────────────────────────── */
+/* ── Hamburger button ───────────────────────────────────────────── */
+.hamburger {
+  display: none;
+  position: fixed;
+  top: 12px;
+  left: 12px;
+  z-index: 200;
+  width: 40px;
+  height: 40px;
+  background: var(--navy);
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  gap: 5px;
+  padding: 0;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+}
+.hamburger span {
+  display: block;
+  width: 20px;
+  height: 2px;
+  background: #fff;
+  border-radius: 2px;
+  transition: all 0.2s;
+}
+.hamburger.open span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+.hamburger.open span:nth-child(2) { opacity: 0; }
+.hamburger.open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+
+/* ── Overlay ─────────────────────────────────────────────────────── */
+.nav-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.45);
+  z-index: 99;
+  backdrop-filter: blur(2px);
+}
+.nav-overlay.visible { display: block; }
+
+/* ── Mobile breakpoint ──────────────────────────────────────────── */
 @media (max-width: 768px) {
-  .sidebar { transform: translateX(-100%); transition: transform 0.25s; }
+  .hamburger { display: flex; }
+  .sidebar { transform: translateX(-100%); transition: transform 0.25s ease; z-index: 150; }
   .sidebar.open { transform: translateX(0); }
+  .main { margin-left: 0; padding-top: 60px; }
+  .page-cover { padding-top: 16px; }
   .main { margin-left: 0; }
   .page-cover { padding: 24px 20px; }
   .body-wrap { padding: 24px 16px 60px; }

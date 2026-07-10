@@ -1,4 +1,4 @@
-const NAV = [
+const NAV_ITEMS = [
   { label: 'Project Overview', href: 'index.html', num: '' },
   { label: 'Investor Deck', href: 'investor.html', num: '✦' },
   { label: 'divider' },
@@ -44,7 +44,7 @@ function buildNav(currentPage) {
       <div class="logo-sub">Systems Engineering Portfolio</div>
     </div>`;
 
-  NAV.forEach(item => {
+  NAV_ITEMS.forEach(item => {
     if (item.label === 'divider') {
       html += `<div class="sidebar-divider"></div>`;
     } else if (item.type === 'heading') {

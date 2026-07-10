@@ -7,7 +7,7 @@
 <link rel="stylesheet" href="assets/coffco.css">
 <style>
 .hero {
-  background: linear-gradient(135deg, var(--navy) 0%, #0F3460 60%, #0D5C5C 100%);
+  background: transparent;
   color: #fff;
   padding: 56px 48px 48px;
   position: relative;
@@ -70,25 +70,27 @@
   margin: 20px 0;
 }
 .dod-card {
-  background: var(--white);
-  border: 1px solid var(--rule);
+  background: rgba(255,255,255,0.08);
+  border: 1px solid rgba(255,255,255,0.15);
   border-radius: 10px;
   padding: 18px;
   text-decoration: none;
   color: inherit;
   display: block;
-  transition: box-shadow 0.15s, transform 0.15s;
+  transition: box-shadow 0.15s, transform 0.15s, background 0.15s;
   position: relative;
+  backdrop-filter: blur(4px);
 }
 .dod-card:hover {
-  box-shadow: 0 4px 16px rgba(0,0,0,0.09);
+  background: rgba(255,255,255,0.14);
+  box-shadow: 0 4px 24px rgba(0,0,0,0.3);
   transform: translateY(-2px);
 }
 .dod-card .card-num {
   position: absolute;
   top: 16px; right: 16px;
   width: 28px; height: 28px;
-  background: var(--navy);
+  background: var(--teal);
   color: #fff;
   border-radius: 50%;
   display: flex; align-items: center; justify-content: center;
@@ -98,19 +100,19 @@
   font-size: 10px;
   letter-spacing: 0.1em;
   text-transform: uppercase;
-  color: var(--soft);
+  color: rgba(255,255,255,0.5);
   margin-bottom: 5px;
 }
 .dod-card .card-title {
   font-size: 15px;
   font-weight: 700;
-  color: var(--navy);
+  color: #fff;
   margin-bottom: 7px;
   padding-right: 36px;
 }
 .dod-card .card-desc {
   font-size: 12px;
-  color: var(--soft);
+  color: rgba(255,255,255,0.65);
   line-height: 1.5;
 }
 .dod-card .card-status {
@@ -134,25 +136,26 @@
   margin: 16px 0;
 }
 .support-card {
-  background: var(--white);
-  border: 1px solid var(--rule);
+  background: rgba(255,255,255,0.08);
+  border: 1px solid rgba(255,255,255,0.15);
   border-radius: 8px;
   padding: 14px 16px;
   text-decoration: none;
   color: inherit;
   display: block;
   transition: background 0.15s;
+  backdrop-filter: blur(4px);
 }
-.support-card:hover { background: var(--bg); }
+.support-card:hover { background: rgba(255,255,255,0.14); }
 .support-card .s-title {
   font-size: 13px;
   font-weight: 700;
-  color: var(--navy);
+  color: #fff;
   margin-bottom: 4px;
 }
 .support-card .s-desc {
   font-size: 11px;
-  color: var(--soft);
+  color: rgba(255,255,255,0.6);
 }
 .support-card .s-version {
   font-size: 10px;
@@ -177,7 +180,7 @@
 .metric-val {
   font-size: 24px;
   font-weight: 800;
-  color: var(--navy);
+  color: #fff;
   line-height: 1;
 }
 .metric-unit {
@@ -187,7 +190,7 @@
 }
 .metric-lbl {
   font-size: 11px;
-  color: var(--soft);
+  color: rgba(255,255,255,0.6);
   margin-top: 4px;
 }
 
@@ -236,7 +239,7 @@
 </head>
 <body>
 <nav class="sidebar"></nav>
-<main class="main">
+<main class="main" style="background:linear-gradient(170deg,#1C2B4A 0%,#0F3460 35%,#0D5C5C 65%,#0A4A3A 100%);min-height:100vh">
 
 <div class="hero" style="position:relative">
   <a href="https://the-school-of-systems-engineering.circle.so/c/start-here/" target="_blank" rel="noopener"
@@ -270,15 +273,14 @@
 
 </div>
 
-<div class="body-wrap">
+<div class="body-wrap" style="color:#fff">
 <div style="background:var(--navy);border-radius:10px;padding:20px 24px;margin-bottom:24px;display:flex;align-items:center;gap:16px;flex-wrap:wrap">
   <div style="width:44px;height:44px;background:rgba(255,255,255,0.12);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0">📋</div>
   <div style="flex:1;min-width:200px">
     <div style="font-size:16px;font-weight:700;color:#fff;margin-bottom:4px">CoffCo Systems Engineering Proposal V1.1</div>
     <div style="font-size:12px;color:#90a8c0;line-height:1.5">Primary submission document · 36 pages · Covers all 11 DoD deliverables · Systems Thinking, SRS, Architecture, Design, Analysis, Implementation, Integration, V&amp;V, Safety, Transition, IPS, Disposal</div>
   </div>
-  <a href="downloads/CoffCo_Systems_Engineering_Proposal_V1.1.docx"
-     style="background:var(--teal);color:#fff;padding:10px 20px;border-radius:8px;font-size:13px;font-weight:600;text-decoration:none;white-space:nowrap;flex-shrink:0">
+  <a href="downloads/CoffCo_Systems_Engineering_Proposal_V1.1.docx" style="color:var(--teal-md);font-weight:600">
     &#11015; Download Proposal (.docx)
   </a>
 </div>

@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>CoffCo — A Coffee Machine as a System of Systems</title>
+<link rel="stylesheet" href="assets/coffco.css">
+<style>
+.prose-body{max-width:900px;margin:0 auto;padding:40px 44px 80px}
+.prose-body p{font-size:14px;line-height:1.8;color:#3A3F47;margin-bottom:16px}
+.disc-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:24px}
+.disc-card{border-radius:8px;padding:16px 18px}
+.disc-label{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;margin-bottom:7px}
+.disc-body{font-size:13px;line-height:1.65;color:#3A3F47}
+.callout{border-left:3px solid var(--teal);background:#E1F5EE;padding:14px 18px;border-radius:0 8px 8px 0;margin:0 0 24px;font-size:13px;line-height:1.75;color:#1a3a3a}
+.callout strong{color:var(--teal)}
+.callout.amber{border-color:#854F0B;background:#FAEEDA;color:#3a2000}
+.callout.amber strong{color:#854F0B}
+.img-wrap{border-radius:12px;overflow:hidden;box-shadow:0 6px 32px rgba(0,0,0,0.12);margin-bottom:6px}
+.img-caption{font-size:11px;color:#9b9a96;text-align:right;margin-bottom:28px}
+.sec-divider{font-size:17px;font-weight:700;color:var(--navy);margin:36px 0 14px;padding-bottom:10px;border-bottom:2px solid #D8DDE6}
+.research-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:24px}
+.research-card{background:#fff;border:.5px solid #E2E6ED;border-radius:8px;padding:14px 16px}
+.rc-num{display:inline-flex;width:22px;height:22px;background:var(--navy);color:#fff;border-radius:50%;align-items:center;justify-content:center;font-size:10px;font-weight:700;margin-bottom:7px;flex-shrink:0}
+.rc-title{font-size:12px;font-weight:700;color:var(--navy);margin-bottom:5px}
+.rc-body{font-size:12px;line-height:1.6;color:#5A5A5A}
+.rc-coffco{font-size:11px;color:var(--teal);font-weight:600;margin-top:6px}
+.se-list{margin:0 0 24px;padding:0;list-style:none;display:flex;flex-direction:column;gap:8px}
+.se-list li{display:flex;gap:12px;align-items:flex-start;background:#fff;border:.5px solid #E2E6ED;border-radius:8px;padding:12px 14px;font-size:13px;line-height:1.6;color:#3A3F47}
+.se-list li::before{content:"◆";color:var(--teal);font-size:10px;margin-top:3px;flex-shrink:0}
+@media(max-width:640px){.disc-grid,.research-grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<nav class="sidebar"></nav>
+<main class="main">
+<div class="page-cover">
+  <div class="cover-eyebrow">Reference &middot; Systems Engineering Context</div>
+  <h1 class="cover-title">A Coffee Machine as a System of Systems</h1>
+  <p class="cover-sub">Why a connected coffee machine is a textbook SE problem &middot; Four disciplines &middot; One integrated system &middot; Mapped to CoffCo subsystems</p>
+  <div class="cover-meta">
+    <span><strong>Subsystems:</strong> SS-1 through SS-5</span>
+    <span><strong>Disciplines:</strong> Mechanics · Electronics · UX · Software</span>
+    <span><strong>SE principle:</strong> System of systems</span>
+  </div>
+</div>
+
+<div class="prose-body">
+
+<p>Coffee machines are complex engineered systems integrating thermal, hydraulic, mechanical, and electronic subsystems to deliver precise, repeatable beverages. A smart coffee machine may appear to be a simple domestic appliance — but it is in fact a system of systems in which four distinct engineering disciplines must work together seamlessly to deliver a single user outcome: a quality beverage in under three minutes, without instruction, in an unsupervised hotel room. This is precisely why the CoffCo programme warranted a full systems engineering treatment.</p>
+
+<div class="callout">
+  <strong>The SE insight.</strong> None of these four disciplines can succeed in isolation. A mechanically perfect pump that the firmware cannot control safely is a hazard. An intuitive UI attached to an electronics subsystem that cannot maintain 60°C is a guest complaint. Systems engineering defines the interfaces between these disciplines, allocates requirements to subsystems, and ensures the integrated whole meets the stakeholder need — not just the sum of its parts.
+</div>
+
+<!-- Four discipline cards -->
+<div class="sec-divider">The Four Disciplines — Mapped to CoffCo Subsystems</div>
+<div class="disc-grid">
+  <div class="disc-card" style="background:#E6F1FB;border-left:3px solid #185FA5">
+    <div class="disc-label" style="color:#185FA5">① Mechanics → SS-2 / SS-3</div>
+    <div class="disc-body">The Thermal Assembly and Fluid Management subsystems provide the mechanical foundation — water pump (0.9–1.3 bar), heating element (60–95°C), PRV, drip tray, and the consumable loading interlock. Research identifies the brewing unit, portafilter, and dispersion head as critical for proper water distribution and extraction; materials are selected for durability, thermal conductivity, and chemical resistance. Reliable mechanical design is the foundation on which every other subsystem depends.</div>
+  </div>
+  <div class="disc-card" style="background:#FAEEDA;border-left:3px solid #854F0B">
+    <div class="disc-label" style="color:#854F0B">② Electronics → SS-4 / SS-5</div>
+    <div class="disc-body">The Power Management and Monitoring &amp; Comms subsystems provide the electronic nervous system — 230V/110V supply regulation, NTC thermistors, pressure transducers, flowmeters, hardware watchdog timer (independent of firmware), and the wireless telemetry module. PID controllers or digital temperature controls maintain precise water temperature; high-end systems employ dual boilers or pre-infusion thermal ramps to synchronise temperature with pressure changes. Safety-critical functions (TCO, WDT IC) are implemented in hardware, not software.</div>
+  </div>
+  <div class="disc-card" style="background:#E1F5EE;border-left:3px solid #0F6E56">
+    <div class="disc-label" style="color:#0F6E56">③ UX → SS-1</div>
+    <div class="disc-body">The User Interface Assembly must satisfy one of the most demanding UX requirements in the portfolio: SRS 2.1 requires the machine to be fully operable by a first-time user without instruction. Touchscreens or button panels allow users to select beverages, monitor status, and receive alerts; the interface integrates with embedded systems to execute pre-programmed brewing sequences. Icon-only controls, a 7-state LED status ring, and a deliberate 2-step CONFIRM BREW gate are all UX decisions driven directly by the SE analysis.</div>
+  </div>
+  <div class="disc-card" style="background:#EEEDFE;border-left:3px solid #534AB7">
+    <div class="disc-label" style="color:#534AB7">④ Software → SS-2 / SS-5</div>
+    <div class="disc-body">The Brew Control and Monitoring &amp; Comms subsystems run the firmware that orchestrates all other disciplines — the 11-state finite state machine, sensor monitoring loops, fault detection and safe-shutdown logic, cloud telemetry, and the scheduled OTA firmware update mechanism (SRS 1.11). Microcontrollers orchestrate heating, pumping, and flow profiles; advanced machines implement pressure profiling to modulate extraction dynamically. Software failure is mitigated by a hardware-independent WDT IC (SRS 3.12) and A/B partition rollback.</div>
+  </div>
+</div>
+
+<!-- Key subsystems from research -->
+<div class="sec-divider">Key Engineering Subsystems</div>
+<div class="research-grid">
+  <div class="research-card">
+    <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px">
+      <div class="rc-num">1</div>
+      <div class="rc-title">Thermal Management</div>
+    </div>
+    <div class="rc-body">Modern machines use PID controllers or digital temperature controls to maintain precise water temperature. High-end systems employ dual boilers or pre-infusion thermal ramps to synchronise temperature with pressure changes. Espresso requires 90–96°C for optimal flavour consistency.</div>
+    <div class="rc-coffco">CoffCo: SRS 4.1 (≥60°C americano) · SRS 4.2/4.3 (60–90°C milk) · NTC sensors in SS-5</div>
+  </div>
+  <div class="research-card">
+    <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px">
+      <div class="rc-num">2</div>
+      <div class="rc-title">Hydraulic &amp; Pump Systems</div>
+    </div>
+    <div class="rc-body">Rotary vane, gear, or vibration pumps generate 9–19 bar to force water through grounds. Advanced machines implement pressure profiling to modulate extraction dynamically, coordinated with real-time sensor feedback. Fan et al. (2009) identifies pump debris clogging as the top failure mode by frequency.</div>
+    <div class="rc-coffco">CoffCo: SRS 1.5 (extraction pressure) · RCM2 FM-23 (pump debris) · OA-IPS-02 (strainer)</div>
+  </div>
+  <div class="research-card">
+    <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px">
+      <div class="rc-num">3</div>
+      <div class="rc-title">Control &amp; Embedded Systems</div>
+    </div>
+    <div class="rc-body">Microcontrollers orchestrate heating, pumping, and flow profiles. Sensors — thermistors, RTDs, and flowmeters — provide feedback for precise control, enabling automated sequences for different brew strengths and cup sizes. Temperature sensors feed the PID controller which adjusts the heater, while the pump modulates flow to maintain extraction quality.</div>
+    <div class="rc-coffco">CoffCo: SS-2 Brew Control MCU · SS-5 telemetry · SRS 3.12 hardware WDT · 11-state FSM</div>
+  </div>
+  <div class="research-card">
+    <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px">
+      <div class="rc-num">4</div>
+      <div class="rc-title">Mechanical Components</div>
+    </div>
+    <div class="rc-body">The brewing unit, portafilter, and dispersion head ensure proper water distribution and extraction. Materials are selected for durability, thermal conductivity, and chemical resistance. Elastomer seals and O-rings are critical failure points — Fan et al. (2009) identifies incorrect elastomer specification as a root cause of early seal failure.</div>
+    <div class="rc-coffco">CoffCo: RCM2 FM-25 (seal degradation) · OA-IPS-03 (FKM elastomers) · SRS 4.9 food safety</div>
+  </div>
+  <div class="research-card">
+    <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px">
+      <div class="rc-num">5</div>
+      <div class="rc-title">User Interface</div>
+    </div>
+    <div class="rc-body">Touchscreens or button panels allow users to select beverages, monitor status, and receive alerts. The interface integrates with embedded systems to execute pre-programmed brewing sequences. For hotel deployment, zero-instruction operation is the governing constraint.</div>
+    <div class="rc-coffco">CoffCo: SRS 2.1 (unaided first-time operation) · SS-1 icon-only controls · 7-state LED ring</div>
+  </div>
+  <div class="research-card">
+    <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px">
+      <div class="rc-num">6</div>
+      <div class="rc-title">IoT &amp; Connectivity</div>
+    </div>
+    <div class="rc-body">Modern machines increasingly incorporate IoT capabilities, enabling remote monitoring, predictive maintenance, and adaptive brewing profiles. Automation and feedback loops ensure subsystems interact seamlessly, with connectivity enabling fleet-level operational insight and OTA software improvement.</div>
+    <div class="rc-coffco">CoffCo: SRS 1.11 (OTA firmware) · SS-5 telemetry · Cloud Ops dashboard · MTBF/MTTR tracking</div>
+  </div>
+</div>
+
+<!-- SE considerations -->
+<div class="sec-divider">Systems Engineering Considerations</div>
+<ul class="se-list">
+  <li><strong>Stakeholder analysis:</strong> machines must meet the needs of consumers (ease of use, consistency), manufacturers (reliability, maintainability), and regulatory bodies (safety, environmental compliance). For CoffCo this is captured in the CATWOE analysis and 42 SRS requirements across four stakeholder groups.</li>
+  <li><strong>Safety and environmental compliance:</strong> compliance with electrical and thermal safety standards (IEC 60335) is essential. Energy-efficient designs reduce standby power and water waste. CoffCo additionally addresses WEEE, RoHS, REACH, and HACCP compliance across the SRS, Safety Analysis, and Disposal Plan.</li>
+  <li><strong>Integration and feedback loops:</strong> effective systems engineering ensures subsystems interact seamlessly. Temperature sensors feed the PID controller, which adjusts the heater, while the pump modulates flow to maintain extraction quality. In CoffCo this integration is formalised in the ICD (interfaces II-01 to II-09) and the 7-gate integration sequence.</li>
+  <li><strong>Automation and connectivity:</strong> IoT capabilities enable remote monitoring, predictive maintenance, and adaptive brewing profiles. The CoffCo Cloud Ops dashboard provides fleet-level telemetry; OTA firmware (SRS 1.11) enables continuous improvement without field engineer visits.</li>
+</ul>
+
+<div class="callout amber">
+  <strong>Why this matters for CoffCo.</strong> The research confirms that coffee machines are genuinely multi-domain systems — not simple appliances. The CoffCo SE programme applied the full systems engineering lifecycle precisely because the problem demands it: 19 identified hazards, 25 FMECA failure modes, 10 ILS branches, and ≥26,280 h MTBF target across a system that must operate unsupervised for 365 days in a safety-regulated environment. This is not over-engineering. It is appropriate engineering.
+</div>
+
+<!-- Infographic -->
+<div class="sec-divider">Industry Infographic</div>
+<div class="img-wrap">
+  <img src="assets/coffco-system-of-systems.jpg"
+       alt="Infographic: What a Connected Coffee Machine Teaches Us About Systems Engineering — showing four disciplines: Mechanics, Electronics, UX, and Software working together as a system of systems"
+       style="width:100%;display:block">
+</div>
+<div class="img-caption">Industry use case infographic — a coffee machine is more than a product; it is a system of systems</div>
+
+</div>
+</main>
+<script src="assets/nav.js"></script>
+</body>
+</html>

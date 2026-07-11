@@ -29,6 +29,7 @@ const NAV_ITEMS = [
   { label: 'divider' },
   { label: 'Reference', type: 'heading' },
   { label: 'Supporting Documents', href: 'supporting-docs.html', num: '' },
+  { label: 'System of Systems', href: 'system-of-systems.html', num: '' },
   { label: 'Definitions & Acronyms', href: 'definitions.html', num: '' },
   { label: 'Useful Links', href: 'useful-links.html', num: '' },
   { label: 'Glossary of Terms', href: 'glossary.html', num: '' },
